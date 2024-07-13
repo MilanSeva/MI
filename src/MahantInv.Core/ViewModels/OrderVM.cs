@@ -42,7 +42,7 @@ namespace MahantInv.Core.ViewModels
         {
             get
             {
-                if (!NetAmount.HasValue || OrderTransactionVMs == null || !OrderTransactionVMs.Any()) return (decimal)NetAmount;
+                if (!NetAmount.HasValue || OrderTransactionVMs == null || !OrderTransactionVMs.Any()) return null;
                 decimal unpaidAmt = (decimal)NetAmount.Value - OrderTransactionVMs.Sum(os => os.Amount);
                 //if (unpaidAmt > 0)
                 //{
