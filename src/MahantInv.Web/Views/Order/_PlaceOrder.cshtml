@@ -1,0 +1,177 @@
+﻿@using static MahantInv.Core.Utility.Meta
+@model MahantInv.Core.SimpleAggregates.Order
+
+<div id="PlaceOrder" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Place Order</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div id="OrderErrorSection" class="text-danger"></div>
+                        <input type="hidden" asp-for="@Model.Id" />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="@Model.ProductId"></label>
+                                    <a href="#" class="pl-2" onclick="Common.OpenProductModal(this)" data-target="AddProduct" data-type="s">(New)</a>
+                                    <select asp-for="@Model.ProductId" class="form-control form-control-sm" style="width:100%" placeholder="Product">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.OrderDate"></label>
+                                    <input type="date" asp-for="@Model.OrderDate" class="form-control" placeholder="Order Date" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="@Model.SellerId"></label>
+                                    <a href="#" class="pl-2" onclick="Common.OpenPartyModal(this)" data-type="s">(New)</a>
+                                    <select id="SellerId" class="form-control form-control-sm select2" style="width:100%" placeholder="Seller">
+                                        <option value="">Select Seller</option>
+                                        @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Core.SimpleAggregates.Party>).Where(p => p.Type == PartyTypes.Seller || p.Type == PartyTypes.Both))
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.Quantity"></label>
+                                    <input type="number" asp-for="@Model.Quantity" class="form-control countable" placeholder="Quantity" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.PricePerItem"></label>
+                                    <input type="number" asp-for="@Model.PricePerItem" class="form-control form-control-sm countable" placeholder="Price/Item" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.Discount"></label>
+                                    <input type="text" asp-for="@Model.Discount" class="form-control form-control-sm countable" placeholder="Discount(%)" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label asp-for="@Model.Tax"></label>
+                                    <input type="number" asp-for="@Model.Tax" class="form-control form-control-sm countable" placeholder="Tax" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Discount</label>
+                                    <input type="number" asp-for="@Model.DiscountAmount" class="form-control form-control-sm" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Net Amount</label>
+                                    <input type="number" asp-for="@Model.NetAmount" class="form-control form-control-sm" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                            <div class="col-md-6">
+                            <div class="form-group">
+                            <label asp-for="@Model.ReceivedQuantity"></label>
+                            <input type="number" asp-for="@Model.ReceivedQuantity" class="form-control form-control-sm" placeholder="Received Quantity" />
+                            </div>
+                            </div>
+                            <div class="col-md-6">
+                            <div class="form-group">
+                            <label asp-for="@Model.ReceivedDate"></label>
+                            <input type="date" asp-for="@Model.ReceivedDate" class="form-control form-control-sm" placeholder="Received Date" />
+                            </div>
+                            </div>
+                            </div>*@
+                        <div class="form-group">
+                            <label asp-for="@Model.Remark"></label>
+                            <textarea asp-for="@Model.Remark" rows="2" class="form-control form-control-sm" placeholder="Remark"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        
+                        <div id="OrderTransactionSection">
+                            <div class="table-responsive-sm">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Payer <a href="#" class="pl-2" onclick="Common.OpenPartyModal(this)" data-type="p">(New)</a></th>
+                                            <th scope="col">Payment Type</th>
+                                            <th scope="col">Amount</th>
+                                            <th scope="col">Payment Date</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <select id="PartyId" class="form-control form-control-sm select2" style="width:100%" placeholder="Party">
+                                                    <option value="">Select Payer</option>
+                                                    @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Core.SimpleAggregates.Party>).Where(p => p.Type == PartyTypes.Payer || p.Type == PartyTypes.Both))
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                </select>
+                                            </th>
+                                            <th>
+                                                <select id="PaymentTypeId" class="form-control form-control-sm select2" style="width:100%" placeholder="Payment Type">
+                                                    <option value="">Select Payment Type</option>
+                                                    @foreach (var item in (ViewBag.PaymentTypes as ICollection<MahantInv.Core.SimpleAggregates.PaymentType>))
+                                                    {
+                                                        <option value="@item.Id">@item.Title</option>
+                                                    }
+                                                </select>
+                                            </th>
+                                            <th>
+                                                <input type="number" id="Amount" class="form-control" placeholder="Paid Amount" style="width:135px;"/>
+                                            </th>
+                                            <th>
+                                                <input type="date" id="PaymentDate" class="form-control" placeholder="Payment Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                            </th>
+                                            <th>
+                                                <button type="button" class="btn btn-outline-success" onclick="Common.AddOrderTransaction(this)">A</button>
+                                                <button type="button" class="btn btn-outline-danger" onclick="Common.CancelOrderTransaction(this)">C</button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="OrderTransactionBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="OrderTransactionSummarySection" class="d-inline p-2 bg-info text-white">
+                            Paid Amount :
+                            <span class="text-dark h5" id="OrderTransactionSummarySectionPaidAmount">0</span>
+                            Pending Amount  :
+                            <span class="text-danger h5" id="OrderTransactionSummarySectionPendingAmount">0</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12 text-center" id="actionsection">
+                    <button type="button" class="cancelbtn btn btn-outline-danger form-control col-md-3" onclick="Common.CancelOrder(this)" data-target="PlaceOrder">Cancel Order</button>
+                    <button type="button" class="saveorderbtn btn btn-outline-success form-control col-md-3" onclick="Common.SaveOrder(this)" data-target="PlaceOrder">Save Order</button>
+                    <button type="button" class="receiveorderbtn btn btn-outline-warning form-control col-md-3" onclick="Common.ReceiveOrder(this)" data-target="PlaceOrder">Receive Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_AddParty",new MahantInv.Core.SimpleAggregates.Party())
+@await Html.PartialAsync("_AddEditProduct",new MahantInv.Core.SimpleAggregates.Product())

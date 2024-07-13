@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Orders";
+}
+<style>
+    .sick-days-warning {
+        background-color: #ffcccb !important;
+    }
+
+    .cell-span {
+        background: white;
+        border-left: 1px solid lightgrey !important;
+        border-right: 1px solid lightgrey !important;
+        border-bottom: 1px solid lightgrey !important;
+        display: flex;
+        justify-content: left; /* align horizontal*/
+        align-items: center;
+    }
+</style>
+<div class="card border-dark">
+    <div class="card-header">
+        <div class="form-inline">
+            <div class="col-md-4 col-sm-4 col-lg-4">
+                <span class="font-weight-bold">Orders</span>
+            </div>
+            <div class="form-group col-md-4 col-sm-12 col-lg-4">
+                 <label for="staticEmail" class="col-sm-4 col-form-label">Order Date</label>
+                <input type="text" class="form-control form-control-sm" id="ordersdaterange" style="width:50%"/>
+            </div>
+            <div class="col-md-4 col-sm-4 col-lg-4 text-right" style="padding-right:0px !important;">
+                <button class="btn btn-outline-success btn-sm" type="button" onclick="Common.ExportToExcel()">
+                    <span>Export to Excel</span>
+                </button>
+                <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-id="0" data-target="PlaceOrder">
+                    <span>New</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body ag-theme-balham" id="ordersdata">
+    </div>
+</div>
+
+<table id="OrderTransactionBodyTemplate" style="display:none;">
+    <tbody>
+        <tr id='{idx}'>
+            <td>{Party}</td>
+            <td>{PaymentType}</td>
+            <td>{Amount}</td>
+            <td>{PaymentDate}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="Common.EditOrderTransaction(this)">Edit</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="Common.DeleteOrderTransaction(this)">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@*@await Html.PartialAsync("_AddEditOrder",new MahantInv.Core.SimpleAggregates.Order())*@
+@await Html.PartialAsync("_PlaceOrder",new MahantInv.Core.SimpleAggregates.Order())
+
+@section Scripts{
+<script src="~/Orders/index.js" type="text/javascript" asp-append-version="true"></script>
+}

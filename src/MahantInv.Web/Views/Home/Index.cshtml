@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Usage";
+}
+<style>
+    .sick-days-warning {
+        background-color: #ffcccb !important;
+    }
+</style>
+<div class="card border-dark">
+    <div class="card-header">
+        <div class="form-inline">
+            
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                <select id="ProductUsageSelect" mu class="form-control form-control-sm" style="width: 100%"></select>
+            </div>
+            <div class="col-md-2 col-sm-2 col-lg-2">
+                <select id="BuyersSelect" class="form-control form-control-sm" style="width: 100%">
+                    <option value="">Select Buyer</option>
+                    @foreach (var item in (ViewBag.Buyers as SelectList))
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 col-sm-2 col-lg-2">
+                <input id="UsageQuantity" type="number" class="form-control" placeholder="Usage Quantity" />
+            </div>
+            <div class="col-md-2 col-sm-2 col-lg-2">
+                <input id="UsageDate" type="date" class="form-control" placeholder="Date" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+            </div>
+            <div class="col-md-1 col-sm-1 col-lg-1">
+                <button class="btn btn-outline-success" type="button" onclick="Common.UseProduct(this)">
+                    <span>Save</span>
+                </button>
+            </div>
+            <div class="col-md-2 col-sm-2 col-lg-2 text-right" style="padding-right:0px !important;">
+                <button class="btn btn-outline-primary" type="button" onclick="Common.ExportToExcel()">
+                    <span>Export to Excel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body ag-theme-balham" id="usagedata">
+    </div>
+</div>
+@*@await Html.PartialAsync("_AddEditProduct",new MahantInv.Core.SimpleAggregates.Product())*@
+@section Scripts{
+<script src="~/Home/index.js" type="text/javascript" asp-append-version="true"></script>
+    }
