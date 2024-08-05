@@ -229,7 +229,7 @@ class Common {
 
                 $container.find(".select2-result-repository__title").text(repo.fullName);
                 let detail = ' Size : ' + repo.sizeUnitTypeCode;
-                $container.find(".select2-result-repository__description").text((repo.description + ',' ?? '') + '' + detail);
+                $container.find(".select2-result-repository__description").text((repo.description == null ? "" : repo.description + ',' ?? '') + '' + detail);
 
                 return $container;
             },
