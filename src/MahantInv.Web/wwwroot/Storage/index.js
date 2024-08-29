@@ -1,4 +1,5 @@
-﻿function ActionCellRenderer() { }
+﻿let storageGridAPI;
+function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
@@ -51,8 +52,8 @@ var storageGridOptions = {
     defaultColGroupDef: {
         marryChildren: true
     },
-    getRowNodeId: function (data) {
-        return data.id;
+    getRowId: params => {
+        return params.data.id;
     },
     suppressContextMenu: true,
     components: {
@@ -87,7 +88,7 @@ var storageGridOptions = {
         }
     },
     onGridReady: function (params) {
-        storageGridOptions.api.sizeColumnsToFit();
+        storageGridAPI.sizeColumnsToFit();
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while storage(s) are loading</span>',
@@ -131,15 +132,15 @@ class Common {
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#storagedata');
-        new agGrid.Grid(gridDiv, storageGridOptions);
+        storageGridAPI = new agGrid.createGrid(gridDiv, storageGridOptions);
         fetch(baseUrl + 'api/storages')
             .then((response) => response.json())
             .then(data => {                
-                storageGridOptions.api.setRowData(data);
+                storageGridAPI.setGridOption("rowData", data);
                 //Common.InitSelect2();
             })
             .catch(error => {
-                storageGridOptions.api.setRowData([])
+                storageGridAPI.setGridOption("rowData", []);
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});

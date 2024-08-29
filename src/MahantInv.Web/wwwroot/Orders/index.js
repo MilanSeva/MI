@@ -1,4 +1,5 @@
-﻿var orderTransaction = [];
+﻿let orderGridAPI;
+var orderTransaction = [];
 let editModeIdx = -1;
 function ActionCellRenderer() { }
 
@@ -181,10 +182,9 @@ var orderGridOptions = {
         marryChildren: true
     },
 
-    getRowNodeId: function (data) {
-        return data.id;
+    getRowId: params => {
+        return params.data.id;
     },
-    autoSizeColumn: true,
     suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer
@@ -199,11 +199,11 @@ var orderGridOptions = {
     },
     onGridReady: function (params) {
         const allColumnIds = [];
-        orderGridOptions.columnApi.getAllColumns().forEach((column) => {
+        orderGridAPI.getAllGridColumns().forEach((column) => {
             if (column.colId != 'id')
                 allColumnIds.push(column.colId);
         });
-        orderGridOptions.columnApi.autoSizeColumns(allColumnIds, false);
+        orderGridAPI.autoSizeColumns(allColumnIds, false);
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your orders are loading</span>',
@@ -358,7 +358,7 @@ class Common {
 
     static ApplyAGGrid() {
         var gridDiv = document.querySelector('#ordersdata');
-        new agGrid.Grid(gridDiv, orderGridOptions);
+        orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
     }
 
     static LoadDataInGrid(startDate, endDate) {
@@ -374,11 +374,11 @@ class Common {
             .then(data => {
                 var gridData = [];
                 Common.BuildGridData(data, gridData);
-                orderGridOptions.api.setRowData(gridData);
+                orderGridAPI.setGridOption("rowData", gridData);
             })
             .catch(error => {
                 console.log('error:', error);
-                orderGridOptions.api.setRowData([])
+                orderGridAPI.setGridOption("rowData", []);
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});
@@ -405,13 +405,13 @@ class Common {
                 gData.paymentStatus = v.paymentStatus;
                 gData.pendingAmount = v.pendingAmount;
                 gData.orderDateFormat = v.orderDateFormat;
-                
+
                 gridData.push(gData);
             }
             else {
                 let idx = 0;
                 $.each(v.orderTransactionVMs, function (oti, otv) {
-                    var gData = { payer: otv.party, paymentType: otv.paymentType, amount: otv.amount, paymentDateFormat : otv.paymentDateFormat, orderTransactionsCount: 1 };
+                    var gData = { payer: otv.party, paymentType: otv.paymentType, amount: otv.amount, paymentDateFormat: otv.paymentDateFormat, orderTransactionsCount: 1 };
                     if (idx == 0) {
                         gData.orderTransactionsCount = v.orderTransactionsCount;
                         gData.productFullName = v.productFullName;
@@ -586,7 +586,7 @@ class Common {
             let gridData = [];
             Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridOptions.api.applyTransaction({ add: gridData, addIndex:0 });
+                orderGridOptions.api.applyTransaction({ add: gridData, addIndex: 0 });
             }
             else {
                 orderGridOptions.api.applyTransaction({ update: gridData });
@@ -662,14 +662,14 @@ class Common {
         //order.OrderTransactions = orderTransaction;
         for (var i = 0; i < orderTransaction.length; i++) {
             order.OrderTransactions.push(new OrderTransaction(orderTransaction[i].Id, orderTransaction[i].PartyId, orderTransaction[i].Party,
-                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate,'DD/MM/YYYY').format('MM/DD/YYYY')))
-        }        
+                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate, 'DD/MM/YYYY').format('MM/DD/YYYY')))
+        }
         return order;
     }
 
     static async ReceiveOrder(mthis) {
         $('#OrderErrorSection').empty();
-        let order = Common.BuildOrderValues();        
+        let order = Common.BuildOrderValues();
         var response = await fetch(baseUrl + 'api/order/receive', {
             method: 'POST',
             body: JSON.stringify(order),
@@ -802,7 +802,7 @@ class Common {
             orderTransaction[editModeIdx].PaymentTypeId = PaymentTypeId;
             orderTransaction[editModeIdx].PaymentType = PaymentType;
             orderTransaction[editModeIdx].Amount = Amount;
-            orderTransaction[editModeIdx].PaymentDate = moment(PaymentDate,'YYYY-MM-DD').format('DD/MM/YYYY');
+            orderTransaction[editModeIdx].PaymentDate = moment(PaymentDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
             editModeIdx = -1;
         }
         Common.UpdateOrderTransactionGrid();
@@ -841,7 +841,7 @@ class Common {
         $('#PartyId').val(orderTransaction[idx].PartyId).trigger('change');
         $('#PaymentTypeId').val(orderTransaction[idx].PaymentTypeId).trigger('change');
         $('#Amount').val(orderTransaction[idx].Amount);
-        $('#PaymentDate').val(moment(orderTransaction[idx].PaymentDate,'DD/MM/YYYY').format('YYYY-MM-DD'));
+        $('#PaymentDate').val(moment(orderTransaction[idx].PaymentDate, 'DD/MM/YYYY').format('YYYY-MM-DD'));
         editModeIdx = idx;
     }
     static async DeleteOrderTransaction(mthis) {

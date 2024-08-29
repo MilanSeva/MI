@@ -1,4 +1,5 @@
-﻿function ActionCellRenderer() { }
+﻿let partyGridAPI;
+function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
@@ -75,8 +76,8 @@ var partyGridOptions = {
     defaultColGroupDef: {
         marryChildren: true
     },
-    getRowNodeId: function (data) {
-        return data.id;
+    getRowId: params => {
+        return params.data.id;
     },
     suppressContextMenu: true,
     components: {
@@ -111,7 +112,7 @@ var partyGridOptions = {
         }
     },
     onGridReady: function (params) {
-        partyGridOptions.api.sizeColumnsToFit();
+        partyGridAPI.sizeColumnsToFit();
         //const allColumnIds = [];
         //partyGridOptions.columnApi.getAllColumns().forEach((column) => {
         //    if (column.colId != 'id')
@@ -173,15 +174,15 @@ class Common {
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#partiesdata');
-        new agGrid.Grid(gridDiv, partyGridOptions);
+        partyGridAPI = new agGrid.createGrid(gridDiv, partyGridOptions);
         fetch(baseUrl + 'api/parties')
             .then((response) => response.json())
             .then(data => {
-                partyGridOptions.api.setRowData(data);
+                partyGridAPI.setGridOption("rowData", data);
                 Common.InitSelect2();
             })
             .catch(error => {
-                partyGridOptions.api.setRowData([])
+                partyGridAPI.setGridOption("rowData", []);
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});

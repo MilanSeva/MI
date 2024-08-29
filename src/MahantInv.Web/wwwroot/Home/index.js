@@ -1,4 +1,5 @@
-﻿function ActionCellRenderer() { }
+﻿let productUsageAPI;
+function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
@@ -69,8 +70,8 @@ var productUsageGridOptions = {
     },
     //onCellClicked: onCellClickedEvent,
     //onSelectionChanged: onSelectionChanged,
-    getRowNodeId: function (data) {
-        return data.id;
+    getRowId: params => {
+        return params.data.id;
     },
     suppressContextMenu: true,
     //components: {
@@ -105,7 +106,7 @@ var productUsageGridOptions = {
         }
     },
     onGridReady: function (params) {
-        productUsageGridOptions.api.sizeColumnsToFit();
+        productUsageAPI.sizeColumnsToFit();
         //const allColumnIds = [];
         //productUsageGridOptions.columnApi.getAllColumns().forEach((column) => {
         //    if (column.colId != 'id')
@@ -157,16 +158,16 @@ class Common {
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#usagedata');
-        new agGrid.Grid(gridDiv, productUsageGridOptions);
+        productUsageAPI = new agGrid.createGrid(gridDiv, productUsageGridOptions);
         fetch(baseUrl + 'api/usages')
             .then((response) => response.json())
             .then(data => {
-                productUsageGridOptions.api.setRowData(data);
+                productUsageAPI.setGridOption("rowData", data);
                 Common.InitSelect2();
             })
             .catch(error => {
                 console.log('err:', error);
-                productUsageGridOptions.api.setRowData([])
+                productUsageAPI.setGridOption("rowData", []);
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});

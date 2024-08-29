@@ -1,4 +1,5 @@
-﻿function ActionCellRenderer() { }
+﻿let unitTypeGridAPI;
+function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
@@ -51,15 +52,15 @@ var unitTypeGridOptions = {
     defaultColGroupDef: {
         marryChildren: true
     },
-    getRowNodeId: function (data) {
-        return data.code;
+    getRowId: params => {
+        return params.data.code;
     },
     suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer
     },
     onGridReady: function (params) {
-        unitTypeGridOptions.api.sizeColumnsToFit();
+        unitTypeGridAPI.sizeColumnsToFit();
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while Unit Type(s) are loading</span>',
@@ -98,15 +99,15 @@ class Common {
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#unittypedata');
-        new agGrid.Grid(gridDiv, unitTypeGridOptions);
+        unitTypeGridAPI = new agGrid.createGrid(gridDiv, unitTypeGridOptions);
         fetch(baseUrl + 'api/unittypes')
             .then((response) => response.json())
             .then(data => {
-                unitTypeGridOptions.api.setRowData(data);
+                unitTypeGridAPI.setGridOption("rowData", data);
                 //Common.InitSelect2();
             })
             .catch(error => {
-                unitTypeGridOptions.api.setRowData([])
+                unitTypeGridAPI.setGridOption("rowData", []);
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});

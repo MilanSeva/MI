@@ -1,4 +1,5 @@
-﻿function ActionCellRenderer() { }
+﻿let productGridAPI;
+function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
@@ -18,7 +19,7 @@ function onCellClickedEvent(params) {
 const stockClassRules = {
     'sick-days-warning': (params) => params.data.currentStock < params.data.reorderLevel
 };
-var productGridOptions = {
+var productGridAPIOptions = {
 
     // define grid columns
     columnDefs: [
@@ -82,8 +83,8 @@ var productGridOptions = {
     },
     onCellClicked: onCellClickedEvent,
     //onSelectionChanged: onSelectionChanged,
-    getRowNodeId: function (data) {
-        return data.id;
+    getRowId: params=> {
+        return params.data.id;
     },
     suppressContextMenu: true,
     components: {
@@ -118,13 +119,13 @@ var productGridOptions = {
         }
     },
     onGridReady: function (params) {
-        productGridOptions.api.sizeColumnsToFit();
+        productGridAPI.sizeColumnsToFit();
         //const allColumnIds = [];
-        //productGridOptions.columnApi.getAllColumns().forEach((column) => {
+        //productGridAPIOptions.columnApi.getAllColumns().forEach((column) => {
         //    if (column.colId != 'id')
         //        allColumnIds.push(column.colId);
         //});
-        //productGridOptions.columnApi.autoSizeColumns(allColumnIds, false);
+        //productGridAPIOptions.columnApi.autoSizeColumns(allColumnIds, false);
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your products are loading</span>',
@@ -185,15 +186,17 @@ class Common {
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#productsdata');
-        new agGrid.Grid(gridDiv, productGridOptions);
+        productGridAPI = new agGrid.createGrid(gridDiv, productGridAPIOptions);
         fetch(baseUrl + 'api/products')
             .then((response) => response.json())
             .then(data => {
-                productGridOptions.api.setRowData(data);
+                //productGridAPIOptions.api.setRowData(data);
+                productGridAPI.setGridOption("rowData", data);
                 Common.InitSelect2();
             })
             .catch(error => {
-                productGridOptions.api.setRowData([])
+                productGridAPI.setGridOption("rowData", []);
+                //productGridAPIOptions.api.setRowData([])
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});
@@ -259,13 +262,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             if (Id == 0) {
-                productGridOptions.api.applyTransaction({ add: [response.data] });//addIndex
+                productGridAPIOptions.api.applyTransaction({ add: [response.data] });//addIndex
             }
             else {
-                productGridOptions.api.applyTransaction({ update: [response.data] });
+                productGridAPIOptions.api.applyTransaction({ update: [response.data] });
             }
-            let rowNode = productGridOptions.api.getRowNode(response.data.id);
-            productGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = productGridAPIOptions.api.getRowNode(response.data.id);
+            productGridAPIOptions.api.flashCells({ rowNodes: [rowNode] });
             $("#ProductUsageSelect").select2('destroy').empty();
             setTimeout(function () {
                 Common.InitSelect2();
@@ -293,7 +296,8 @@ class Common {
     static BindSelectData() {
         var result = [];
         result.push({ id: '', text: '' });
-        productGridOptions.api.forEachNode((rowNode, index) => {
+        //productGridAPI.setGridOption("rows", data);
+        productGridAPI.forEachNode((rowNode, index) => {
             result.push({ id: rowNode.data.id, text: rowNode.data.name });
         });
         return result;
@@ -352,9 +356,9 @@ class Common {
         }
         if (response.success) {
             toastr.success("Saved", '', { positionClass: 'toast-top-center' });
-            productGridOptions.api.applyTransaction({ update: [response.data] });
-            let rowNode = productGridOptions.api.getRowNode(response.data.id);
-            productGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            productGridAPIOptions.api.applyTransaction({ update: [response.data] });
+            let rowNode = productGridAPIOptions.api.getRowNode(response.data.id);
+            productGridAPIOptions.api.flashCells({ rowNodes: [rowNode] });
 
             $('#ProductUsageSelect').val('').trigger('change');
             $('#UsageQuantity').val('');
@@ -369,7 +373,7 @@ class Common {
     }
 
     static async ExportToExcel() {
-        productGridOptions.api.exportDataAsExcel({ fileName: 'Products.xlsx' });
+        productGridAPIOptions.api.exportDataAsExcel({ fileName: 'Products.xlsx' });
     }
 }
 
