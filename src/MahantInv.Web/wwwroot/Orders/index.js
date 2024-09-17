@@ -342,7 +342,7 @@ class Common {
     static OpenActionModal(mthis) {
         let id = $(mthis).data('id');
         $('#ReceivedOrCancelledOrder').modal('show');
-        let rowData = orderGridOptions.api.getRowNode(id).data;
+        let rowData = orderGridAPI.getRowNode(id).data;
         $('#OrderId').val(rowData.id);
         $('#ProductId').val(rowData.productId);
         $('#ProductName').html(rowData.productName);
@@ -586,13 +586,13 @@ class Common {
             let gridData = [];
             Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridOptions.api.applyTransaction({ add: gridData, addIndex: 0 });
+                orderGridAPI.applyTransaction({ add: gridData, addIndex: 0 });
             }
             else {
-                orderGridOptions.api.applyTransaction({ update: gridData });
+                orderGridAPI.applyTransaction({ update: gridData });
             }
-            let rowNode = orderGridOptions.api.getRowNode(response.data.id);
-            orderGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -695,14 +695,14 @@ class Common {
             let gridData = [];
             Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridOptions.api.applyTransaction({ add: gridData });
+                orderGridAPI.applyTransaction({ add: gridData });
             }
             else {
-                orderGridOptions.api.applyTransaction({ update: gridData });
+                orderGridAPI.applyTransaction({ update: gridData });
             }
-            //orderGridOptions.api.applyTransaction({ update: [response.data] });
-            let rowNode = orderGridOptions.api.getRowNode(response.data.id);
-            orderGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            //orderGridAPI.applyTransaction({ update: [response.data] });
+            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -748,9 +748,9 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
 
-            orderGridOptions.api.applyTransaction({ update: [response.data] });
-            let rowNode = orderGridOptions.api.getRowNode(response.data.id);
-            orderGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            orderGridAPI.applyTransaction({ update: [response.data] });
+            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -922,7 +922,7 @@ class Common {
     }
 
     static async ExportToExcel() {
-        orderGridOptions.api.exportDataAsExcel({ fileName: 'Orders_' + $('#ordersdaterange').val() + '.xlsx' });
+        orderGridAPI.exportDataAsExcel({ fileName: 'Orders_' + $('#ordersdaterange').val() + '.xlsx' });
     }
 
     static async SaveProduct(mthis) {
