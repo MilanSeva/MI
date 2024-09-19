@@ -188,13 +188,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             if (Id == 0) {
-                storageGridOptions.api.applyTransaction({ add: [response.data] });//addIndex
+                storageGridAPI.applyTransaction({ add: [response.data] });//addIndex
             }
             else {
-                storageGridOptions.api.applyTransaction({ update: [response.data] });
+                storageGridAPI.applyTransaction({ update: [response.data] });
             }
-            let rowNode = storageGridOptions.api.getRowNode(response.data.id);
-            storageGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = storageGridAPI.getRowNode(response.data.id);
+            storageGridAPI.flashCells({ rowNodes: [rowNode] });
             return;
         }
         if (response.success == false) {

@@ -250,13 +250,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             if (Id == 0) {
-                partyGridOptions.api.applyTransaction({ add: [response.data] });//addIndex
+                partyGridAPI.applyTransaction({ add: [response.data] });//addIndex
             }
             else {
-                partyGridOptions.api.applyTransaction({ update: [response.data] });
+                partyGridAPI.applyTransaction({ update: [response.data] });
             }
-            let rowNode = partyGridOptions.api.getRowNode(response.data.id);
-            partyGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = partyGridAPI.getRowNode(response.data.id);
+            partyGridAPI.flashCells({ rowNodes: [rowNode] });
             return;
         }
         if (response.success == false) {

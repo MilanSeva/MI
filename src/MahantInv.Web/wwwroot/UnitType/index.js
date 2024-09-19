@@ -155,13 +155,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             //if (Id == 0) {
-                unitTypeGridOptions.api.applyTransaction({ add: [response.data] });//addIndex
+            unitTypeGridAPI.applyTransaction({ add: [response.data] });//addIndex
             //}
             //else {
             //    unitTypeGridOptions.api.applyTransaction({ update: [response.data] });
             //}
-            let rowNode = unitTypeGridOptions.api.getRowNode(response.data.code);
-            unitTypeGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = unitTypeGridAPI.getRowNode(response.data.code);
+            unitTypeGridAPI.flashCells({ rowNodes: [rowNode] });
             return;
         }
         if (response.success == false) {

@@ -190,13 +190,13 @@ class Common {
         fetch(baseUrl + 'api/products')
             .then((response) => response.json())
             .then(data => {
-                //productGridAPIOptions.api.setRowData(data);
+                //productGridAPI.setRowData(data);
                 productGridAPI.setGridOption("rowData", data);
                 Common.InitSelect2();
             })
             .catch(error => {
                 productGridAPI.setGridOption("rowData", []);
-                //productGridAPIOptions.api.setRowData([])
+                //productGridAPI.setRowData([])
                 //toastr.error(error, '', {
                 //    positionClass: 'toast-top-center'
                 //});
@@ -262,13 +262,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             if (Id == 0) {
-                productGridAPIOptions.api.applyTransaction({ add: [response.data] });//addIndex
+                productGridAPI.applyTransaction({ add: [response.data] });//addIndex
             }
             else {
-                productGridAPIOptions.api.applyTransaction({ update: [response.data] });
+                productGridAPI.applyTransaction({ update: [response.data] });
             }
-            let rowNode = productGridAPIOptions.api.getRowNode(response.data.id);
-            productGridAPIOptions.api.flashCells({ rowNodes: [rowNode] });
+            let rowNode = productGridAPI.getRowNode(response.data.id);
+            productGridAPI.flashCells({ rowNodes: [rowNode] });
             $("#ProductUsageSelect").select2('destroy').empty();
             setTimeout(function () {
                 Common.InitSelect2();
@@ -356,9 +356,9 @@ class Common {
         }
         if (response.success) {
             toastr.success("Saved", '', { positionClass: 'toast-top-center' });
-            productGridAPIOptions.api.applyTransaction({ update: [response.data] });
-            let rowNode = productGridAPIOptions.api.getRowNode(response.data.id);
-            productGridAPIOptions.api.flashCells({ rowNodes: [rowNode] });
+            productGridAPI.applyTransaction({ update: [response.data] });
+            let rowNode = productGridAPI.getRowNode(response.data.id);
+            productGridAPI.flashCells({ rowNodes: [rowNode] });
 
             $('#ProductUsageSelect').val('').trigger('change');
             $('#UsageQuantity').val('');
@@ -373,7 +373,7 @@ class Common {
     }
 
     static async ExportToExcel() {
-        productGridAPIOptions.api.exportDataAsExcel({ fileName: 'Products.xlsx' });
+        productGridAPI.exportDataAsExcel({ fileName: 'Products.xlsx' });
     }
 }
 
