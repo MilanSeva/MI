@@ -54,11 +54,11 @@ namespace MahantInv.Infrastructure
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            builder.Register<ServiceFactory>(context =>
-            {
-                var c = context.Resolve<IComponentContext>();
-                return t => c.Resolve(t);
-            });
+            //builder.Register<ServiceFactory>(context =>
+            //{
+            //    var c = context.Resolve<IComponentContext>();
+            //    return t => c.Resolve(t);
+            //});
 
             var mediatrOpenTypes = new[]
             {
