@@ -26,4 +26,8 @@
     <ProjectReference Include="..\MahantInv.Core\MahantInv.Core.csproj" />
     <ProjectReference Include="..\MahantInv.SharedKernel\MahantInv.SharedKernel.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Context\" />
+  </ItemGroup>
 </Project>
