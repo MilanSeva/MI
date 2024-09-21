@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MahantInv.Core.Utility;
+using MahantInv.Infrastructure.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;

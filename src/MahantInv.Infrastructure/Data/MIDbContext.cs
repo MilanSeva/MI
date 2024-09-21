@@ -1,5 +1,4 @@
 ﻿using Ardalis.EFCore.Extensions;
-using MahantInv.Core.ProjectAggregate;
 using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MediatR;

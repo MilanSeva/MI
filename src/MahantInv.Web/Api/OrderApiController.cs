@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Entities;
-using MahantInv.Core.Utility;
+using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static MahantInv.Core.Utility.Meta;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {

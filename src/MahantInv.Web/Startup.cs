@@ -1,18 +1,20 @@
 ﻿using Ardalis.ListStartupServices;
 using Autofac;
-using MahantInv.Core;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Identity;
-using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -42,15 +44,18 @@ namespace MahantInv.Web
             string connectionString = Configuration.GetConnectionString("MahantInventoryDB");  //Configuration.GetConnectionString("DefaultConnection");
             //services.UseSqlServerUOW(connectionString);
             services.UseSQLiteUOW(connectionString);
-            services.AddDbContext(connectionString);
+            services.AddDbContext<MIDbContext>(
+                options => options.UseSqlite(connectionString));
 
             services.AddControllersWithViews().AddNewtonsoftJson();
             //services.AddMvcCore().SetCompatibilityVersion(CompatibilityVersion.Latest)
             //    .AddMvcOptions(o => o.EnableEndpointRouting = false);
+
             services.AddRazorPages();
             services.AddIdentity<MIIdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<MIDbContext>()
                 .AddDefaultTokenProviders();
+
             services.Configure<SmtpSettings>(Configuration.GetSection(nameof(SmtpSettings)));
             services.ConfigureApplicationCookie(options =>
             {
@@ -83,7 +88,7 @@ namespace MahantInv.Web
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DefaultCoreModule());
+            //builder.RegisterModule(new DefaultCoreModule());
             builder.RegisterModule(new DefaultInfrastructureModule(_env.EnvironmentName == "Development"));
         }
 

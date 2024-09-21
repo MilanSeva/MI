@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using MahantInv.Infrastructure.Interfaces;
-using MahantInv.Core.ProjectAggregate;
 using MahantInv.Infrastructure.Data;
 using MahantInv.SharedKernel.Interfaces;
 using MediatR;
@@ -19,9 +18,7 @@ namespace MahantInv.Infrastructure
         public DefaultInfrastructureModule(bool isDevelopment, Assembly callingAssembly = null)
         {
             _isDevelopment = isDevelopment;
-            var coreAssembly = Assembly.GetAssembly(typeof(Project)); // TODO: Replace "Project" with any type from your Core project
             var infrastructureAssembly = Assembly.GetAssembly(typeof(StartupSetup));
-            _assemblies.Add(coreAssembly);
             _assemblies.Add(infrastructureAssembly);
             if (callingAssembly != null)
             {

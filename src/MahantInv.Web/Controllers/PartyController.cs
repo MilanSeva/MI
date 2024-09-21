@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Entities;
-using MahantInv.Core.Utility;
+using MahantInv.Infrastructure.Utility;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

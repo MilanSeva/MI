@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using MahantInv.SharedKernel.Interfaces;
-using MahantInv.Core.Utility;
+using MahantInv.Infrastructure.Utility;
 using Microsoft.Extensions.Options;
 using MahantInv.Infrastructure.ViewModels;
 
