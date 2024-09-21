@@ -12,16 +12,19 @@ namespace MahantInv.Infrastructure.Entities
     [Table("ProductStorages")]
     public class ProductStorage :BaseEntity, IAggregateRoot
     {
-        public int ProductId { get; set; }
-        public int StorageId { get; set; }
+        
+        [NotMapped]
         [Dapper.Contrib.Extensions.Write(false)]
-        public string StorageName { get; set; }
+        public virtual string? StorageName { get; set; }
+
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
+        public int ProductId { get; set; }
         
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("StorageId")]
         public virtual Storage Storage { get; set; }
+        public int StorageId { get; set; }
     }
 }

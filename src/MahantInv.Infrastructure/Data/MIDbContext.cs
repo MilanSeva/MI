@@ -61,7 +61,7 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -81,7 +81,7 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<Party>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.Category).WithMany(p => p.Parties).OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -90,14 +90,14 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Products).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<ProductInventory>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventories).OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -106,7 +106,7 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<ProductInventoryHistory>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventoryHistories).OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -115,14 +115,14 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<ProductStorage>(entity =>
             {
-                entity.HasOne(d => d.Product).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductStorages).OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.Storage).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<ProductUsage>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
 
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -131,7 +131,7 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<Storage>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+
             });
 
         }
