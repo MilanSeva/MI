@@ -1,11 +1,10 @@
 ﻿using Ardalis.EFCore.Extensions;
+using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +21,35 @@ namespace MahantInv.Infrastructure.Data
             _mediator = mediator;
         }
 
+        public virtual DbSet<Buyer> Buyers { get; set; }
 
+        public virtual DbSet<Notification> Notifications { get; set; }
+
+        public virtual DbSet<Order> Orders { get; set; }
+
+        public virtual DbSet<OrderStatusType> OrderStatusTypes { get; set; }
+
+        public virtual DbSet<OrderTransaction> OrderTransactions { get; set; }
+
+        public virtual DbSet<Party> Parties { get; set; }
+
+        public virtual DbSet<PartyCategory> PartyCategories { get; set; }
+
+        public virtual DbSet<PaymentType> PaymentTypes { get; set; }
+
+        public virtual DbSet<Product> Products { get; set; }
+
+        public virtual DbSet<ProductInventory> ProductInventories { get; set; }
+
+        public virtual DbSet<ProductInventoryHistory> ProductInventoryHistories { get; set; }
+
+        public virtual DbSet<ProductStorage> ProductStorages { get; set; }
+
+        public virtual DbSet<ProductUsage> ProductUsages { get; set; }
+
+        public virtual DbSet<Storage> Storages { get; set; }
+
+        public virtual DbSet<UnitType> UnitTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,6 +59,80 @@ namespace MahantInv.Infrastructure.Data
             // alternately this is built-in to EF Core 2.2
             //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Product).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Status).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<OrderTransaction>(entity =>
+            {
+                entity.HasOne(d => d.Order).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Party).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.PaymentType).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<Party>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Category).WithMany(p => p.Parties).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Parties).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Products).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<ProductInventory>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventories).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventories).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<ProductInventoryHistory>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventoryHistories).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventoryHistories).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<ProductStorage>(entity =>
+            {
+                entity.HasOne(d => d.Product).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Storage).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<ProductUsage>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<Storage>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+            });
 
         }
 

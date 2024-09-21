@@ -1,4 +1,5 @@
-﻿using MahantInv.SharedKernel;
+﻿using MahantInv.Infrastructure.Identity;
+using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -36,13 +37,26 @@ namespace MahantInv.Infrastructure.Entities
         public DateTime? ModifiedAt { get; set; }
         [Dapper.Contrib.Extensions.Write(false)]
         public List<ProductStorage> ProductStorages { get; set; }
+
+        [ForeignKey("LastModifiedById")]
+        [InverseProperty("Products")]
+        public virtual MIIdentityUser LastModifiedBy { get; set; }
+
+        [InverseProperty("Product")]
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductInventory> ProductInventories { get; set; } = new List<ProductInventory>();
+
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductInventoryHistory> ProductInventoryHistories { get; set; } = new List<ProductInventoryHistory>();
+
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductUsage> ProductUsages { get; set; } = new List<ProductUsage>();
+
+        [ForeignKey("UnitTypeCode")]
+        [InverseProperty("Products")]
+        public virtual UnitType UnitTypeCodeNavigation { get; set; }
     }
-    [Table("ProductStorages")]
-    public class ProductStorage : IAggregateRoot
-    {
-        public int ProductId { get; set; }
-        public int StorageId { get; set; }
-        [Dapper.Contrib.Extensions.Write(false)]
-        public string StorageName { get; set; }
-    }
+    
 }

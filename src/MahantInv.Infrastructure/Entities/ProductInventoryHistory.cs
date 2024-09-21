@@ -3,7 +3,6 @@ using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -11,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Entities
 {
-    [Table("ProductInventory")]
-    public class ProductInventory : BaseEntity, IAggregateRoot
+    [Table("ProductInventoryHistory")]
+    public class ProductInventoryHistory : BaseEntity, IAggregateRoot
     {
         public int? ProductId { get; set; }
         public double? Quantity { get; set; }
@@ -22,13 +21,12 @@ namespace MahantInv.Infrastructure.Entities
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("LastModifiedById")]
-        [InverseProperty("ProductInventories")]
+        [InverseProperty("ProductInventoryHistories")]
         public virtual MIIdentityUser LastModifiedBy { get; set; }
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
-        [InverseProperty("ProductInventories")]
+        [InverseProperty("ProductInventoryHistories")]
         public virtual Product Product { get; set; }
     }
 }
-

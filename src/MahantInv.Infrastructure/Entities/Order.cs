@@ -1,4 +1,5 @@
-﻿using MahantInv.SharedKernel;
+﻿using MahantInv.Infrastructure.Identity;
+using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -43,11 +44,29 @@ namespace MahantInv.Infrastructure.Entities
         public string LastModifiedById { get; set; }
         [Display(Name = "Modified At")]
         public DateTime? ModifiedAt { get; set; }
+
         [Dapper.Contrib.Extensions.Write(false)]
-        public List<OrderTransaction> OrderTransactions { get; set; }
-        public Order()
-        {
-            OrderTransactions = new();
-        }
+        [ForeignKey("LastModifiedById")]
+        [InverseProperty("Orders")]
+        public virtual MIIdentityUser LastModifiedBy { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [InverseProperty("Order")]
+        public virtual ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [ForeignKey("ProductId")]
+        [InverseProperty("Orders")]
+        public virtual Product Product { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [ForeignKey("SellerId")]
+        [InverseProperty("Orders")]
+        public virtual Party Seller { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [ForeignKey("StatusId")]
+        [InverseProperty("Orders")]
+        public virtual OrderStatusType Status { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MahantInv.SharedKernel;
+﻿using MahantInv.Infrastructure.Identity;
+using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -33,5 +34,23 @@ namespace MahantInv.Infrastructure.Entities
         public string Country { get; set; }
         public string LastModifiedById { get; set; }
         public DateTime? ModifiedAt { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [ForeignKey("CategoryId")]
+        [InverseProperty("Parties")]
+        public virtual PartyCategory Category { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [ForeignKey("LastModifiedById")]
+        [InverseProperty("Parties")]
+        public virtual MIIdentityUser LastModifiedBy { get; set; }
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [InverseProperty("Party")]
+        public virtual ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        [InverseProperty("Seller")]
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
