@@ -14,7 +14,7 @@
     <div class="card-body ag-theme-balham" id="storagedata">
     </div>
 </div>
-@await Html.PartialAsync("_AddEditStorage",new MahantInv.Core.SimpleAggregates.Storage())
+@await Html.PartialAsync("_AddEditStorage",new MahantInv.Infrastructure.Entities.Storage())
 @section Scripts{
 <script src="~/Storage/index.js" type="text/javascript" asp-append-version="true"></script>
 }

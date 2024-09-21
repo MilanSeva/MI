@@ -1,4 +1,4 @@
-﻿@model MahantInv.Core.SimpleAggregates.Party
+﻿@model MahantInv.Infrastructure.Entities.Party
 
 <div id="AddParty" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -25,7 +25,7 @@
                             <label asp-for="@Model.CategoryId"></label>
                             <select asp-for="@Model.CategoryId" class="form-control form-control-sm" placeholder="Category">
                                 <option value="">Select Category</option>
-                                @foreach (var item in (ViewBag.Categories as IEnumerable<MahantInv.Core.SimpleAggregates.PartyCategory>))
+                                @foreach (var item in (ViewBag.Categories as IEnumerable<MahantInv.Infrastructure.Entities.PartyCategory>))
                                 {
                                     <option value="@item.Id">@item.Name</option>
                                 }

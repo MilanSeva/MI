@@ -1,4 +1,4 @@
-﻿@model MahantInv.Core.SimpleAggregates.Product
+﻿@model MahantInv.Infrastructure.Entities.Product
 
 <div id="AddProduct" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -31,7 +31,7 @@
                             <label asp-for="@Model.UnitTypeCode"></label>
                             <select id="UnitTypeCode" class="form-control form-control-sm" placeholder="Unit Type">
                                 <option value="">Select Unit Type</option>
-                                @foreach (var item in (ViewBag.UnitTypes as ICollection<MahantInv.Core.SimpleAggregates.UnitType>))
+                                @foreach (var item in (ViewBag.UnitTypes as ICollection<MahantInv.Infrastructure.Entities.UnitType>))
                                 {
                                     <option value="@item.Code">@item.Name</option>
                                 }
@@ -65,7 +65,8 @@
                         <div class="form-group">
                             <label asp-for="@Model.StorageNames"></label>
                             <select id="StorageNames" class="form-control form-control-sm" placeholder="Storage" multiple>
-                                @foreach (var item in (ViewBag.Storages as ICollection<MahantInv.Core.SimpleAggregates.Storage>).Where(s => s.Enabled))
+                                @foreach (var item in (ViewBag.Storages as ICollection<MahantInv.Infrastructure.Entities.Storage>).Where(s => s.Enabled))
+
                                 {
                                     <option value="@item.Id">@item.Name</option>
                                 }

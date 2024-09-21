@@ -27,7 +27,7 @@ namespace MahantInv.Web
 
                 try
                 {
-                    var context = services.GetRequiredService<AppDbContext>();
+                    var context = services.GetRequiredService<MIDbContext>();
                     //                    context.Database.Migrate();
                     context.Database.EnsureCreated();
                     //SeedData.Initialize(services);

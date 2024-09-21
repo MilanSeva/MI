@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using MahantInv.Core.Interfaces;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Core.ProjectAggregate;
 using MahantInv.Infrastructure.Data;
 using MahantInv.SharedKernel.Interfaces;

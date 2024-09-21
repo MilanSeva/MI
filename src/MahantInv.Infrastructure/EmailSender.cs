@@ -1,5 +1,5 @@
 ﻿using Ardalis.GuardClauses;
-using MahantInv.Core.ViewModels;
+using MahantInv.Infrastructure.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -9,10 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MahantInv.Infrastructure.Interfaces;
 
 namespace MahantInv.Infrastructure
 {
-    public class EmailService : Core.Interfaces.IEmailService
+    public class EmailService : IEmailService
     {
         private readonly ILogger<EmailService> _logger;
         private SmtpSettings _smtpSettings { get; set; }

@@ -44,7 +44,7 @@ namespace MahantInv.Infrastructure
             });
         }
         public static void AddDbContext(this IServiceCollection services, string connectionString) =>
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContext<MIDbContext>(options =>
                 options.UseSqlite(connectionString)); // will be created in web project root
     }
 }

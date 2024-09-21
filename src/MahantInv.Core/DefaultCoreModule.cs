@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using MahantInv.Core.Interfaces;
-using MahantInv.Core.Services;
 
 namespace MahantInv.Core
 {
@@ -8,8 +6,8 @@ namespace MahantInv.Core
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<ToDoItemSearchService>()
-                .As<IToDoItemSearchService>().InstancePerLifetimeScope();
+            //builder.RegisterType<ToDoItemSearchService>()
+            //    .As<IToDoItemSearchService>().InstancePerLifetimeScope();
         }
     }
 }

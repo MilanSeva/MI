@@ -1,4 +1,4 @@
-﻿using MahantInv.Core.SimpleAggregates;
+﻿using MahantInv.Infrastructure.Entities;
 using System.Collections.Generic;
 
 namespace MahantInv.Web.ViewModels

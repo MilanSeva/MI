@@ -1,4 +1,4 @@
-﻿@model MahantInv.Core.SimpleAggregates.Order
+﻿@model MahantInv.Infrastructure.Entities.Order
 
 <div id="AddEditOrder" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -16,7 +16,7 @@
                     <label asp-for="@Model.ProductId"></label>
                     <select asp-for="@Model.ProductId" class="form-control form-control-sm select2" style="width:100%" placeholder="Payment Type">
                         <option value="">Select Payment Type</option>
-                        @foreach (var item in (ViewBag.Products as ICollection<MahantInv.Core.ViewModels.ProductVM>))
+                        @foreach (var item in (ViewBag.Products as ICollection<MahantInv.Infrastructure.ViewModels.ProductVM>))
                         {
                             <option value="@item.Id">@item.Name</option>
                         }

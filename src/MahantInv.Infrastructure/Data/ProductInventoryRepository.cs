@@ -1,5 +1,5 @@
-﻿using MahantInv.Core.Interfaces;
-using MahantInv.Core.SimpleAggregates;
+﻿using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using Dapper;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Core.Utility;
 using Microsoft.Extensions.Options;
-using MahantInv.Core.ViewModels;
+using MahantInv.Infrastructure.ViewModels;
 
 namespace MahantInv.Infrastructure.Data
 {

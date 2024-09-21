@@ -1,5 +1,5 @@
 ﻿@using static MahantInv.Core.Utility.Meta
-@model MahantInv.Core.SimpleAggregates.Order
+@model MahantInv.Infrastructure.Entities.Order
 
 <div id="PlaceOrder" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -38,7 +38,7 @@
                                     <a href="#" class="pl-2" onclick="Common.OpenPartyModal(this)" data-type="s">(New)</a>
                                     <select id="SellerId" class="form-control form-control-sm select2" style="width:100%" placeholder="Seller">
                                         <option value="">Select Seller</option>
-                                        @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Core.SimpleAggregates.Party>).Where(p => p.Type == PartyTypes.Seller || p.Type == PartyTypes.Both))
+                                        @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Infrastructure.Entities.Party>).Where(p => p.Type == PartyTypes.Seller || p.Type == PartyTypes.Both))
                                         {
                                             <option value="@item.Id">@item.Name</option>
                                         }
@@ -120,7 +120,7 @@
                                             <th>
                                                 <select id="PartyId" class="form-control form-control-sm select2" style="width:100%" placeholder="Party">
                                                     <option value="">Select Payer</option>
-                                                    @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Core.SimpleAggregates.Party>).Where(p => p.Type == PartyTypes.Payer || p.Type == PartyTypes.Both))
+                                                    @foreach (var item in (ViewBag.Parties as ICollection<MahantInv.Infrastructure.Entities.Party>).Where(p => p.Type == PartyTypes.Payer || p.Type == PartyTypes.Both))
                                                     {
                                                         <option value="@item.Id">@item.Name</option>
                                                     }
@@ -129,7 +129,7 @@
                                             <th>
                                                 <select id="PaymentTypeId" class="form-control form-control-sm select2" style="width:100%" placeholder="Payment Type">
                                                     <option value="">Select Payment Type</option>
-                                                    @foreach (var item in (ViewBag.PaymentTypes as ICollection<MahantInv.Core.SimpleAggregates.PaymentType>))
+                                                    @foreach (var item in (ViewBag.PaymentTypes as ICollection<MahantInv.Infrastructure.Entities.PaymentType>))
                                                     {
                                                         <option value="@item.Id">@item.Title</option>
                                                     }
@@ -173,5 +173,5 @@
     </div>
 </div>
 
-@await Html.PartialAsync("_AddParty",new MahantInv.Core.SimpleAggregates.Party())
-@await Html.PartialAsync("_AddEditProduct",new MahantInv.Core.SimpleAggregates.Product())
+@await Html.PartialAsync("_AddParty",new MahantInv.Infrastructure.Entities.Party())
+@await Html.PartialAsync("_AddEditProduct",new MahantInv.Infrastructure.Entities.Product())

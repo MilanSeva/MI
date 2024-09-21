@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using MahantInv.Core.Interfaces;
-using MahantInv.Core.SimpleAggregates;
+using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Entities;
 using MahantInv.Core.Utility;
-using MahantInv.Core.ViewModels;
+using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Http;

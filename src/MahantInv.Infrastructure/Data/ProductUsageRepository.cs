@@ -1,6 +1,6 @@
-﻿using MahantInv.Core.Interfaces;
-using MahantInv.Core.SimpleAggregates;
-using MahantInv.Core.ViewModels;
+﻿using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

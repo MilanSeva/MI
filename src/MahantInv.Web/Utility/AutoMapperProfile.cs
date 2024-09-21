@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MahantInv.Core.ViewModels;
+using MahantInv.Infrastructure.ViewModels;
 using MahantInv.Web.ViewModels;
 
 namespace MahantInv.Web.Utility

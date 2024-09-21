@@ -1,5 +1,5 @@
-﻿using MahantInv.Core.Interfaces;
-using MahantInv.Core.SimpleAggregates;
+﻿using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

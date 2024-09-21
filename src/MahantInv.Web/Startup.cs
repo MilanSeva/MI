@@ -3,6 +3,7 @@ using Autofac;
 using MahantInv.Core;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Identity;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -47,8 +48,8 @@ namespace MahantInv.Web
             //services.AddMvcCore().SetCompatibilityVersion(CompatibilityVersion.Latest)
             //    .AddMvcOptions(o => o.EnableEndpointRouting = false);
             services.AddRazorPages();
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
+            services.AddIdentity<MIIdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<MIDbContext>()
                 .AddDefaultTokenProviders();
             services.Configure<SmtpSettings>(Configuration.GetSection(nameof(SmtpSettings)));
             services.ConfigureApplicationCookie(options =>
