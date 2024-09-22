@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
 using System;
+using System.Configuration;
 using System.Threading.Tasks;
 
 namespace MahantInv.Web
@@ -23,6 +24,8 @@ namespace MahantInv.Web
            .WriteTo.Debug(new RenderedCompactJsonFormatter())
            .WriteTo.File("logs\\logs.txt", rollingInterval: RollingInterval.Day)
            .CreateLogger();
+
+            
             var host = CreateHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
@@ -55,6 +58,7 @@ namespace MahantInv.Web
         .UseServiceProviderFactory(new AutofacServiceProviderFactory())
         .ConfigureWebHostDefaults(webBuilder =>
         {
+            
             webBuilder
                 .UseStartup<Startup>();
             Log.Logger.Error("Prod");
