@@ -4,6 +4,11 @@ namespace MahantInv.Infrastructure.Utility
 {
     public static class Meta
     {
+        public class Roles
+        {
+            public const string Admin = "Admin";
+            public const string User = "User";
+        }
         public static DateTime Now = DateTime.UtcNow;
         public class OrderStatusTypes
         {

@@ -3,6 +3,7 @@ using Autofac;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Identity;
+using MahantInv.SharedKernel.Filter;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +37,7 @@ namespace MahantInv.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddControllers(options => { options.Filters.Add<HttpGlobalExceptionFilter>(); });
             string connectionString = Configuration.GetConnectionString("MahantInventoryDB");  //Configuration.GetConnectionString("DefaultConnection");
             //services.UseSqlServerUOW(connectionString);
             services.UseSQLiteUOW(connectionString);

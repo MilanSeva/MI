@@ -1,18 +1,22 @@
 ﻿using Autofac.Extensions.DependencyInjection;
 using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Identity;
+using MahantInv.Infrastructure.SeedScripts;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
 using System;
+using System.Threading.Tasks;
 
 namespace MahantInv.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
            .MinimumLevel.Information()
@@ -31,6 +35,10 @@ namespace MahantInv.Web
                     //                    context.Database.Migrate();
                     context.Database.EnsureCreated();
                     //SeedData.Initialize(services);
+
+                    var userManager = services.GetRequiredService<UserManager<MIIdentityUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    await SeedData.Initialize(services, userManager, roleManager);
                 }
                 catch (Exception ex)
                 {
@@ -39,7 +47,7 @@ namespace MahantInv.Web
                 }
             }
 
-            host.Run();
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
