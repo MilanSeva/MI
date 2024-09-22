@@ -14,6 +14,7 @@ namespace MahantInv.Infrastructure.Entities
     [Table("Products")]
     public class Product : BaseEntity, IAggregateRoot
     {
+        public string? PicturePath { get; set; }
         [Required(ErrorMessage = "Product Name field is required"), Display(Name = "Product Name")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Size field is required"), Display(Name = "Size")]

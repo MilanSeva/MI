@@ -70,5 +70,7 @@ namespace MahantInv.Infrastructure.Entities
         public virtual OrderStatusType Status { get; set; }
         [InverseProperty("Orders")]
         public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
+        [InverseProperty("Orders")]
+        public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
 }
