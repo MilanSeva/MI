@@ -22,15 +22,8 @@ namespace MahantInv.Infrastructure.Entities
         public int? CategoryId { get; set; }
         [Display(Name = "Primary Contact")]
         public string PrimaryContact { get; set; }
-        [Display(Name = "Secondary Contact")]
-        public string SecondaryContact { get; set; }
-        [Display(Name="Line 1")]
-        public string Line1 { get; set; }
-        [Display(Name = "Line 2")]
-        public string Line2 { get; set; }
-        public string Taluk { get; set; }
-        public string District { get; set; }
-        public string State { get; set; }
+        [Display(Name = "City")]
+        public string City { get; set; }
         public string Country { get; set; }
         public string LastModifiedById { get; set; }
         public DateTime? ModifiedAt { get; set; }

@@ -68,5 +68,7 @@ namespace MahantInv.Infrastructure.Entities
         [ForeignKey("StatusId")]
         [InverseProperty("Orders")]
         public virtual OrderStatusType Status { get; set; }
+        [InverseProperty("Orders")]
+        public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
     }
 }

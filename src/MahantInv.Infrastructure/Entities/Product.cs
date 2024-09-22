@@ -23,6 +23,9 @@ namespace MahantInv.Infrastructure.Entities
         public string UnitTypeCode { get; set; }
         [Required(ErrorMessage = "Reorder Level field is required"), Display(Name = "Reorder Level")]
         public decimal? ReorderLevel { get; set; }
+        public string? OrderBulkName { get; set; }
+        public int? OrderBulkQuantity { get; set; }
+
         [Display(Name = "Is Disposable?")]
         public bool IsDisposable { get; set; }
         public string Company { get; set; }
@@ -57,6 +60,9 @@ namespace MahantInv.Infrastructure.Entities
         [ForeignKey("UnitTypeCode")]
         [InverseProperty("Products")]
         public virtual UnitType UnitTypeCodeNavigation { get; set; }
+
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
     }
     
 }

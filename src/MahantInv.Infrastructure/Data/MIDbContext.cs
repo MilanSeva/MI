@@ -122,8 +122,6 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<ProductUsage>(entity =>
             {
-
-
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.Product).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
@@ -132,6 +130,12 @@ namespace MahantInv.Infrastructure.Data
             modelBuilder.Entity<Storage>(entity =>
             {
 
+            });
+
+            modelBuilder.Entity<ProductExpiry>(entity =>
+            {
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductExpiries).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Order).WithMany(p => p.ProductExpiries).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
         }

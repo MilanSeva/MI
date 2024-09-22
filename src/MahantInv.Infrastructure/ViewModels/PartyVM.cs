@@ -11,13 +11,6 @@ namespace MahantInv.Infrastructure.ViewModels
     {
         public string LastModifiedBy { get; set; }
         public string Category { get; set; }
-        public string Address
-        {
-            get
-            {
-                return $"{Line1} {Line2}";
-            }
-        }
     }
 
 }
