@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.ViewModels;
-using MahantInv.Web.ViewModels;
 
 namespace MahantInv.Web.Utility
 {

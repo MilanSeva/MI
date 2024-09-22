@@ -1,10 +1,9 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using MahantInv.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
-using Dapper.Contrib.Extensions;
 
 namespace MahantInv.Infrastructure.Data
 {

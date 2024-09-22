@@ -1,15 +1,13 @@
-﻿using MahantInv.Infrastructure.Interfaces;
+﻿using Dapper;
 using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Utility;
+using MahantInv.Infrastructure.ViewModels;
+using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
-using MahantInv.SharedKernel.Interfaces;
-using MahantInv.Infrastructure.Utility;
-using Microsoft.Extensions.Options;
-using MahantInv.Infrastructure.ViewModels;
 
 namespace MahantInv.Infrastructure.Data
 {

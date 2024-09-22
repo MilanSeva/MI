@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.SharedKernel.Interfaces;
 using MediatR;
 using MediatR.Pipeline;

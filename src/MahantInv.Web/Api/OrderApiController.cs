@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -110,7 +109,7 @@ namespace MahantInv.Web.Api
                 await _orderRepository.UpdateAsync(oldOrder);
                 await _orderRepository.DeleteOrderTransactionByOrderId(oldOrder.Id);
                 returnOrder = _mapper.Map<Order>(order);
-                order.RefNo= oldOrder.RefNo;
+                order.RefNo = oldOrder.RefNo;
             }
             foreach (OrderTransaction orderTransaction in order.OrderTransactions)
             {
@@ -120,7 +119,7 @@ namespace MahantInv.Web.Api
                     PartyId = orderTransaction.PartyId,
                     PaymentTypeId = orderTransaction.PaymentTypeId,
                     Amount = orderTransaction.Amount,
-                    PaymentDate= orderTransaction.PaymentDate
+                    PaymentDate = orderTransaction.PaymentDate
                 };
                 await _orderTransactionRepository.AddAsync(ot);
                 //returnOrder.OrderTransactions.Add(ot);

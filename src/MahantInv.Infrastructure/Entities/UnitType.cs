@@ -1,5 +1,4 @@
-﻿using MahantInv.SharedKernel;
-using MahantInv.SharedKernel.Interfaces;
+﻿using MahantInv.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

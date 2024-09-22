@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ namespace MahantInv.Web.Controllers
         private readonly IStorageRepository _storageRepository;
         private readonly IAsyncRepository<UnitType> _unitTypeRepository;
         private readonly IProductUsageRepository _productUsageRepository;
-        public OrderController(IProductUsageRepository productUsageRepository,IAsyncRepository<UnitType> unitTypeRepository,IStorageRepository storageRepository,IMapper mapper, ILogger<OrderController> logger, IProductsRepository productsRepository, IAsyncRepository<PaymentType> paymentTypeRespository, IAsyncRepository<Party> partyRespository) : base(mapper)
+        public OrderController(IProductUsageRepository productUsageRepository, IAsyncRepository<UnitType> unitTypeRepository, IStorageRepository storageRepository, IMapper mapper, ILogger<OrderController> logger, IProductsRepository productsRepository, IAsyncRepository<PaymentType> paymentTypeRespository, IAsyncRepository<Party> partyRespository) : base(mapper)
         {
             _logger = logger;
             _partyRespository = partyRespository;

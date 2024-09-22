@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.SharedKernel.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

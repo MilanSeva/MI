@@ -1,13 +1,9 @@
-﻿using MahantInv.Infrastructure.Interfaces;
+﻿using Dapper;
 using MahantInv.Infrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Data
 {
@@ -71,7 +67,7 @@ namespace MahantInv.Infrastructure.Data
 
         public Task RemoveProductStorages(int productId)
         {
-            return db.ExecuteAsync("delete from ProductStorages where ProductId = @productId",new { productId },transaction:t);
+            return db.ExecuteAsync("delete from ProductStorages where ProductId = @productId", new { productId }, transaction: t);
         }
     }
 }

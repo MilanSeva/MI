@@ -1,15 +1,15 @@
 ﻿using Ardalis.GuardClauses;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using MailKit.Net.Smtp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MahantInv.Infrastructure.Interfaces;
 
 namespace MahantInv.Infrastructure
 {

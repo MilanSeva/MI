@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Interfaces;
-using MahantInv.Infrastructure.Entities;
-using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -35,7 +33,7 @@ namespace MahantInv.Web.Controllers
             try
             {
                 var buyers = await _productUsageRepository.ListAllAsync();
-                ViewBag.Buyers = new SelectList(buyers.Where(b => !string.IsNullOrWhiteSpace(b.Buyer)).Select(b =>new { Buyer = b.Buyer }).Distinct(), "Buyer", "Buyer");
+                ViewBag.Buyers = new SelectList(buyers.Where(b => !string.IsNullOrWhiteSpace(b.Buyer)).Select(b => new { Buyer = b.Buyer }).Distinct(), "Buyer", "Buyer");
                 return View();
             }
             catch (Exception e)

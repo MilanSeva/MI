@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Utility
 {
@@ -15,7 +11,7 @@ namespace MahantInv.Infrastructure.Utility
             public const string Received = "Received";
             public const string Cancelled = "Cancelled";
         }
-       
+
         public class PartyTypes
         {
             public const string Payer = "Payer";

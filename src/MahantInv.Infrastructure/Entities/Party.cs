@@ -5,20 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Entities
 {
     [Table("Parties")]
-    public class Party:BaseEntity,IAggregateRoot
+    public class Party : BaseEntity, IAggregateRoot
     {
-        [Required,Display(Name ="Party Name")]
+        [Required, Display(Name = "Party Name")]
         public string Name { get; set; }
-        [Required,Display(Name ="Party Type")]
+        [Required, Display(Name = "Party Type")]
         public string Type { get; set; }
-        [Required,Display(Name ="Category")]
+        [Required, Display(Name = "Category")]
         public int? CategoryId { get; set; }
         [Display(Name = "Primary Contact")]
         public string PrimaryContact { get; set; }

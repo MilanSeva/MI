@@ -26,6 +26,7 @@ namespace MahantInv.Infrastructure.Data
         public virtual DbSet<Notification> Notifications { get; set; }
 
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderDocument> OrderDocuments { get; set; }
 
         public virtual DbSet<OrderStatusType> OrderStatusTypes { get; set; }
 
@@ -38,6 +39,7 @@ namespace MahantInv.Infrastructure.Data
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
 
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<ProductExpiry> ProductExpiries { get; set; }
 
         public virtual DbSet<ProductInventory> ProductInventories { get; set; }
 
@@ -90,8 +92,6 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.Entity<Product>(entity =>
             {
-
-
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Products).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
@@ -130,6 +130,10 @@ namespace MahantInv.Infrastructure.Data
             modelBuilder.Entity<Storage>(entity =>
             {
 
+            });
+            modelBuilder.Entity<OrderDocument>(entity =>
+            {
+                entity.HasOne(d => d.Order).WithMany(p => p.OrderDocuments).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<ProductExpiry>(entity =>

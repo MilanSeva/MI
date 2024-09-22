@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Entities;
+using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
-using MahantInv.Web.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -61,7 +59,7 @@ namespace MahantInv.Web.Api
                 {
                     return BadRequest(new { success = false, errors = new[] { "Storage field is required" } });
                 }
-                if(!product.Size.HasValue)
+                if (!product.Size.HasValue)
                 {
                     return BadRequest(new { success = false, errors = new[] { "Size field is required" } });
                 }
@@ -79,7 +77,7 @@ namespace MahantInv.Web.Api
                 {
                     await _productRepository.UpdateAsync(product);
                 }
-                
+
 
                 List<ProductStorage> ProductStorages = product.StorageNames.Split(",")
                     .Select(s => new ProductStorage { ProductId = product.Id, StorageName = s.Trim() }).ToList();

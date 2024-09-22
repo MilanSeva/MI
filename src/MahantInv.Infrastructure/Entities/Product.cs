@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Entities
 {
@@ -65,5 +62,5 @@ namespace MahantInv.Infrastructure.Entities
         [InverseProperty("Product")]
         public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
     }
-    
+
 }

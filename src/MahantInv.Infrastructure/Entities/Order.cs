@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Entities
 {
@@ -29,15 +26,15 @@ namespace MahantInv.Infrastructure.Entities
         public DateTime? OrderDate { get; set; }
         //[Display(Name = "Received Date")]
         //public DateTime? ReceivedDate { get; set; }
-        [Display(Name ="Price Per Item")]
+        [Display(Name = "Price Per Item")]
         public double? PricePerItem { get; set; }
-        [Display(Name ="Discount(%)")]
+        [Display(Name = "Discount(%)")]
         public double? Discount { get; set; }
-        [Display(Name ="Tax(%)")]
+        [Display(Name = "Tax(%)")]
         public double? Tax { get; set; }
-        [Display(Name ="Discount Amount")]
+        [Display(Name = "Discount Amount")]
         public double? DiscountAmount { get; set; }
-        [Display(Name ="Net Amount")]
+        [Display(Name = "Net Amount")]
         public double? NetAmount { get; set; }
         public string Remark { get; set; }
         [Display(Name = "Last Modified By")]
@@ -68,9 +65,9 @@ namespace MahantInv.Infrastructure.Entities
         [ForeignKey("StatusId")]
         [InverseProperty("Orders")]
         public virtual OrderStatusType Status { get; set; }
-        [InverseProperty("Orders")]
+        [InverseProperty("Order")]
         public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
-        [InverseProperty("Orders")]
+        [InverseProperty("Order")]
         public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
 }
