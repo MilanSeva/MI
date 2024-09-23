@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Data
 {
-    internal class ProductUsageRepository : DapperRepository<ProductUsage>, IProductUsageRepository
+    public class ProductUsageRepository : DapperRepository<ProductUsage>, IProductUsageRepository
     {
         public ProductUsageRepository(IDapperUnitOfWork uow) : base(uow)
         {
