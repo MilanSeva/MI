@@ -125,6 +125,17 @@ if (app.Environment.IsDevelopment())
     );
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var seedService = scope.ServiceProvider;
+    var context = seedService.GetRequiredService<MIDbContext>();
+    context.Database.EnsureCreated();
+
+    var userManager = seedService.GetRequiredService<UserManager<MIIdentityUser>>();
+    var roleManager = seedService.GetRequiredService<RoleManager<IdentityRole>>();
+    await SeedData.Initialize(seedService, userManager, roleManager);
+}
+
 app.UseRouting();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
