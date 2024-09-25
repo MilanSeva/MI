@@ -108,7 +108,11 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 //builder.Services.AddScoped<IEmailService, NotificationRe>();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 //builder.Host.ConfigureContainer<ContainerBuilder>(cb => cb.Populate(builder.Services));
-
+// Register Autofac modules
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+{
+    containerBuilder.RegisterModule(new DefaultInfrastructureModule(false));
+});
 var app = builder.Build();
 
 app.UseSwagger();
