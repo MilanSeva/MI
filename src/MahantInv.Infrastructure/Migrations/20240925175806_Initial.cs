@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -296,8 +296,6 @@ namespace MahantInv.Infrastructure.Migrations
                     OrderBulkQuantity = table.Column<int>(type: "INTEGER", nullable: true),
                     IsDisposable = table.Column<bool>(type: "INTEGER", nullable: false),
                     Company = table.Column<string>(type: "TEXT", nullable: true),
-                    StorageNames = table.Column<string>(type: "TEXT", nullable: false),
-                    StorageIds = table.Column<string>(type: "TEXT", nullable: true),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     LastModifiedById = table.Column<string>(type: "TEXT", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: true)

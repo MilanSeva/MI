@@ -3,9 +3,9 @@ using MahantInv.Infrastructure.ViewModels;
 
 namespace MahantInv.Web.Utility
 {
-    public class AutoMapperProfile : Profile
+    public class MappingProfile : Profile
     {
-        public AutoMapperProfile()
+        public MappingProfile()
         {
             //CreateMap<destination, source>();
             CreateMap<OrderVM, OrdersGrid>();

@@ -315,13 +315,6 @@ namespace MahantInv.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("StorageIds")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StorageNames")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("UnitTypeCode")
                         .HasColumnType("TEXT");
 

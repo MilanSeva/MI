@@ -73,22 +73,22 @@ namespace MahantInv.Infrastructure
                 .AsImplementedInterfaces();
             }
 
-            builder.RegisterType<EmailService>().As<IEmailService>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<ProductsRepository>().As<IProductsRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<OrdersRepository>().As<IOrdersRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<ProductInventoryRepository>().As<IProductInventoryRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<PartiesRepository>().As<IPartiesRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<BuyersRepository>().As<IBuyersRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<StorageRepository>().As<IStorageRepository>()
-                .InstancePerLifetimeScope();
-            builder.RegisterType<ProductUsageRepository>().As<IProductUsageRepository>()
-                .InstancePerLifetimeScope();
+            //builder.RegisterType<EmailService>().As<IEmailService>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<ProductsRepository>().As<IProductsRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<OrdersRepository>().As<IOrdersRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<ProductInventoryRepository>().As<IProductInventoryRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<PartiesRepository>().As<IPartiesRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<BuyersRepository>().As<IBuyersRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<StorageRepository>().As<IStorageRepository>()
+            //    .InstancePerLifetimeScope();
+            //builder.RegisterType<ProductUsageRepository>().As<IProductUsageRepository>()
+            //    .InstancePerLifetimeScope();
         }
 
         private void RegisterDevelopmentOnlyDependencies(ContainerBuilder builder)

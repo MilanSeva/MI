@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,13 +23,15 @@ namespace MahantInv.Web.Api
         private readonly IProductsRepository _productRepository;
         private readonly IStorageRepository _storageRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly MIDbContext _context;
 
-        public ProductApiController(IUnitOfWork unitOfWork, IStorageRepository storageRepository, IMapper mapper, ILogger<ProductApiController> logger, IProductsRepository productRepository) : base(mapper)
+        public ProductApiController(MIDbContext context, IUnitOfWork unitOfWork, IStorageRepository storageRepository, IMapper mapper, ILogger<ProductApiController> logger, IProductsRepository productRepository) : base(mapper)
         {
             _logger = logger;
             _productRepository = productRepository;
             _storageRepository = storageRepository;
             _unitOfWork = unitOfWork;
+            _context = context;
         }
         [HttpGet("products")]
         public async Task<object> GetAllProducats()
@@ -44,7 +49,7 @@ namespace MahantInv.Web.Api
             }
         }
         [HttpPost("product/save")]
-        public async Task<object> SaveProduct([FromBody] Product product)
+        public async Task<object> SaveProduct([FromBody] ProductCreateDto input)
         {
             try
             {
@@ -55,52 +60,70 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(errors);
                 }
-                if (string.IsNullOrWhiteSpace(product.StorageNames))
+                if (string.IsNullOrWhiteSpace(input.StorageNames))
                 {
                     return BadRequest(new { success = false, errors = new[] { "Storage field is required" } });
                 }
-                if (!product.Size.HasValue)
+                if (!input.Size.HasValue)
                 {
                     return BadRequest(new { success = false, errors = new[] { "Size field is required" } });
                 }
-
-                product.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                product.ModifiedAt = DateTime.UtcNow;
-                product.Enabled = true;
-                var storages = await _storageRepository.ListAllAsync();
-                await _unitOfWork.BeginAsync();
-                if (product.Id == 0)
+                
+                Product? product;
+                if (input.Id == 0)
                 {
-                    product.Id = await _productRepository.AddAsync(product);
+                    product = _mapper.Map<Product>(input);
+                    product.Enabled = true;
                 }
                 else
                 {
-                    await _productRepository.UpdateAsync(product);
-                }
-
-
-                List<ProductStorage> ProductStorages = product.StorageNames.Split(",")
-                    .Select(s => new ProductStorage { ProductId = product.Id, StorageName = s.Trim() }).ToList();
-
-                await _productRepository.RemoveProductStorages(product.Id);
-
-                foreach (var productStorage in ProductStorages)
-                {
-                    Storage matchedStorage = storages.SingleOrDefault(s => s.Name.Equals(productStorage.StorageName, StringComparison.Ordinal));
-
-                    if (matchedStorage == null)
+                    product = await _context.Products
+                        .Include(p => p.ProductStorages)
+                        .SingleOrDefaultAsync(p => p.Id == input.Id);
+                    if (product == null)
                     {
-                        productStorage.StorageId = await _storageRepository.AddAsync(new Storage { Name = productStorage.StorageName, Enabled = true });
+                        return BadRequest(new { success = false, errors = new[] { "Product not found" } });
+                    }
+                    product = _mapper.Map<ProductCreateDto, Product>(input, product);
+                }
+                product.ModifiedAt = DateTime.UtcNow;
+                product.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                if (input.Id != 0)
+                {
+                    product.ProductStorages.RemoveAll(p => true);
+                }
+                var storages = await _context.Storages.ToListAsync();
+                product.ProductStorages = new();
+
+                string[] storageNames = input.StorageNames.Split(",");
+                foreach (string storageName in storageNames)
+                {
+                    Storage storage = storages.SingleOrDefault(s => s.Name == storageName);
+                    if (storage == null)
+                    {
+                        product.ProductStorages.Add(new ProductStorage
+                        {
+                            Storage = new Storage { Name = storageName }
+                        });
                     }
                     else
                     {
-                        productStorage.StorageId = matchedStorage.Id;
+                        product.ProductStorages.Add(new ProductStorage
+                        {
+                            StorageId = storage.Id
+                        });
                     }
-                    await _productRepository.AddProductStorage(productStorage);
                 }
-
-
-                await _unitOfWork.CommitAsync();
+                if (input.Id == 0)
+                {
+                    await _context.Products.AddAsync(product);
+                }
+                else
+                {
+                    _context.Products.Update(product);
+                }
+                await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);
                 return Ok(new { success = true, data = productVM });

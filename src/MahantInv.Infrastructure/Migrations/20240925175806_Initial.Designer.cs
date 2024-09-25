@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahantInv.Infrastructure.Migrations
 {
     [DbContext(typeof(MIDbContext))]
-    [Migration("20240922094922_Initial")]
+    [Migration("20240925175806_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -315,13 +315,6 @@ namespace MahantInv.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal?>("Size")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StorageIds")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StorageNames")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

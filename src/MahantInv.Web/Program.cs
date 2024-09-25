@@ -1,9 +1,9 @@
 ﻿using Ardalis.ListStartupServices;
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Identity;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.SeedScripts;
@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -42,14 +43,13 @@ services.AddControllers(options =>
     options.Filters.Add<HttpGlobalExceptionFilter>();
 });
 services.AddControllers(options => { options.Filters.Add<HttpGlobalExceptionFilter>(); });
-string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB"); 
+string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB");
 
 services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
     options => options.UseSqlite(connectionString));
 
 services.AddControllersWithViews().AddNewtonsoftJson();
-
 
 services.AddRazorPages();
 services.AddIdentity<MIIdentityUser, IdentityRole>()
@@ -83,7 +83,8 @@ services.Configure<ServiceConfig>(config =>
     // optional - default path to view services is /listallservices - recommended to choose your own path
     config.Path = "/listservices";
 });
-services.AddAutoMapper(typeof(Program));
+
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
@@ -105,7 +106,6 @@ builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductUsageRepository, ProductUsageRepository>();
 builder.Services.AddTransient<IStorageRepository, StorageRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-//builder.Services.AddScoped<IEmailService, NotificationRe>();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 //builder.Host.ConfigureContainer<ContainerBuilder>(cb => cb.Populate(builder.Services));
 // Register Autofac modules
@@ -113,6 +113,8 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterModule(new DefaultInfrastructureModule(false));
 });
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
 
 app.UseSwagger();
