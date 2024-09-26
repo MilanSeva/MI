@@ -45,7 +45,6 @@
   <ItemGroup>
     <Folder Include="ApiModels\" />
     <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="wwwroot\img\" />
   </ItemGroup>
   
 </Project>

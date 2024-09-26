@@ -514,9 +514,8 @@ class Common {
         $('#PlaceOrder').find('.modal-dialog').css('max-width', '{v}px'.replace('{v}', ($(window).width() - 100)));
     }
     static async GetAllProducts() {
-        let response = await fetch(baseUrl + 'api/products', {
+        let response = await fetch(baseUrl + 'api/product/search', {
             method: 'GET',
-            //body: JSON.stringify(order),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -531,19 +530,22 @@ class Common {
             data: response,
             templateResult: function (repo) {
                 if (repo.loading) {
-                    return repo.fullName;
+                    return repo.name;
                 }
                 var $container = $(
                     "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__title'></div>" +
-                    "<div class='select2-result-repository__description' style='color:#000;'></div>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath + "'></div>" +
+                    "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__title'>" + repo.name + "</div>" +
+                    "<div class='select2-result-repository__description'>" + repo.description + "</div>" +
                     "<div class='select2-result-repository__statistics'>" +
+                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode + "</div>" +
+                    "<div class='select2-result-repository__stargazers'>" + repo.company + "</div>" +
+                    "<div class='select2-result-repository__watchers'>" + repo.storage + "</div>" +
+                    "</div>" +
+                    "</div>" +
                     "</div>"
                 );
-                $container.find(".select2-result-repository__title").text(repo.fullName);
-                let detail = ' Size : ' + repo.sizeUnitTypeCode;
-                $container.find(".select2-result-repository__description").text((repo.description + ',' ?? '') + '' + detail);
-
                 return $container;
             },
             templateSelection: function (repo) {
@@ -555,7 +557,6 @@ class Common {
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
         let order = Common.BuildOrderValues();
-        console.log('order:', order);
         var response = await fetch(baseUrl + 'api/order/save', {
             method: 'POST',
             body: JSON.stringify(order),

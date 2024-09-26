@@ -190,7 +190,7 @@ class Common {
 
     static init() {
         $('#usagedata').height(Common.calcDataTableHeight(27));
-        Common.GetAllProducts();
+        Common.ProductSearchSelect2();
     }
 
     //static BindSelectData() {
@@ -201,10 +201,9 @@ class Common {
     //    });
     //    return result;
     //}
-    static async GetAllProducts() {
-        let response = await fetch(baseUrl + 'api/products', {
+    static async ProductSearchSelect2() {
+        let response = await fetch(baseUrl + 'api/product/search', {
             method: 'GET',
-            //body: JSON.stringify(order),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -216,29 +215,28 @@ class Common {
             closeOnSelect: true,
             allowClear: true,
             data: response,
-            //minimumResultsForSearch: 20,
-            //minimumInputLength: 1,
-            //language: "in-gu",
             templateResult: function (repo) {
                 if (repo.loading) {
-                    return repo.fullName;
+                    return repo.name;
                 }
                 var $container = $(
                     "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__title'></div>" +
-                    "<div class='select2-result-repository__description' style='color:#000;'></div>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath +"'></div>" +
+                    "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__title'>"+repo.name+"</div>" +
+                    "<div class='select2-result-repository__description'>"+repo.description+"</div>" +
                     "<div class='select2-result-repository__statistics'>" +
+                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode +"</div>" +
+                    "<div class='select2-result-repository__stargazers'>"+repo.company+"</div>" +
+                    "<div class='select2-result-repository__watchers'>"+repo.storage+"</div>" +
+                    "</div>" +
+                    "</div>" +
                     "</div>"
                 );
-
-                $container.find(".select2-result-repository__title").text(repo.fullName);
-                let detail = ' Size : ' + repo.sizeUnitTypeCode;
-                $container.find(".select2-result-repository__description").text((repo.description == null || repo.description=="null" ? "" : repo.description + ',' ?? '') + '' + detail);
-
                 return $container;
             },
             templateSelection: function (repo) {
-                return repo.fullName
+                return repo.name
             }
         });
     }
