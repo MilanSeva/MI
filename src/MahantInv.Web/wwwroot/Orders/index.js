@@ -214,12 +214,14 @@ var orderGridOptions = {
 };
 
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
+        this.OrderBulkName = OrderBulkName;
+        this.OrderBulkQuantity = OrderBulkQuantity;
         this.ReorderLevel = ReorderLevel;
         this.IsDisposable = IsDisposable;
         this.Company = Common.ParseValue(Company);
@@ -256,18 +258,13 @@ class OrderTransaction {
     }
 }
 class Party {
-    constructor(Id, Name, Type, CategoryId, PrimaryContact, SecondaryContact, Line1, Line2, Taluk, District, State, Country) {
+    constructor(Id, Name, Type, CategoryId, PrimaryContact, City, Country) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.Type = Common.ParseValue(Type);
         this.CategoryId = CategoryId;
         this.PrimaryContact = Common.ParseValue(PrimaryContact);
-        this.SecondaryContact = Common.ParseValue(SecondaryContact);
-        this.Line1 = Common.ParseValue(Line1);
-        this.Line2 = Common.ParseValue(Line2);
-        this.Taluk = Common.ParseValue(Taluk);
-        this.District = Common.ParseValue(District);
-        this.State = Common.ParseValue(State);
+        this.City = Common.ParseValue(City);
         this.Country = Common.ParseValue(Country);
     }
 }
@@ -311,6 +308,8 @@ class Common {
         $('#Description').val('');
         $('#Size').val('');
         $('#UnitTypeCode').val('');
+        $('#OrderBulkName').val('');
+        $('#OrderBulkQuantity').val('');
         $('#ReorderLevel').val('');
         $('#IsDisposable').prop("checked", false);
         $('#Company').val('');
@@ -329,12 +328,7 @@ class Common {
         $('#Type').val('');
         $('#CategoryId').val('');
         $('#PrimaryContact').val('');
-        $('#SecondaryContact').val('');
-        $('#Line1').val('');
-        $('#Line2').val('');
-        $('#Taluk').val('');
-        $('#District').val('');
-        $('#State').val('');
+        $('#City').val('');
         $('#Country').val('');
 
         $('#AddParty').modal('show');
@@ -502,7 +496,7 @@ class Common {
             allowClear: true
         });
         $('#Country').select2({
-            placeholder: 'Search Counry',
+            placeholder: 'Search Country',
             data: Common.BindSelectData(),
             theme: "bootstrap4",
             dropdownParent: $("#AddParty")
@@ -873,14 +867,9 @@ class Common {
         let Type = $('#Type').val();
         let CategoryId = $('#CategoryId').val();
         let PrimaryContact = $('#PrimaryContact').val();
-        let SecondaryContact = $('#SecondaryContact').val();
-        let Line1 = $('#Line1').val();
-        let Line2 = $('#Line2').val();
-        let Taluk = $('#Taluk').val();
-        let District = $('#District').val();
-        let State = $('#State').val();
+        let City = $('#City').val();
         let Country = $('#Country').val();
-        let party = new Party(0, Name, Type, CategoryId, PrimaryContact, SecondaryContact, Line1, Line2, Taluk, District, State, Country);
+        let party = new Party(0, Name, Type, CategoryId, PrimaryContact, City, Country);
 
         var response = await fetch(baseUrl + 'api/party/save', {
             method: 'POST',
@@ -931,11 +920,13 @@ class Common {
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
+        let OrderBulkName = $('#OrderBulkName');
+        let OrderBulkQuantity = $('#OrderBulkQuantity');
         let ReorderLevel = $('#ReorderLevel').val();
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(0, Name, Description, Size, UnitTypeCode, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(0, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',

@@ -68,7 +68,7 @@ namespace MahantInv.Web.Api
                 {
                     return BadRequest(new { success = false, errors = new[] { "Size field is required" } });
                 }
-                
+
                 Product? product;
                 if (input.Id == 0)
                 {
@@ -104,15 +104,21 @@ namespace MahantInv.Web.Api
                     {
                         product.ProductStorages.Add(new ProductStorage
                         {
-                            Storage = new Storage { Name = storageName }
+                            Storage = new Storage { Name = storageName, Enabled = true }
                         });
                     }
                     else
                     {
+                        //if (!(input.Id != 0 && product.ProductStorages.Any(s => s.StorageId == storage.Id)))
+                        //{
                         product.ProductStorages.Add(new ProductStorage
                         {
+                            ProductId = product.Id,
                             StorageId = storage.Id
                         });
+                        //}
+                        storage.Enabled = true;
+                        _context.Storages.Update(storage);
                     }
                 }
                 if (input.Id == 0)
@@ -121,7 +127,7 @@ namespace MahantInv.Web.Api
                 }
                 else
                 {
-                    _context.Products.Update(product);
+                    //_context.Products.Update(product);
                 }
                 await _context.SaveChangesAsync();
 

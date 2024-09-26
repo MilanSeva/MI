@@ -210,11 +210,14 @@ class Common {
                 'Content-Type': 'application/json'
             },
         }).then(response => { return response.json() });
+        
         $('#ProductUsageSelect').select2({
             placeholder: 'Search Product',
             closeOnSelect: true,
             allowClear: true,
             data: response,
+            //minimumResultsForSearch: 20,
+            //minimumInputLength: 1,
             //language: "in-gu",
             templateResult: function (repo) {
                 if (repo.loading) {

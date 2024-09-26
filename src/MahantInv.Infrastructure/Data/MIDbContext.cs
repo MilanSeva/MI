@@ -65,66 +65,66 @@ namespace MahantInv.Infrastructure.Data
             {
 
 
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Orders);
 
-                entity.HasOne(d => d.Product).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.Orders);
 
-                entity.HasOne(d => d.Status).WithMany(p => p.Orders).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Status).WithMany(p => p.Orders);
             });
 
             modelBuilder.Entity<OrderTransaction>(entity =>
             {
-                entity.HasOne(d => d.Order).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Order).WithMany(p => p.OrderTransactions);
 
-                entity.HasOne(d => d.Party).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Party).WithMany(p => p.OrderTransactions);
 
-                entity.HasOne(d => d.PaymentType).WithMany(p => p.OrderTransactions).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.PaymentType).WithMany(p => p.OrderTransactions);
             });
 
             modelBuilder.Entity<Party>(entity =>
             {
 
 
-                entity.HasOne(d => d.Category).WithMany(p => p.Parties).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Category).WithMany(p => p.Parties);
 
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Parties).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Parties);
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Products).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.Products);
             });
 
             modelBuilder.Entity<ProductInventory>(entity =>
             {
 
 
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventories).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventories);
 
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventories).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventories);
             });
 
             modelBuilder.Entity<ProductInventoryHistory>(entity =>
             {
 
 
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventoryHistories).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventoryHistories);
 
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventoryHistories).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventoryHistories);
             });
 
             modelBuilder.Entity<ProductStorage>(entity =>
             {
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductStorages).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductStorages);
 
-                entity.HasOne(d => d.Storage).WithMany().OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Storage).WithMany();
             });
 
             modelBuilder.Entity<ProductUsage>(entity =>
             {
-                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductUsages);
 
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductUsages).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductUsages);
             });
 
             modelBuilder.Entity<Storage>(entity =>
@@ -133,13 +133,13 @@ namespace MahantInv.Infrastructure.Data
             });
             modelBuilder.Entity<OrderDocument>(entity =>
             {
-                entity.HasOne(d => d.Order).WithMany(p => p.OrderDocuments).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Order).WithMany(p => p.OrderDocuments);
             });
 
             modelBuilder.Entity<ProductExpiry>(entity =>
             {
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductExpiries).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(d => d.Order).WithMany(p => p.ProductExpiries).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductExpiries);
+                entity.HasOne(d => d.Order).WithMany(p => p.ProductExpiries);
             });
 
         }

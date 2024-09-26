@@ -36,6 +36,12 @@ var productGridAPIOptions = {
             headerName: 'Size & Unit', field: 'sizeUnitTypeCode', filter: 'agTextColumnFilter', headerTooltip: 'Size & Unit'
         },
         {
+            headerName: 'Order Bulk Name', field: 'orderBulkName', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Name'
+        },
+        {
+            headerName: 'Order Bulk Quantity', field: 'orderBulkQuantity', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Quantity'
+        },
+        {
             headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Storage'
             , cellClassRules: stockClassRules
         },
@@ -45,9 +51,9 @@ var productGridAPIOptions = {
         },
         {
             headerName: 'Is Disposable?', field: 'disposable', filter: 'agSetColumnFilter', headerTooltip: 'Is Disposable'
-        },        
+        },
         {
-            headerName: 'Storage', field: 'storageNames', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
+            headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
         },
         {
             headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
@@ -83,7 +89,7 @@ var productGridAPIOptions = {
     },
     onCellClicked: onCellClickedEvent,
     //onSelectionChanged: onSelectionChanged,
-    getRowId: params=> {
+    getRowId: params => {
         return params.data.id;
     },
     suppressContextMenu: true,
@@ -137,12 +143,14 @@ var productGridAPIOptions = {
 
 
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
+        this.OrderBulkName = OrderBulkName;
+        this.OrderBulkQuantity = OrderBulkQuantity;
         this.ReorderLevel = ReorderLevel;
         this.IsDisposable = IsDisposable;
         this.Company = Common.ParseValue(Company);
@@ -210,6 +218,8 @@ class Common {
         $('#Name').val(model.Name);
         $('#Description').val(model.Description);
         $('#Size').val(model.Size);
+        $('#OrderBulkName').val(model.OrderBulkName);
+        $('#OrderBulkQuantity').val(model.OrderBulkQuantity);
         $('#UnitTypeCode').val(model.UnitTypeCode);
         $('#ReorderLevel').val(model.ReorderLevel);
         $('#IsDisposable').prop("checked", model.IsDisposable);
@@ -233,11 +243,13 @@ class Common {
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
+        let OrderBulkName = $('#OrderBulkName').val();
+        let OrderBulkQuantity = $('#OrderBulkQuantity').val();
         let ReorderLevel = $('#ReorderLevel').val();
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(Id, Name, Description, Size, UnitTypeCode, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -284,8 +296,7 @@ class Common {
             },
         }).then(response => { return response.json() })
             .then(data => {
-                console.log('data:',data);
-                Common.BindValuesToProductForm(new Product(data.id, data.name, data.description, data.size, data.unitTypeCode, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
+                Common.BindValuesToProductForm(new Product(data.id, data.name, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
             })
             .catch(error => {
                 console.log(error);

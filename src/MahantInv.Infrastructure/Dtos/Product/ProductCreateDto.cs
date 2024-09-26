@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Dtos.Product
 {
-    public class ProductCreateDto: BaseEntity
+    public class ProductCreateDto : BaseEntity
     {
         public string? PicturePath { get; set; }
         [Required(ErrorMessage = "Product Name field is required"), Display(Name = "Product Name")]
@@ -22,7 +22,9 @@ namespace MahantInv.Infrastructure.Dtos.Product
         public string UnitTypeCode { get; set; }
         [Required(ErrorMessage = "Reorder Level field is required"), Display(Name = "Reorder Level")]
         public decimal? ReorderLevel { get; set; }
+        [Display(Name = "Order Bulk Name")]
         public string? OrderBulkName { get; set; }
+        [Display(Name = "Order Bulk Quantity")]
         public int? OrderBulkQuantity { get; set; }
 
         [Display(Name = "Is Disposable?")]
@@ -32,6 +34,6 @@ namespace MahantInv.Infrastructure.Dtos.Product
         //public int? StorageId { get; set; }
         [Dapper.Contrib.Extensions.Write(false)]
         public string StorageNames { get; set; }
-        
+
     }
 }
