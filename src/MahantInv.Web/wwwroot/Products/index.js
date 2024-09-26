@@ -11,6 +11,21 @@ ActionCellRenderer.prototype.init = function (params) {
 ActionCellRenderer.prototype.getGui = function () {
     return this.eGui;
 }
+
+function ImageCellRenderer() { }
+
+ImageCellRenderer.prototype.init = function (params) {
+    this.params = params;
+    let img = document.createElement('img');
+    img.src = params.value == null ? "/img/default.jpg" : params.value;
+    img.setAttribute('class', 'agimg');
+    this.eGui = document.createElement('span');
+    this.eGui.setAttribute('class', 'agimgSpanLogo');
+    this.eGui.appendChild(img);
+}
+ImageCellRenderer.prototype.getGui = function () {
+    return this.eGui;
+}
 function onCellClickedEvent(params) {
     $('#ProductUsageSelect').val(params.data.id);
     $('#ProductUsageSelect').trigger('change');
@@ -23,6 +38,9 @@ var productGridAPIOptions = {
 
     // define grid columns
     columnDefs: [
+        {
+            headerName: 'Img', field: 'picturePath', headerTooltip: 'Image', cellRenderer: "imageCellRenderer"
+        },
         {
             headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
         },
@@ -94,7 +112,8 @@ var productGridAPIOptions = {
     },
     suppressContextMenu: true,
     components: {
-        actionCellRenderer: ActionCellRenderer
+        actionCellRenderer: ActionCellRenderer,
+        imageCellRenderer: ImageCellRenderer
     },
     columnTypes: {
         numberColumn: {
