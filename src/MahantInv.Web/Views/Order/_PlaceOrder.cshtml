@@ -142,8 +142,8 @@
                                                 <input type="date" id="PaymentDate" class="form-control" placeholder="Payment Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                             </th>
                                             <th>
-                                                <button type="button" class="btn btn-outline-success" onclick="Common.AddOrderTransaction(this)">A</button>
-                                                <button type="button" class="btn btn-outline-danger" onclick="Common.CancelOrderTransaction(this)">C</button>
+                                                <button type="button" class="btn btn-outline-success" title="Add" onclick="Common.AddOrderTransaction(this)">A</button>
+                                                <button type="button" class="btn btn-outline-danger" title="Clear" onclick="Common.CancelOrderTransaction(this)">C</button>
                                             </th>
                                         </tr>
                                     </thead>

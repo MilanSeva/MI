@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Entities;
@@ -33,6 +34,12 @@ namespace MahantInv.Web.Api
             _unitOfWork = unitOfWork;
             _context = context;
         }
+        [HttpGet("product/search")]
+        public async Task<IEnumerable<ProductSearchDto>> ProductSearch()
+        {
+            return await _context.Products.Where(p => p.Enabled).ProjectTo<ProductSearchDto>(_mapper.ConfigurationProvider).ToListAsync();
+        }
+
         [HttpGet("products")]
         public async Task<object> GetAllProducats()
         {
