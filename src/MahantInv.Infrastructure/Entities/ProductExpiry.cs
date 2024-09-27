@@ -1,4 +1,5 @@
 ﻿using MahantInv.SharedKernel;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MahantInv.Infrastructure.Entities
@@ -6,6 +7,7 @@ namespace MahantInv.Infrastructure.Entities
     [Table("ProductExpiries")]
     public class ProductExpiry : BaseEntity
     {
+        public DateTime ExpiryDate { get; set; }
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]

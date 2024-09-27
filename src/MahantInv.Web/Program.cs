@@ -9,6 +9,7 @@ using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.SeedScripts;
 using MahantInv.SharedKernel.Filter;
 using MahantInv.Web;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -139,7 +140,8 @@ using (var scope = app.Services.CreateScope())
 
     var userManager = seedService.GetRequiredService<UserManager<MIIdentityUser>>();
     var roleManager = seedService.GetRequiredService<RoleManager<IdentityRole>>();
-    await SeedData.Initialize(seedService, userManager, roleManager);
+    var mediator = seedService.GetRequiredService<IMediator>();
+    await SeedData.Initialize(seedService, mediator, userManager, roleManager);
 }
 
 app.UseRouting();

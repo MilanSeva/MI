@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MahantInv.Infrastructure.Data;
+using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
@@ -7,7 +9,9 @@ using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +29,8 @@ namespace MahantInv.Web.Api
         private readonly IAsyncRepository<ProductInventoryHistory> _productInventoryHistoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAsyncRepository<OrderTransaction> _orderTransactionRepository;
-        public OrderApiController(IMapper mapper, IUnitOfWork unitOfWork, IAsyncRepository<OrderTransaction> orderTransactionRepository, IAsyncRepository<ProductInventoryHistory> productInventoryHistoryRepository, IProductInventoryRepository productInventoryRepository, ILogger<OrderApiController> logger, IOrdersRepository orderRepository) : base(mapper)
+        private readonly MIDbContext _context;
+        public OrderApiController(MIDbContext context, IMapper mapper, IUnitOfWork unitOfWork, IAsyncRepository<OrderTransaction> orderTransactionRepository, IAsyncRepository<ProductInventoryHistory> productInventoryHistoryRepository, IProductInventoryRepository productInventoryRepository, ILogger<OrderApiController> logger, IOrdersRepository orderRepository) : base(mapper)
         {
             _logger = logger;
             _orderRepository = orderRepository;
@@ -33,9 +38,10 @@ namespace MahantInv.Web.Api
             _unitOfWork = unitOfWork;
             _productInventoryHistoryRepository = productInventoryHistoryRepository;
             _orderTransactionRepository = orderTransactionRepository;
+            _context = context;
         }
         [HttpPost("orders")]
-        public async Task<object> GetallOrders([FromBody] FilterModel filterModel)
+        public async Task<object> GetAllOrders([FromBody] FilterModel filterModel)
         {
             try
             {
@@ -51,7 +57,7 @@ namespace MahantInv.Web.Api
             }
         }
         [HttpPost("order/save")]
-        public async Task<object> SaveOrder([FromBody] Order order)
+        public async Task<object> SaveOrder([FromBody] OrderCreateDto orderDto)
         {
             try
             {
@@ -62,8 +68,8 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(new { success = false, errors });
                 }
-                await LogOrder(order, isReceived: false);
-                OrderVM orderVM = await _orderRepository.GetOrderById(order.Id);
+                await LogOrder(orderDto, isReceived: false);
+                OrderVM orderVM = await _orderRepository.GetOrderById(orderDto.Id);
                 return Ok(new { success = true, data = orderVM });
             }
             catch (Exception e)
@@ -77,54 +83,89 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors });
             }
         }
-        private async Task<Order> LogOrder(Order order, bool isReceived)
+        private async Task<IActionResult> LogOrder(OrderCreateDto orderDto, bool isReceived)
         {
-            Order returnOrder;
+            Order order;
+            if (orderDto.Id == 0)
+            {
+                order = _mapper.Map<Order>(orderDto);
+            }
+            else
+            {
+                order = await _context.Orders
+                   .Include(o => o.OrderTransactions)
+                   .Include(o => o.ProductExpiries)
+                   .SingleOrDefaultAsync(o => o.Id == orderDto.Id);
+
+                if (order.OrderTransactions != null && order.OrderTransactions.Any())
+                {
+                    order.OrderTransactions.RemoveAll(o => true);
+                }
+                if (order.ProductExpiries != null && order.ProductExpiries.Any())
+                {
+                    order.ProductExpiries.RemoveAll(o => true);
+                }
+            }
             order.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             order.ModifiedAt = DateTime.UtcNow;
             order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
 
-            if (order.Id == 0)
+            order.RefNo = Guid.NewGuid().ToString();
+
+            if (orderDto.ProductExpiries != null && orderDto.ProductExpiries.Any())
             {
-                order.RefNo = Guid.NewGuid().ToString();
-                order.Id = await _orderRepository.AddAsync(order);
-                returnOrder = _mapper.Map<Order>(order);
+                order.ProductExpiries.AddRange(
+                    orderDto.ProductExpiries.Select(e => new ProductExpiry
+                    {
+                        ProductId = order.ProductId.Value,
+                        ExpiryDate = e,
+                        IsArchive = false,
+                    })
+                    );
             }
-            else
+            order.OrderTransactions = _mapper.Map<List<OrderTransaction>>(orderDto.OrderTransactions);
+            order.PaymentStatus = Meta.PaymentStatuses.Unpaid;
+            if (order.OrderTransactions != null && order.OrderTransactions.Any())
             {
-                Order oldOrder = await _orderRepository.GetByIdAsync(order.Id);
-                oldOrder.ProductId = order.ProductId;
-                oldOrder.Quantity = order.Quantity;
-                oldOrder.OrderDate = order.OrderDate;
-                oldOrder.Remark = order.Remark;
-                oldOrder.SellerId = order.SellerId;
-                oldOrder.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                oldOrder.PricePerItem = order.PricePerItem;
-                oldOrder.Discount = order.Discount;
-                oldOrder.Tax = order.Tax;
-                oldOrder.DiscountAmount = order.DiscountAmount;
-                oldOrder.NetAmount = order.NetAmount;
-                oldOrder.ModifiedAt = DateTime.UtcNow;
-                oldOrder.StatusId = !isReceived && oldOrder.StatusId == Meta.OrderStatusTypes.Received ? oldOrder.StatusId : order.StatusId;
-                await _orderRepository.UpdateAsync(oldOrder);
-                await _orderRepository.DeleteOrderTransactionByOrderId(oldOrder.Id);
-                returnOrder = _mapper.Map<Order>(order);
-                order.RefNo = oldOrder.RefNo;
-            }
-            foreach (OrderTransaction orderTransaction in order.OrderTransactions)
-            {
-                OrderTransaction ot = new()
+                double transAmout = order.OrderTransactions.Sum(e => (double)e.Amount);
+                if (transAmout > 0)
                 {
-                    OrderId = order.Id,
-                    PartyId = orderTransaction.PartyId,
-                    PaymentTypeId = orderTransaction.PaymentTypeId,
-                    Amount = orderTransaction.Amount,
-                    PaymentDate = orderTransaction.PaymentDate
-                };
-                await _orderTransactionRepository.AddAsync(ot);
-                //returnOrder.OrderTransactions.Add(ot);
+                    order.PaymentStatus = transAmout >= order.NetAmount ? Meta.PaymentStatuses.Paid : Meta.PaymentStatuses.PartiallyPaid;
+                }
             }
-            return returnOrder;
+            if (isReceived)
+            {
+                order.ReceivedDate = Meta.Now;
+                ProductInventory? productInventory = await _context.ProductInventories.SingleOrDefaultAsync(i => i.ProductId == order.ProductId);
+                if (productInventory == null)
+                {
+                    productInventory = new()
+                    {
+                        LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                        RefNo = order.RefNo,
+                        ModifiedAt = DateTime.UtcNow,
+                        ProductId = order.ProductId.Value,
+                        Quantity = order.Quantity.Value
+                    };
+                    await _context.ProductInventories.AddAsync(productInventory);
+                }
+                else
+                {
+                    ProductInventoryHistory piHistory = _mapper.Map<ProductInventoryHistory>(productInventory);
+                    _context.ProductInventoryHistories.Add(piHistory);
+                    productInventory.RefNo = order.RefNo;
+                    productInventory.ModifiedAt = order.ModifiedAt;
+                    productInventory.Quantity += order.ReceivedQuantity.Value;
+                }
+            }
+            if (orderDto.Id == 0)
+            {
+                await _context.Orders.AddAsync(order);
+            }
+
+            await _context.SaveChangesAsync();
+            return null;
+
         }
         [HttpGet("order/byid/{orderId}")]
         public async Task<object> OrderGetById(int orderId)
@@ -142,32 +183,40 @@ namespace MahantInv.Web.Api
             }
         }
         [HttpPost("order/receive")]
-        public async Task<object> ReceiveOrder([FromBody] Order order)
+        public async Task<object> ReceiveOrder([FromBody] OrderCreateDto orderDto)
         {
             try
             {
-                if (!order.Quantity.HasValue)
+                if (!orderDto.Quantity.HasValue)
                 {
-                    ModelState.AddModelError(nameof(order.Quantity), "Quantity field is required");
+                    ModelState.AddModelError(nameof(orderDto.Quantity), "Quantity field is required");
                 }
-                if (order.Quantity <= 0)
+                if (orderDto.Quantity <= 0)
                 {
-                    ModelState.AddModelError(nameof(order.Quantity), "Quantity larger than 0");
+                    ModelState.AddModelError(nameof(orderDto.Quantity), "Quantity larger than 0");
                 }
-                if (!order.OrderDate.HasValue)
+                if (orderDto.ReceivedQuantity == null)
                 {
-                    ModelState.AddModelError(nameof(order.OrderDate), "Order Date field is required");
+                    ModelState.AddModelError(nameof(orderDto.ReceivedQuantity), "Received Quantity field is required");
+                }
+                if (orderDto.ReceivedQuantity <= 0)
+                {
+                    ModelState.AddModelError(nameof(orderDto.ReceivedQuantity), "Received Quantity larger than 0");
+                }
+                if (orderDto.ReceivedDate == null)
+                {
+                    ModelState.AddModelError(nameof(orderDto.ReceivedDate), "Received Date field is required");
+                }
+                if (!orderDto.OrderDate.HasValue)
+                {
+                    ModelState.AddModelError(nameof(orderDto.OrderDate), "Order Date field is required");
                 }
                 else
                 {
-                    if (order.OrderDate.Value > DateTime.Today.Date)
+                    if (orderDto.OrderDate.Value > DateTime.Today.Date)
                     {
-                        ModelState.AddModelError(nameof(order.OrderDate), "Order Date can't be future date");
+                        ModelState.AddModelError(nameof(orderDto.OrderDate), "Order Date can't be future date");
                     }
-                }
-                if (!order.OrderTransactions.Any())
-                {
-                    ModelState.AddModelError(nameof(order.OrderTransactions), "Please add atleast one payer");
                 }
                 if (!ModelState.IsValid)
                 {
@@ -176,49 +225,16 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(new { success = false, errors });
                 }
-                if (order.Id != 0)
+                if (orderDto.Id != 0)
                 {
-                    var existingOrder = await _orderRepository.GetOrderById(order.Id);
-                    if (existingOrder != null && !existingOrder.StatusId.Equals(OrderStatusTypes.Ordered, StringComparison.Ordinal))
+                    var existingOrder = await _context.Orders.FindAsync(orderDto.Id);
+                    if (existingOrder == null)
                     {
-                        ModelState.AddModelError(nameof(order.StatusId), "Order either received or calcelled");
+                        ModelState.AddModelError(nameof(orderDto.Id), "Order not found");
                     }
                 }
-                ProductInventory productInventory = await _productInventoryRepository.GetByProductId(order.ProductId.Value);
-
-                await _unitOfWork.BeginAsync();
-                var oldOrder = await LogOrder(order, isReceived: true);
-
-                if (productInventory == null)
-                {
-                    await _productInventoryRepository.AddAsync(new ProductInventory
-                    {
-                        ProductId = oldOrder.ProductId.Value,
-                        Quantity = order.Quantity,
-                        RefNo = oldOrder.RefNo,
-                        LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                        ModifiedAt = DateTime.UtcNow
-                    });
-                }
-                else
-                {
-                    await _productInventoryHistoryRepository.AddAsync(new ProductInventoryHistory
-                    {
-                        ProductId = productInventory.ProductId.Value,
-                        LastModifiedById = productInventory.LastModifiedById,
-                        ModifiedAt = productInventory.ModifiedAt,
-                        Quantity = productInventory.Quantity,
-                        RefNo = productInventory.RefNo
-                    });
-
-                    productInventory.Quantity += order.Quantity;
-                    productInventory.RefNo = oldOrder.RefNo;
-                    productInventory.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                    productInventory.ModifiedAt = DateTime.UtcNow;
-                    await _productInventoryRepository.UpdateAsync(productInventory);
-                }
-                await _unitOfWork.CommitAsync();
-                OrderVM orderVM = await _orderRepository.GetOrderById(order.Id);
+                await LogOrder(orderDto, isReceived: false);
+                OrderVM orderVM = await _orderRepository.GetOrderById(orderDto.Id);
                 return Ok(new { success = true, data = orderVM });
             }
             catch (Exception e)

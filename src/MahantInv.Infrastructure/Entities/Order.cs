@@ -1,4 +1,6 @@
-﻿using MahantInv.Infrastructure.Identity;
+﻿using AutoMapper;
+using MahantInv.Infrastructure.Dtos.Purchase;
+using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
@@ -50,7 +52,7 @@ namespace MahantInv.Infrastructure.Entities
 
         [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("Order")]
-        public virtual ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+        public virtual List<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
@@ -67,8 +69,8 @@ namespace MahantInv.Infrastructure.Entities
         [InverseProperty("Orders")]
         public virtual OrderStatusType Status { get; set; }
         [InverseProperty("Order")]
-        public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
+        public virtual List<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
         [InverseProperty("Order")]
-        public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
+        public virtual List<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
 }

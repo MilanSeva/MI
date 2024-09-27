@@ -1,10 +1,13 @@
-﻿using MahantInv.SharedKernel;
+﻿using AutoMapper;
+using MahantInv.Infrastructure.Dtos.Purchase;
+using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MahantInv.Infrastructure.Entities
 {
+    [AutoMap(typeof(OrderTransactionCreateDto))]
     [Table("OrderTransactions")]
     public class OrderTransaction : BaseEntity, IAggregateRoot
     {
