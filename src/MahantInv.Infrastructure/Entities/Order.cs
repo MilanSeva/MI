@@ -15,17 +15,18 @@ namespace MahantInv.Infrastructure.Entities
         public int? ProductId { get; set; }
         [Required, Display(Name = "Quantity")]
         public double? Quantity { get; set; }
-        //[Display(Name = "Received Quantity")]
-        //public double? ReceivedQuantity { get; set; }
+        [Display(Name = "Received Quantity")]
+        public double? ReceivedQuantity { get; set; }
         public string RefNo { get; set; }
         [Display(Name = "Status")]
         public string StatusId { get; set; }
+        public string PaymentStatus { get; set; }
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
         [Required, Display(Name = "Order Date")]
         public DateTime? OrderDate { get; set; }
-        //[Display(Name = "Received Date")]
-        //public DateTime? ReceivedDate { get; set; }
+        [Display(Name = "Received Date")]
+        public DateTime? ReceivedDate { get; set; }
         [Display(Name = "Price Per Item")]
         public double? PricePerItem { get; set; }
         [Display(Name = "Discount(%)")]
