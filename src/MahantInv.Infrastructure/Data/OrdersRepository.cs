@@ -28,34 +28,38 @@ namespace MahantInv.Infrastructure.Data
             return db.ExecuteAsync("delete from OrderTransactions where OrderId = @orderId", new { orderId }, transaction: t);
         }
 
-        public async Task<OrderVM> GetOrderById(int orderId)
+        public async Task<OrderCreateDto> GetOrderById(int orderId)
         {
-            string sql = @"select * from vOrders o
-                left outer join vOrderTransactions ot on o.Id = ot.OrderId
-                    where o.Id = @orderId";
-            var orderVMDictionary = new Dictionary<int, OrderVM>();
-            var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
-                (order, orderTransaction) =>
-                {
-                    if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
-                    {
-                        orderVMEntry = order;
-                        orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
-                    }
-                    if (orderTransaction != null)
-                    {
-                        if (orderVMEntry.OrderTransactionVMs == null)
-                        {
-                            orderVMEntry.OrderTransactionVMs = new();
-                        }
-                        orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
-                    }
-                    return orderVMEntry;
-                },
-                new { orderId },
-                splitOn: "Id",
-                 transaction: t);
-            return result.Distinct().Single();
+           return await _context.Orders
+                .Where(o => o.Id == orderId)
+                .ProjectTo<OrderCreateDto>(_mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync();
+            //string sql = @"select * from vOrders o
+            //    left outer join vOrderTransactions ot on o.Id = ot.OrderId
+            //        where o.Id = @orderId";
+            //var orderVMDictionary = new Dictionary<int, OrderVM>();
+            //var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
+            //    (order, orderTransaction) =>
+            //    {
+            //        if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
+            //        {
+            //            orderVMEntry = order;
+            //            orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
+            //        }
+            //        if (orderTransaction != null)
+            //        {
+            //            if (orderVMEntry.OrderTransactionVMs == null)
+            //            {
+            //                orderVMEntry.OrderTransactionVMs = new();
+            //            }
+            //            orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
+            //        }
+            //        return orderVMEntry;
+            //    },
+            //    new { orderId },
+            //    splitOn: "Id",
+            //     transaction: t);
+            //return result.Distinct().Single();
         }
 
         public async Task<IEnumerable<OrderListDto>> GetOrders(DateTime startDate, DateTime endDate)

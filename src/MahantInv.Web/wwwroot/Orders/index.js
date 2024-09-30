@@ -159,7 +159,7 @@ class Product {
     }
 }
 class Order {
-    constructor(Id, ProductId, Quantity, SellerId, OrderDate, Remark, PricePerItem, Discount, Tax, DiscountAmount, NetAmount) {
+    constructor(Id, ProductId, Quantity, SellerId, OrderDate, Remark, PricePerItem, Discount, Tax, DiscountAmount, NetAmount, ReceivedQuantity, ReceivedDate) {
         this.Id = parseInt(Id);
         this.ProductId = ProductId;
         this.Quantity = Quantity;
@@ -482,7 +482,7 @@ class Common {
                 return repo.name
             }
         });
-    }name
+    } name
 
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
@@ -583,7 +583,7 @@ class Common {
         let Tax = $('#Tax').val();
         let DiscountAmount = $('#DiscountAmount').val();
         let NetAmount = $('#NetAmount').val();
-        let order = new Order(Id, ProductId, Quantity, SellerId, OrderDate, Remark, PricePerItem, Discount, Tax, DiscountAmount, NetAmount);
+        let order = new Order(Id, ProductId, Quantity, SellerId, OrderDate, Remark, PricePerItem, Discount, Tax, DiscountAmount, NetAmount, ReceivedQuantity, ReceivedDate);
         //order.OrderTransactions = orderTransaction;
         for (var i = 0; i < orderTransaction.length; i++) {
             order.OrderTransactions.push(new OrderTransaction(orderTransaction[i].Id, orderTransaction[i].PartyId, orderTransaction[i].Party,

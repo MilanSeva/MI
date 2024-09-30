@@ -8,16 +8,16 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
     public class OrderCreateDto
     {
         public int Id { get; set; }
-        [Required, Display(Name = "Product")]
+        [Required, Display(Name = "Product *")]
         public int? ProductId { get; set; }
-        [Required, Display(Name = "Quantity")]
+        [Required, Display(Name = "Quantity *")]
         public double? Quantity { get; set; }
         [Display(Name = "Received Quantity")]
         public double? ReceivedQuantity { get; set; }
         public string RefNo { get; set; }
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
-        [Required, Display(Name = "Order Date")]
+        [Required, Display(Name = "Order Date *")]
         public DateTime? OrderDate { get; set; }
         [Display(Name = "Received Date")]
         public DateTime? ReceivedDate { get; set; }

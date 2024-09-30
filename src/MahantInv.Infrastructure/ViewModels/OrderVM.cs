@@ -8,33 +8,33 @@ namespace MahantInv.Infrastructure.ViewModels
     {
         public string ProductName { get; set; }
         public string Company { get; set; }
-        public string ProductFullName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(Company))
-                {
-                    return ProductName;
-                }
-                return $"{ProductName} - {Company}";
-            }
-        }
+        //public string ProductFullName
+        //{
+        //    get
+        //    {
+        //        if (string.IsNullOrWhiteSpace(Company))
+        //        {
+        //            return ProductName;
+        //        }
+        //        return $"{ProductName} - {Company}";
+        //    }
+        //}
         public string Status { get; set; }
         public string Seller { get; set; }
-        public string LastModifiedBy { get; set; }
+        //public string LastModifiedBy { get; set; }
         public double? CurrentStock { get; set; }
-        public double ReorderLevel { get; set; }
+        //public double ReorderLevel { get; set; }
         public double? PaidAmount { get; set; }
-        public string PaymentStatus
-        {
-            get
-            {
-                if (!NetAmount.HasValue || NetAmount.Value == 0) return "No Need";
-                if (!PaidAmount.HasValue || PaidAmount.Value == 0) return "Pending";
-                if (NetAmount > PaidAmount) return "Partially Paid";
-                return "Paid";
-            }
-        }
+        //public string PaymentStatus
+        //{
+        //    get
+        //    {
+        //        if (!NetAmount.HasValue || NetAmount.Value == 0) return "No Need";
+        //        if (!PaidAmount.HasValue || PaidAmount.Value == 0) return "Pending";
+        //        if (NetAmount > PaidAmount) return "Partially Paid";
+        //        return "Paid";
+        //    }
+        //}
         public decimal? PendingAmount
         {
             get
@@ -78,19 +78,19 @@ namespace MahantInv.Infrastructure.ViewModels
             }
         }
     }
-    public class OrdersGrid : Order
-    {
-        public string ProductName { get; set; }
-        public string Status { get; set; }
-        public string Seller { get; set; }
-        public string LastModifiedBy { get; set; }
-        public double? CurrentStock { get; set; }
-        public double ReorderLevel { get; set; }
-        public string OrderDateFormat { get; set; }
-        public string ReceivedDateFormat { get; set; }
-        public string Payer { get; set; }//Party
-        public string PaymentType { get; set; }
-        public double? Amount { get; set; }
-        public int OrderTransactionsCount { get; set; }
-    }
+    //public class OrdersGrid : Order
+    //{
+    //    public string ProductName { get; set; }
+    //    public string Status { get; set; }
+    //    public string Seller { get; set; }
+    //    public string LastModifiedBy { get; set; }
+    //    public double? CurrentStock { get; set; }
+    //    public double ReorderLevel { get; set; }
+    //    public string OrderDateFormat { get; set; }
+    //    public string ReceivedDateFormat { get; set; }
+    //    public string Payer { get; set; }//Party
+    //    public string PaymentType { get; set; }
+    //    public double? Amount { get; set; }
+    //    public int OrderTransactionsCount { get; set; }
+    //}
 }

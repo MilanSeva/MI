@@ -17,7 +17,7 @@ namespace MahantInv.Infrastructure.Utility
             public const string Cancelled = "Cancelled";
         }
         public class PaymentStatuses {
-            public const string Unpaid = "Unspaid";
+            public const string Unpaid = "Unpaid";
             public const string PartiallyPaid = "Partially Paid";
             public const string Paid = "Paid";
         }

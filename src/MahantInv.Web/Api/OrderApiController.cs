@@ -69,8 +69,8 @@ namespace MahantInv.Web.Api
                     return BadRequest(new { success = false, errors });
                 }
                 await LogOrder(orderDto, isReceived: false);
-                OrderVM orderVM = await _orderRepository.GetOrderById(orderDto.Id);
-                return Ok(new { success = true, data = orderVM });
+                OrderCreateDto orderCreateDto = await _orderRepository.GetOrderById(orderDto.Id);
+                return Ok(new { success = true, data = orderCreateDto });
             }
             catch (Exception e)
             {
@@ -172,7 +172,7 @@ namespace MahantInv.Web.Api
         {
             try
             {
-                Order order = await _orderRepository.GetOrderById(orderId);
+                OrderCreateDto order = await _orderRepository.GetOrderById(orderId);
                 return Ok(order);
             }
             catch (Exception e)
@@ -234,7 +234,7 @@ namespace MahantInv.Web.Api
                     }
                 }
                 await LogOrder(orderDto, isReceived: false);
-                OrderVM orderVM = await _orderRepository.GetOrderById(orderDto.Id);
+                OrderCreateDto orderVM = await _orderRepository.GetOrderById(orderDto.Id);
                 return Ok(new { success = true, data = orderVM });
             }
             catch (Exception e)
@@ -258,7 +258,7 @@ namespace MahantInv.Web.Api
                 oldOrder.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 oldOrder.ModifiedAt = DateTime.UtcNow;
                 await _orderRepository.UpdateAsync(oldOrder);
-                OrderVM orderVM = await _orderRepository.GetOrderById(orderId);
+                OrderCreateDto orderVM = await _orderRepository.GetOrderById(orderId);
                 return Ok(new { success = true, data = orderVM });
             }
             catch (Exception e)
