@@ -60,7 +60,7 @@ namespace MahantInv.Infrastructure.SeedScripts
             new OrderStatusType{ Id = "Cancelled", Title = "Cancelled" }
             ];
             var existingOrderStatuses = await _context.OrderStatusTypes.ToListAsync();
-            var newOrderStatuses = orderStatuses.Where(os => existingOrderStatuses.Any(eos => eos.Id == os.Id));
+            var newOrderStatuses = orderStatuses.Where(os => !existingOrderStatuses.Any(eos => eos.Id == os.Id)).ToList();
             if (newOrderStatuses.Any())
             {
                 await _context.OrderStatusTypes.AddRangeAsync(newOrderStatuses);
@@ -83,7 +83,7 @@ namespace MahantInv.Infrastructure.SeedScripts
             new UnitType{ Code = "mg", Name = "Milligram" }
             ];
             var existingUnitTypes = await _context.UnitTypes.ToListAsync();
-            var newUnitTypes = unitTYpes.Where(os => existingUnitTypes.Any(eos => eos.Code == os.Code));
+            var newUnitTypes = unitTYpes.Where(os => !existingUnitTypes.Any(eos => eos.Code == os.Code)).ToList();
             if (newUnitTypes.Any())
             {
                 await _context.UnitTypes.AddRangeAsync(newUnitTypes);

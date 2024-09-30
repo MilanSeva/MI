@@ -1,5 +1,5 @@
 ﻿@using static MahantInv.Infrastructure.Utility.Meta
-@model MahantInv.Infrastructure.Entities.Order
+@model MahantInv.Infrastructure.Dtos.Purchase.OrderCreateDto
 
 <div id="PlaceOrder" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -84,27 +84,27 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="row">
+                        <div class="row">
                             <div class="col-md-6">
-                            <div class="form-group">
-                            <label asp-for="@Model.ReceivedQuantity"></label>
-                            <input type="number" asp-for="@Model.ReceivedQuantity" class="form-control form-control-sm" placeholder="Received Quantity" />
-                            </div>
+                                <div class="form-group">
+                                    <label asp-for="@Model.ReceivedQuantity"></label>
+                                    <input type="number" asp-for="@Model.ReceivedQuantity" class="form-control form-control-sm" placeholder="Received Quantity" />
+                                </div>
                             </div>
                             <div class="col-md-6">
-                            <div class="form-group">
-                            <label asp-for="@Model.ReceivedDate"></label>
-                            <input type="date" asp-for="@Model.ReceivedDate" class="form-control form-control-sm" placeholder="Received Date" />
+                                <div class="form-group">
+                                    <label asp-for="@Model.ReceivedDate"></label>
+                                    <input type="date" asp-for="@Model.ReceivedDate" class="form-control form-control-sm" placeholder="Received Date" />
+                                </div>
                             </div>
-                            </div>
-                            </div>*@
+                        </div>
                         <div class="form-group">
                             <label asp-for="@Model.Remark"></label>
                             <textarea asp-for="@Model.Remark" rows="2" class="form-control form-control-sm" placeholder="Remark"></textarea>
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
-                        
+
                         <div id="OrderTransactionSection">
                             <div class="table-responsive-sm">
                                 <table class="table table-sm table-bordered">
@@ -136,7 +136,7 @@
                                                 </select>
                                             </th>
                                             <th>
-                                                <input type="number" id="Amount" class="form-control" placeholder="Paid Amount" style="width:135px;"/>
+                                                <input type="number" id="Amount" class="form-control" placeholder="Paid Amount" style="width:135px;" />
                                             </th>
                                             <th>
                                                 <input type="date" id="PaymentDate" class="form-control" placeholder="Payment Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -152,11 +152,11 @@
                                 </table>
                             </div>
                             <div id="OrderTransactionSummarySection" class="d-inline p-2 bg-info text-white">
-                            Paid Amount :
-                            <span class="text-dark h5" id="OrderTransactionSummarySectionPaidAmount">0</span>
-                            Pending Amount  :
-                            <span class="text-danger h5" id="OrderTransactionSummarySectionPendingAmount">0</span>
-                        </div>
+                                Paid Amount :
+                                <span class="text-dark h5" id="OrderTransactionSummarySectionPaidAmount">0</span>
+                                Pending Amount  :
+                                <span class="text-danger h5" id="OrderTransactionSummarySectionPendingAmount">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,5 +173,5 @@
     </div>
 </div>
 
-@await Html.PartialAsync("_AddParty",new MahantInv.Infrastructure.Entities.Party())
-@await Html.PartialAsync("_AddEditProduct",new MahantInv.Infrastructure.Dtos.Product.ProductCreateDto())
+@await Html.PartialAsync("_AddParty", new MahantInv.Infrastructure.Entities.Party())
+@await Html.PartialAsync("_AddEditProduct", new MahantInv.Infrastructure.Dtos.Product.ProductCreateDto())

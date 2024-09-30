@@ -45,7 +45,7 @@ namespace MahantInv.Web.Api
         {
             try
             {
-                IEnumerable<OrderVM> data = await _orderRepository.GetOrders(filterModel.StartDate.Date, filterModel.EndDate.Date);
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(filterModel.StartDate.Date, filterModel.EndDate.Date);
 
                 return Ok(data);
             }

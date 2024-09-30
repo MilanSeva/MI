@@ -37,72 +37,36 @@ var orderGridOptions = {
 
         {
             headerName: 'Order Date', field: 'orderDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
-            , rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            }
-            , cellClassRules: spanCellClassRules
         },
         {
-            headerName: 'Product', field: 'productFullName', filter: 'agTextColumnFilter', headerTooltip: 'Name'
-            , rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            }
-            , cellClassRules: spanCellClassRules
+            headerName: 'Product', field: 'productFullName', filter: 'agSetColumnFilter', headerTooltip: 'Name'
         },
         {
             headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Ordered Quantity'
-            , rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
         },
-        //{
-        //    headerName: 'Received Quantity', field: 'receivedQuantity', filter: 'agNumberColumnFilter', headerTooltip: 'Received Quantity'
-        //    , rowSpan: function (params) {
-        //        return params.data.orderTransactionsCount;
-        //    },
-        //    cellClassRules: spanCellClassRules
-        //},
         {
-            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Storage'
-            , cellClassRules: stockClassRules
-            , rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
+            headerName: 'Received Quantity', field: 'receivedQuantity', filter: 'agNumberColumnFilter', headerTooltip: 'Received Quantity'
         },
         {
             headerName: 'Net Amount', field: 'netAmount', filter: 'agNumberColumnFilter', headerTooltip: 'Net Amount'
-            , cellClassRules: stockClassRules
-            , rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
         },
         {
             headerName: 'Payment Status', field: 'paymentStatus', filter: 'agSetColumnFilter', headerTooltip: 'Payment Status',
-            rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellRenderer: function (params) {
-                if (params.value == 'Partially Paid') {
-                    return '<span>' + params.value + '</span> <span class="badge badge-danger">' + params.data.pendingAmount + '</span>';
-                }
-                else {
-                    return params.value;
-                }
-            },
-            cellClassRules: spanCellClassRules
+            //cellRenderer: function (params) {
+            //    if (params.value == 'Partially Paid') {
+            //        return '<span>' + params.value + '</span> <span class="badge badge-danger">' + params.data.pendingAmount + '</span>';
+            //    }
+            //    else {
+            //        return params.value;
+            //    }
+            //},
+            //cellClassRules: spanCellClassRules
         },
         {
             headerName: 'Seller', field: 'seller', filter: 'agTextColumnFilter', headerTooltip: 'Seller',
-            rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
         },
         {
-            headerName: 'Status', field: 'status', filter: 'agSetColumnFilter', headerTooltip: 'Status',
+            headerName: 'Order Status', field: 'status', filter: 'agSetColumnFilter', headerTooltip: 'Status',
             cellRenderer: function (params) {
                 if (params.value == 'Ordered') {
                     return '<button type="button" class="btn btn-link btn-sm" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">' + params.value + '</button>'
@@ -110,53 +74,19 @@ var orderGridOptions = {
 
                 let cls = params.value == 'Received' ? 'success' : 'danger';
                 return '<span class="badge badge-' + cls + '">' + params.value + '</span>';
-            },
-            rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
+            }
         },
         {
-            headerName: 'Payer', field: 'payer', filter: 'agTextColumnFilter', headerTooltip: 'Payer'
+            headerName: 'Received date', field: 'receiveddateformat', filter: 'agdatecolumnfilter', headerTooltip: 'received date',
         },
         {
-            headerName: 'Paid Amount', field: 'amount', filter: 'agNumberColumnFilter', headerTooltip: 'Paid Amount'
+            headerName: 'Remark', field: 'remark', filter: 'agtextcolumnfilter', headerTooltip: 'Remark', minWidth: 100
         },
-        {
-            headerName: 'Payment Type',
-            field: 'paymentType', filter: 'agSetColumnFilter', headerTooltip: 'Payment Type',
-            //cellRenderer: function (params) {
-            //    if (params.value == 'Unpaid') {
-            //        return '<span class="badge badge-danger">' + params.value + '</span>';
-            //    }
-            //    else {
-            //        return params.value;
-            //    }
-            //}
-        },
-        {
-            headerName: 'Payment Date', field: 'paymentDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Payment Date'
-        },
-
-        //{
-        //    headerName: 'Received Date', field: 'receivedDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Received Date',
-        //    rowSpan: function (params) {
-        //        return params.data.orderTransactionsCount;
-        //    },
-        //    cellClassRules: spanCellClassRules
-        //},
-        //{
-        //    headerName: 'Remark', field: 'remark', filter: 'agTextColumnFilter', headerTooltip: 'Remark', minWidth: 100
-        //},
         {
             headerName: '', field: 'id', headerTooltip: 'Action'
             , pinned: 'right',
             width: 80, suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
-            rowSpan: function (params) {
-                return params.data.orderTransactionsCount;
-            },
-            cellClassRules: spanCellClassRules
         }
     ],
     sideBar: { toolPanels: ['columns', 'filters'] },
@@ -198,12 +128,12 @@ var orderGridOptions = {
         }
     },
     onGridReady: function (params) {
-        const allColumnIds = [];
-        orderGridAPI.getAllGridColumns().forEach((column) => {
-            if (column.colId != 'id')
-                allColumnIds.push(column.colId);
-        });
-        orderGridAPI.autoSizeColumns(allColumnIds, false);
+        //const allColumnIds = [];
+        //orderGridAPI.getAllGridColumns().forEach((column) => {
+        //    if (column.colId != 'id')
+        //        allColumnIds.push(column.colId);
+        //});
+        //orderGridAPI.autoSizeColumns(allColumnIds, false);
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your orders are loading</span>',
@@ -236,8 +166,8 @@ class Order {
         this.SellerId = SellerId;
         this.OrderDate = OrderDate;
         this.Remark = Common.ParseValue(Remark);
-        //this.ReceivedQuantity = ReceivedQuantity;
-        //this.ReceivedDate = ReceivedDate;
+        this.ReceivedQuantity = ReceivedQuantity;
+        this.ReceivedDate = ReceivedDate;
         this.OrderTransactions = [];
         this.PricePerItem = PricePerItem;
         this.Discount = Discount;
@@ -367,8 +297,8 @@ class Common {
             .then((response) => response.json())
             .then(data => {
                 var gridData = [];
-                Common.BuildGridData(data, gridData);
-                orderGridAPI.setGridOption("rowData", gridData);
+                //Common.BuildGridData(data, gridData);
+                orderGridAPI.setGridOption("rowData", data);
             })
             .catch(error => {
                 console.log('error:', error);
@@ -439,8 +369,8 @@ class Common {
         $('#SellerId').val(model.ProductId).trigger('change');
         $('#OrderDate').val(moment(model.OrderDate).format("YYYY-MM-DD"));
         $('#Remark').val(model.Remark);
-        //$('#ReceivedQuantity').val(model.ReceivedQuantity);
-        //$('#ReceivedDate').val(moment(model.ReceivedDate).format("YYYY-MM-DD"));
+        $('#ReceivedQuantity').val(model.ReceivedQuantity);
+        $('#ReceivedDate').val(moment(model.ReceivedDate).format("YYYY-MM-DD"));
         $('#PricePerItem').val(model.PricePerItem);
         $('#Discount').val(model.Discount == model.DiscountAmount ? model.Discount : model.Discount.toString().concat('%'));
         $('#Tax').val(model.Tax);
@@ -549,10 +479,10 @@ class Common {
                 return $container;
             },
             templateSelection: function (repo) {
-                return repo.fullName
+                return repo.name
             }
         });
-    }
+    }name
 
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
@@ -579,12 +509,12 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             let gridData = [];
-            Common.BuildGridData([response.data], gridData);
+            //Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridAPI.applyTransaction({ add: gridData, addIndex: 0 });
+                orderGridAPI.applyTransaction({ add: [response.data], addIndex: 0 });
             }
             else {
-                orderGridAPI.applyTransaction({ update: gridData });
+                orderGridAPI.applyTransaction({ update: response.data });
             }
             let rowNode = orderGridAPI.getRowNode(response.data.id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
@@ -646,8 +576,8 @@ class Common {
         let SellerId = $('#SellerId').val();
         let OrderDate = $('#OrderDate').val();
         let Remark = $('#Remark').val();
-        //let ReceivedQuantity = $('#ReceivedQuantity').val();
-        //let ReceivedDate = $('#ReceivedDate').val();
+        let ReceivedQuantity = $('#ReceivedQuantity').val();
+        let ReceivedDate = $('#ReceivedDate').val();
         let PricePerItem = $('#PricePerItem').val();
         let Discount = parseFloat($('#Discount').val());
         let Tax = $('#Tax').val();
@@ -688,12 +618,12 @@ class Common {
             $('#' + target).modal('hide');
             //let row = Common.BuildGridData([response.data], gridData);
             let gridData = [];
-            Common.BuildGridData([response.data], gridData);
+            //Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridAPI.applyTransaction({ add: gridData });
+                orderGridAPI.applyTransaction({ add: [response.data] });
             }
             else {
-                orderGridAPI.applyTransaction({ update: gridData });
+                orderGridAPI.applyTransaction({ update: [response.data] });
             }
             //orderGridAPI.applyTransaction({ update: [response.data] });
             let rowNode = orderGridAPI.getRowNode(response.data.id);

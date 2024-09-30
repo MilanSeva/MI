@@ -1,7 +1,11 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Dapper;
+using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +15,12 @@ namespace MahantInv.Infrastructure.Data
 {
     public class OrdersRepository : DapperRepository<Order>, IOrdersRepository
     {
-        public OrdersRepository(IDapperUnitOfWork uow) : base(uow)
+        private readonly MIDbContext _context;
+        private readonly IMapper _mapper;
+        public OrdersRepository(MIDbContext context,IMapper mapper, IDapperUnitOfWork uow) : base(uow)
         {
+            _context = context;
+            _mapper = mapper;
         }
 
         public Task DeleteOrderTransactionByOrderId(int orderId)
@@ -50,35 +58,37 @@ namespace MahantInv.Infrastructure.Data
             return result.Distinct().Single();
         }
 
-        public async Task<IEnumerable<OrderVM>> GetOrders(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<OrderListDto>> GetOrders(DateTime startDate, DateTime endDate)
         {
-            string sql = @"select * from vOrders o
-                left outer join vOrderTransactions ot on o.Id = ot.OrderId
-                where date(o.OrderDate) between date(@startDate) and date(@endDate)
-                order by ModifiedAt desc";
-            var orderVMDictionary = new Dictionary<int, OrderVM>();
-            var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
-                (order, orderTransaction) =>
-                {
-                    if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
-                    {
-                        orderVMEntry = order;
-                        orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
-                    }
-                    if (orderTransaction != null)
-                    {
-                        if (orderVMEntry.OrderTransactionVMs == null)
-                        {
-                            orderVMEntry.OrderTransactionVMs = new();
-                        }
-                        orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
-                    }
-                    return orderVMEntry;
-                },
-                new { startDate, endDate },
-                splitOn: "Id",
-                 transaction: t);
-            return result.Distinct().ToList();
+            //string sql = @"select * from vOrders o
+            //    left outer join vOrderTransactions ot on o.Id = ot.OrderId
+            //    where date(o.OrderDate) between date(@startDate) and date(@endDate)
+            //    order by ModifiedAt desc";
+            //var orderVMDictionary = new Dictionary<int, OrderVM>();
+            //var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
+            //    (order, orderTransaction) =>
+            //    {
+            //        if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
+            //        {
+            //            orderVMEntry = order;
+            //            orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
+            //        }
+            //        if (orderTransaction != null)
+            //        {
+            //            if (orderVMEntry.OrderTransactionVMs == null)
+            //            {
+            //                orderVMEntry.OrderTransactionVMs = new();
+            //            }
+            //            orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
+            //        }
+            //        return orderVMEntry;
+            //    },
+            //    new { startDate, endDate },
+            //    splitOn: "Id",
+            //     transaction: t);
+            return await _context.Orders.Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .ProjectTo<OrderListDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
     }
 }

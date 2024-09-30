@@ -56,7 +56,7 @@
 </table>
 
 @*@await Html.PartialAsync("_AddEditOrder",new MahantInv.Infrastructure.Entities.Order())*@
-@await Html.PartialAsync("_PlaceOrder",new MahantInv.Infrastructure.Entities.Order())
+@await Html.PartialAsync("_PlaceOrder", new MahantInv.Infrastructure.Dtos.Purchase.OrderCreateDto())
 
 @section Scripts{
 <script src="~/Orders/index.js" type="text/javascript" asp-append-version="true"></script>
