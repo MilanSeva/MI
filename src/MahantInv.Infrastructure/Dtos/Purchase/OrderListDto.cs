@@ -9,7 +9,7 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
 {
     public class OrderListDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Product { get; set; }
         public double? Quantity { get; set; }
         public double? ReceivedQuantity { get; set; }

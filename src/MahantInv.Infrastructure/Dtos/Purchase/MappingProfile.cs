@@ -13,7 +13,10 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
     {
         public MappingProfile()
         {
-            CreateMap<OrderCreateDto, Order>().ReverseMap();
+            CreateMap<OrderCreateDto, Order>();
+            CreateMap<Order, OrderCreateDto>()
+                .ForMember(d => d.ProductExpiries, o => o.MapFrom(s => s.ProductExpiries.Select(p => p.ExpiryDate)))
+                .ForMember(d => d.OrderTransactions, m => m.MapFrom(s => s.OrderTransactions));
             CreateMap<OrderTransactionCreateDto, OrderTransaction>();
             CreateMap<ProductInventory, ProductInventoryHistory>();
 

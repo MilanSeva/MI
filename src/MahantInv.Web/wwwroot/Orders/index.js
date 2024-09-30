@@ -222,7 +222,7 @@ class Common {
         orderTransaction = [];
         if (id == 0) {
             $('#actionsection').find('.cancelbtn').hide();
-            Common.BindValuesToOrderForm(new Order(0, null, null, null, moment().format("YYYY-MM-DD"), null, null, null, null, null, null, null, null));
+            Common.BindValuesToOrderForm(new Order(0, null, null, null, moment().format("YYYY-MM-DD"), null, null, null, null, null, null, null, null, null, null));
         }
         else {
             $('#actionsection').find('.cancelbtn').show();
@@ -370,9 +370,9 @@ class Common {
         $('#OrderDate').val(moment(model.OrderDate).format("YYYY-MM-DD"));
         $('#Remark').val(model.Remark);
         $('#ReceivedQuantity').val(model.ReceivedQuantity);
-        $('#ReceivedDate').val(moment(model.ReceivedDate).format("YYYY-MM-DD"));
+        $('#ReceivedDate').val(model.receivedDate == null ? null : moment(model.ReceivedDate).format("YYYY-MM-DD"));
         $('#PricePerItem').val(model.PricePerItem);
-        $('#Discount').val(model.Discount == model.DiscountAmount ? model.Discount : model.Discount.toString().concat('%'));
+        $('#Discount').val(model.Discount == null ? 0 : model.Discount == model.DiscountAmount ? model.Discount : model.Discount.toString().concat('%'));
         $('#Tax').val(model.Tax);
         $('#DiscountAmount').val(model.DiscountAmount);
         $('#NetAmount').val(model.NetAmount);
@@ -536,7 +536,7 @@ class Common {
             },
         }).then(response => { return response.json() })
             .then(data => {
-                var order = new Order(data.id, data.productId, data.quantity, data.sellerId, data.orderDate, data.remark, data.pricePerItem, data.discount, data.tax, data.discountAmount, data.netAmount);
+                var order = new Order(data.id, data.productId, data.quantity, data.sellerId, data.orderDate, data.remark, data.pricePerItem, data.discount, data.tax, data.discountAmount, data.netAmount, data.receivedQuantity, data.receivedDate);
                 order.OrderTransactions = [];
                 if (data.orderTransactionVMs != null) {
                     if (data.orderTransactionVMs.length > 0) {
