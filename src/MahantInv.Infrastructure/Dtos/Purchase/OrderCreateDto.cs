@@ -32,6 +32,7 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         [Display(Name = "Net Amount")]
         public double? NetAmount { get; set; }
         public string Remark { get; set; }
+        public string Status { get; set; }
         
         public List<OrderTransactionCreateDto> OrderTransactions { get; set; } = new List<OrderTransactionCreateDto>();
         public List<DateTime> ProductExpiries { get; set; } = new List<DateTime>();

@@ -14,8 +14,10 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public MappingProfile()
         {
             CreateMap<OrderCreateDto, Order>()
-                .ForMember(d=>d.OrderTransactions,o=>o.MapFrom(s=>s.OrderTransactions));
+                .ForMember(d => d.OrderTransactions, o => o.MapFrom(s => s.OrderTransactions))
+                .ForMember(d => d.Status, o => o.Ignore());
             CreateMap<Order, OrderCreateDto>()
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.Title))
                 .ForMember(d => d.ProductExpiries, o => o.MapFrom(s => s.ProductExpiries.Select(p => p.ExpiryDate)))
                 .ForMember(d => d.OrderTransactions, m => m.MapFrom(s => s.OrderTransactions));
             CreateMap<OrderTransactionCreateDto, OrderTransaction>()

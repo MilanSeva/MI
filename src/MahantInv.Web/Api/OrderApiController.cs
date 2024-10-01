@@ -69,6 +69,29 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(new { success = false, errors });
                 }
+                if (orderDto.Id != 0)
+                {
+                    var order = await _context.Orders
+                        .Include(o => o.Status)
+                        .SingleOrDefaultAsync(o => o.Id == orderDto.Id);
+                    if (order == null)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Status), "Order not found");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                              .Where(y => y.Count > 0)
+                              .ToList();
+                        return BadRequest(new { success = false, errors });
+
+                    }
+                    if (order.Status.Title == Meta.OrderStatusTypes.Cancelled)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Quantity), "Order is cancelled");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                             .Where(y => y.Count > 0)
+                             .ToList();
+                        return BadRequest(new { success = false, errors });
+                    }
+                }
                 await LogOrder(orderDto, isReceived: false);
                 IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
                 return Ok(new { success = true, data });
@@ -94,6 +117,7 @@ namespace MahantInv.Web.Api
             else
             {
                 order = await _context.Orders
+                    .Include(o => o.Status)
                    .Include(o => o.OrderTransactions)
                    .Include(o => o.ProductExpiries)
                    .SingleOrDefaultAsync(o => o.Id == orderDto.Id);
@@ -110,7 +134,10 @@ namespace MahantInv.Web.Api
             order = _mapper.Map<OrderCreateDto, Order>(orderDto, order);
             order.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             order.ModifiedAt = DateTime.UtcNow;
-            order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
+            if (order.Status.Title != Meta.OrderStatusTypes.Received)
+            {
+                order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
+            }
 
             order.RefNo = Guid.NewGuid().ToString();
 
@@ -229,13 +256,27 @@ namespace MahantInv.Web.Api
                 }
                 if (orderDto.Id != 0)
                 {
-                    var existingOrder = await _context.Orders.FindAsync(orderDto.Id);
+                    var existingOrder = await _context.Orders.Include(o => o.Status).SingleOrDefaultAsync(o => o.Id == orderDto.Id);
                     if (existingOrder == null)
                     {
-                        ModelState.AddModelError(nameof(orderDto.Id), "Order not found");
+                        ModelState.AddModelError(nameof(orderDto.Status), "Order not found");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                              .Where(y => y.Count > 0)
+                              .ToList();
+                        return BadRequest(new { success = false, errors });
+
                     }
+                    if (existingOrder.Status.Title == Meta.OrderStatusTypes.Cancelled || existingOrder.Status.Title == Meta.OrderStatusTypes.Received)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Quantity), "Order is cancelled/received");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                             .Where(y => y.Count > 0)
+                             .ToList();
+                        return BadRequest(new { success = false, errors });
+                    }
+
                 }
-                await LogOrder(orderDto, isReceived: false);
+                await LogOrder(orderDto, isReceived: true);
                 IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
                 return Ok(new { success = true, data });
             }

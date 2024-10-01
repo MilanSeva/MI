@@ -503,7 +503,7 @@ class Common {
                 else {
                     $('#ReceivedQuantity').attr('readonly', false);
                 }
-
+                console.log();
                 if (data.status == 'Ordered') {
                     $('.cancelbtn').show();
                     $('.saveorderbtn').show();
