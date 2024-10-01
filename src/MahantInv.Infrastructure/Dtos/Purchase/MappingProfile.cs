@@ -13,19 +13,25 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
     {
         public MappingProfile()
         {
-            CreateMap<OrderCreateDto, Order>();
+            CreateMap<OrderCreateDto, Order>()
+                .ForMember(d=>d.OrderTransactions,o=>o.MapFrom(s=>s.OrderTransactions));
             CreateMap<Order, OrderCreateDto>()
                 .ForMember(d => d.ProductExpiries, o => o.MapFrom(s => s.ProductExpiries.Select(p => p.ExpiryDate)))
                 .ForMember(d => d.OrderTransactions, m => m.MapFrom(s => s.OrderTransactions));
-            CreateMap<OrderTransactionCreateDto, OrderTransaction>();
+            CreateMap<OrderTransactionCreateDto, OrderTransaction>()
+                .ForMember(d => d.Party, o => o.Ignore())
+                .ForMember(d => d.PaymentType, o => o.Ignore());
+            CreateMap<OrderTransaction, OrderTransactionCreateDto>()
+                .ForMember(d => d.Party, o => o.MapFrom(s => s.Party.Name))
+                .ForMember(d => d.PaymentType, o => o.MapFrom(s => s.PaymentType.Title));
             CreateMap<ProductInventory, ProductInventoryHistory>();
 
-            CreateMap<Order, OrderVM>()
-                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product.Name))
-                .ForMember(d => d.Company, o => o.MapFrom(s => s.Product.Company))
-                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.Title))
-                .ForMember(d => d.OrderTransactions, o => o.MapFrom(s => s.OrderTransactions));
-            CreateMap<OrderTransaction, OrderTransactionVM>();
+            //CreateMap<Order, OrderVM>()
+            //    .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product.Name))
+            //    .ForMember(d => d.Company, o => o.MapFrom(s => s.Product.Company))
+            //    .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.Title))
+            //    .ForMember(d => d.OrderTransactions, o => o.MapFrom(s => s.OrderTransactions));
+            //CreateMap<OrderTransaction, OrderTransactionVM>();
 
             CreateMap<Order, OrderListDto>()
                 .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.Title))

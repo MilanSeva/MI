@@ -33,14 +33,16 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public double? NetAmount { get; set; }
         public string Remark { get; set; }
         
-        public List<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+        public List<OrderTransactionCreateDto> OrderTransactions { get; set; } = new List<OrderTransactionCreateDto>();
         public List<DateTime> ProductExpiries { get; set; } = new List<DateTime>();
         //public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
     public class OrderTransactionCreateDto
     {
         public int PartyId { get; set; }
-        public string PaymentTypeId { get; set; }
+        public string Party { get; set; }
+        public string? PaymentTypeId { get; set; }
+        public string? PaymentType { get; set; }
         public decimal Amount { get; set; }
         public DateTime? PaymentDate { get; set; }
     }

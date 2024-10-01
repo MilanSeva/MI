@@ -10,7 +10,7 @@ namespace MahantInv.Infrastructure.Interfaces
 {
     public interface IOrdersRepository : IAsyncRepository<Order>
     {
-        Task<IEnumerable<OrderListDto>> GetOrders(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<OrderListDto>> GetOrders(DateTime? startDate = null, DateTime? endDate = null, int? Id = null);
         Task<OrderCreateDto> GetOrderById(int orderId);
         Task DeleteOrderTransactionByOrderId(int orderId);
     }

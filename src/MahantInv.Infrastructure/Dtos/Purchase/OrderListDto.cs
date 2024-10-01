@@ -12,6 +12,8 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public string Id { get; set; }
         public string Product { get; set; }
         public double? Quantity { get; set; }
+        public double? NetAmount { get; set; }
+
         public double? ReceivedQuantity { get; set; }
         public string OrderBulkName { get; set; }
         public string Status { get; set; }
@@ -19,7 +21,7 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public string? Seller { get; set; }
         public string? OrderDate { get; set; }
         public string? ReceivedDate { get; set; }
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
         public string LastModifiedBy { get; set; }
         public string? ModifiedAt { get; set; }
     }

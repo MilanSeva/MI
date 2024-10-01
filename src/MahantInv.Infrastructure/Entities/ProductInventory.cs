@@ -1,12 +1,14 @@
 ﻿using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MahantInv.Infrastructure.Entities
 {
     [Table("ProductInventory")]
+    [Index(nameof(ProductId), IsUnique = true)]
     public class ProductInventory : BaseEntity, IAggregateRoot
     {
         public int? ProductId { get; set; }

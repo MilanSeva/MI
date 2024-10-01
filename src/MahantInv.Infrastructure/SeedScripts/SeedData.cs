@@ -23,6 +23,44 @@ namespace MahantInv.Infrastructure.SeedScripts
             var context = new MIDbContext(serviceProvider.GetRequiredService<DbContextOptions<MIDbContext>>(), mediator);
             await SeedOrderStatuses(context);
             await SeedUnitTypes(context);
+            await SeedPaymentTypes(context);
+            await SeedPartyCategories(context);
+        }
+
+        private static async Task SeedPaymentTypes(MIDbContext _context)
+        {
+            List<PaymentType> paymentTypes = [
+            new PaymentType{ Id = "Seva", Title= "Seva" },
+            new PaymentType{ Id = "Cash", Title = "Cash" },
+            new PaymentType{ Id = "Check", Title = "Check" },
+            new PaymentType{ Id = "Online", Title = "Online" }
+            ];
+            var existingPaymentTypes = await _context.PaymentTypes.ToListAsync();
+            var newPaymentTypes = paymentTypes.Where(os => !existingPaymentTypes.Any(eos => eos.Id == os.Id)).ToList();
+            if (newPaymentTypes.Any())
+            {
+                await _context.PaymentTypes.AddRangeAsync(newPaymentTypes);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private static async Task SeedPartyCategories(MIDbContext _context)
+        {
+            List<PartyCategory> partyCategories = [
+            new PartyCategory{ Id = 1, Name= "Mandir" },
+            new PartyCategory{ Id = 2, Name = "Merchant" },
+            new PartyCategory{ Id = 3, Name = "HariBhakt" },
+            new PartyCategory{ Id = 4, Name = "Trust" },
+            new PartyCategory{ Id = 5, Name = "Saint" },
+            new PartyCategory{ Id = 6, Name = "Other" }
+            ];
+            var existingPartyCategories = await _context.PartyCategories.ToListAsync();
+            var newPartyCategories = partyCategories.Where(os => !existingPartyCategories.Any(eos => eos.Id == os.Id)).ToList();
+            if (newPartyCategories.Any())
+            {
+                await _context.PartyCategories.AddRangeAsync(newPartyCategories);
+                await _context.SaveChangesAsync();
+            }
         }
 
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)

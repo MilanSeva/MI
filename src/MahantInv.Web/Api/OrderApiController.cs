@@ -8,6 +8,7 @@ using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -69,8 +70,8 @@ namespace MahantInv.Web.Api
                     return BadRequest(new { success = false, errors });
                 }
                 await LogOrder(orderDto, isReceived: false);
-                OrderCreateDto orderCreateDto = await _orderRepository.GetOrderById(orderDto.Id);
-                return Ok(new { success = true, data = orderCreateDto });
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
+                return Ok(new { success = true, data });
             }
             catch (Exception e)
             {
@@ -106,6 +107,7 @@ namespace MahantInv.Web.Api
                     order.ProductExpiries.RemoveAll(o => true);
                 }
             }
+            order = _mapper.Map<OrderCreateDto, Order>(orderDto, order);
             order.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             order.ModifiedAt = DateTime.UtcNow;
             order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
@@ -234,8 +236,8 @@ namespace MahantInv.Web.Api
                     }
                 }
                 await LogOrder(orderDto, isReceived: false);
-                OrderCreateDto orderVM = await _orderRepository.GetOrderById(orderDto.Id);
-                return Ok(new { success = true, data = orderVM });
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
+                return Ok(new { success = true, data });
             }
             catch (Exception e)
             {
