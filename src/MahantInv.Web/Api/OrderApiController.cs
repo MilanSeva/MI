@@ -132,7 +132,7 @@ namespace MahantInv.Web.Api
                 double transAmout = order.OrderTransactions.Sum(e => (double)e.Amount);
                 if (transAmout > 0)
                 {
-                    order.PaymentStatus = transAmout >= order.NetAmount ? Meta.PaymentStatuses.Paid : Meta.PaymentStatuses.PartiallyPaid;
+                    order.PaymentStatus = transAmout >= (order.NetAmount.HasValue ? Math.Truncate(order.NetAmount.Value) : order.NetAmount) ? Meta.PaymentStatuses.Paid : Meta.PaymentStatuses.PartiallyPaid;
                 }
             }
             if (isReceived)

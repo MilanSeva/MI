@@ -740,6 +740,7 @@ class Common {
             var result = Common.CalculateDiscountAndNetPay();
             $('#DiscountAmount').val(result.DiscountAmount);
             $('#NetAmount').val(result.NetAmount);
+            Common.UpdateOrderTransactionGrid();
         });
     }
     static async SaveParty(mthis) {
