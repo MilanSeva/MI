@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using MahantInv.Infrastructure.Dtos.Purchase;
-using MahantInv.Infrastructure.Identity;
+﻿using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
@@ -26,9 +24,9 @@ namespace MahantInv.Infrastructure.Entities
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
         [Required, Display(Name = "Order Date")]
-        public DateTime? OrderDate { get; set; }
+        public DateOnly? OrderDate { get; set; }
         [Display(Name = "Received Date")]
-        public DateTime? ReceivedDate { get; set; }
+        public DateOnly? ReceivedDate { get; set; }
         [Display(Name = "Price Per Item")]
         public double? PricePerItem { get; set; }
         [Display(Name = "Discount(%)")]

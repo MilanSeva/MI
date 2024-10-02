@@ -70,7 +70,7 @@ namespace MahantInv.Web.Api
 
                 ProductInventoryHistory productInventoryHistory = new()
                 {
-                    ProductId = productInventory.ProductId.Value,
+                    ProductId = productInventory.ProductId,
                     LastModifiedById = productInventory.LastModifiedById,
                     ModifiedAt = productInventory.ModifiedAt,
                     Quantity = productInventory.Quantity,

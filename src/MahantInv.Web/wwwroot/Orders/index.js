@@ -34,12 +34,11 @@ var orderGridOptions = {
 
     // define grid columns
     columnDefs: [
-
-        {
-            headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
-        },
         {
             headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name'
+        },
+        {
+            headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
         },
         {
             headerName: 'Ordered Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Ordered Quantity'
@@ -77,7 +76,7 @@ var orderGridOptions = {
                 }
 
                 let cls = params.value == 'Received' ? 'success' : 'danger';
-                return '<span class="badge badge-' + cls + '">' + params.value + '</span>';
+                return '<span class="text text-' + cls + '">' + params.value + '</span>';
             }
         },
         {
@@ -140,10 +139,10 @@ var orderGridOptions = {
         //orderGridAPI.autoSizeColumns(allColumnIds, false);
     },
     overlayLoadingTemplate:
-        '<span class="ag-overlay-loading-center">Please wait while your orders are loading</span>',
+        '<span class="ag-overlay-loading-center">Loading your orders, please wait…</span>',
     overlayNoRowsTemplate:
         `<div class="text-center">
-                <h5 class="text-center"><b>Orders will be appear here.</b></h5>
+                <h5 class="text-center"><b>Oops! We couldn’t find any records matching your search.</b></h5>
             </div>`
 };
 
@@ -334,13 +333,11 @@ class Common {
             $('#OrderTransactionBody').html("<tr><td colspan='5' class='text-center alert alert-info'>Transaction(s) will be appear here.</td></tr>");
         }
         else {
-            console.log('model',model);
             orderTransaction = [];
             for (var i = 0; i < model.OrderTransactions.length; i++) {
                 orderTransaction.push(new OrderTransaction(model.OrderTransactions[i].Id, model.OrderTransactions[i].PartyId, model.OrderTransactions[i].Party,
                     model.OrderTransactions[i].PaymentTypeId, model.OrderTransactions[i].PaymentType, model.OrderTransactions[i].Amount, moment(model.OrderTransactions[i].PaymentDate, 'YYYY-MM-DD').format('DD/MM/YYYY')))
             }
-            console.log(orderTransaction);
             //orderTransaction = model.orderTransactions;
             Common.UpdateOrderTransactionGrid();
         }
@@ -567,13 +564,13 @@ class Common {
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
             if (order.Id == 0) {
-                orderGridAPI.applyTransaction({ add: [response.data] });
+                orderGridAPI.applyTransaction({ add: response.data });
             }
             else {
-                orderGridAPI.applyTransaction({ update: [response.data] });
+                orderGridAPI.applyTransaction({ update: response.data });
             }
             //orderGridAPI.applyTransaction({ update: [response.data] });
-            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {

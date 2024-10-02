@@ -1,17 +1,18 @@
 ﻿using MahantInv.Infrastructure.Identity;
-using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MahantInv.Infrastructure.Entities
 {
     [Table("ProductInventory")]
     [Index(nameof(ProductId), IsUnique = true)]
-    public class ProductInventory : BaseEntity, IAggregateRoot
+    public class ProductInventory : IAggregateRoot
     {
-        public int? ProductId { get; set; }
+        [Key]
+        public int ProductId { get; set; }
         public double? Quantity { get; set; }
         public string RefNo { get; set; }
         public string LastModifiedById { get; set; }
@@ -24,7 +25,7 @@ namespace MahantInv.Infrastructure.Entities
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
-        [InverseProperty("ProductInventories")]
+        [InverseProperty("ProductInventory")]
         public virtual Product Product { get; set; }
     }
 }

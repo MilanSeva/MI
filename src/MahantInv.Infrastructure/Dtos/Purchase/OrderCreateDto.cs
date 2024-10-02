@@ -1,5 +1,4 @@
-﻿using MahantInv.Infrastructure.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,9 +17,9 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
         [Required, Display(Name = "Order Date *")]
-        public DateTime? OrderDate { get; set; }
+        public DateOnly? OrderDate { get; set; }
         [Display(Name = "Received Date")]
-        public DateTime? ReceivedDate { get; set; }
+        public DateOnly? ReceivedDate { get; set; }
         [Display(Name = "Price Per Item")]
         public double? PricePerItem { get; set; }
         [Display(Name = "Discount")]
@@ -33,9 +32,9 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public double? NetAmount { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }
-        
+
         public List<OrderTransactionCreateDto> OrderTransactions { get; set; } = new List<OrderTransactionCreateDto>();
-        public List<DateTime> ProductExpiries { get; set; } = new List<DateTime>();
+        public List<DateOnly> ProductExpiries { get; set; } = new List<DateOnly>();
         //public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
     public class OrderTransactionCreateDto
@@ -45,6 +44,6 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         public string? PaymentTypeId { get; set; }
         public string? PaymentType { get; set; }
         public decimal Amount { get; set; }
-        public DateTime? PaymentDate { get; set; }
+        public DateOnly? PaymentDate { get; set; }
     }
 }

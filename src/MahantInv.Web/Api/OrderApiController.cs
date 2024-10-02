@@ -4,15 +4,12 @@ using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
-using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +43,7 @@ namespace MahantInv.Web.Api
         {
             try
             {
-                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(filterModel.StartDate.Date, filterModel.EndDate.Date);
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(filterModel.StartDate, filterModel.EndDate);
 
                 return Ok(data);
             }
@@ -92,7 +89,7 @@ namespace MahantInv.Web.Api
                         return BadRequest(new { success = false, errors });
                     }
                 }
-                await LogOrder(orderDto, isReceived: false);
+                orderDto.Id = await LogOrder(orderDto, isReceived: false);
                 IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
                 return Ok(new { success = true, data });
             }
@@ -107,7 +104,7 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors });
             }
         }
-        private async Task<IActionResult> LogOrder(OrderCreateDto orderDto, bool isReceived)
+        private async Task<int> LogOrder(OrderCreateDto orderDto, bool isReceived)
         {
             Order order;
             if (orderDto.Id == 0)
@@ -164,7 +161,7 @@ namespace MahantInv.Web.Api
             }
             if (isReceived)
             {
-                order.ReceivedDate = Meta.Now;
+                order.ReceivedDate = DateOnly.FromDateTime(Meta.Now);
                 ProductInventory? productInventory = await _context.ProductInventories.SingleOrDefaultAsync(i => i.ProductId == order.ProductId);
                 if (productInventory == null)
                 {
@@ -193,7 +190,7 @@ namespace MahantInv.Web.Api
             }
 
             await _context.SaveChangesAsync();
-            return null;
+            return order.Id;
 
         }
         [HttpGet("order/byid/{orderId}")]
@@ -242,7 +239,7 @@ namespace MahantInv.Web.Api
                 }
                 else
                 {
-                    if (orderDto.OrderDate.Value > DateTime.Today.Date)
+                    if (orderDto.OrderDate.Value > DateOnly.FromDateTime(DateTime.Today))
                     {
                         ModelState.AddModelError(nameof(orderDto.OrderDate), "Order Date can't be future date");
                     }
@@ -276,7 +273,7 @@ namespace MahantInv.Web.Api
                     }
 
                 }
-                await LogOrder(orderDto, isReceived: true);
+                orderDto.Id = await LogOrder(orderDto, isReceived: true);
                 IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
                 return Ok(new { success = true, data });
             }

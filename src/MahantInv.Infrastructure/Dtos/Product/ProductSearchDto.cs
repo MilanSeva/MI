@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MahantInv.Infrastructure.Dtos.Product
+﻿namespace MahantInv.Infrastructure.Dtos.Product
 {
     public class ProductSearchDto
     {

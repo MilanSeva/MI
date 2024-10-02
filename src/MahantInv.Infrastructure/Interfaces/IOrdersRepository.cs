@@ -1,6 +1,5 @@
 ﻿using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
-using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ namespace MahantInv.Infrastructure.Interfaces
 {
     public interface IOrdersRepository : IAsyncRepository<Order>
     {
-        Task<IEnumerable<OrderListDto>> GetOrders(DateTime? startDate = null, DateTime? endDate = null, int? Id = null);
+        Task<IEnumerable<OrderListDto>> GetOrders(DateOnly? startDate = null, DateOnly? endDate = null, int? Id = null);
         Task<OrderCreateDto> GetOrderById(int orderId);
         Task DeleteOrderTransactionByOrderId(int orderId);
     }

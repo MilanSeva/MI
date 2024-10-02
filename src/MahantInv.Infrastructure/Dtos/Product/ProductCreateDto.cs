@@ -1,12 +1,5 @@
-﻿using AutoMapper;
-using MahantInv.Infrastructure.Entities;
-using MahantInv.SharedKernel;
-using System;
-using System.Collections.Generic;
+﻿using MahantInv.SharedKernel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Dtos.Product
 {

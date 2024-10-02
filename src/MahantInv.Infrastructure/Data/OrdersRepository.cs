@@ -4,7 +4,6 @@ using Dapper;
 using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
-using MahantInv.Infrastructure.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -62,7 +61,7 @@ namespace MahantInv.Infrastructure.Data
             //return result.Distinct().Single();
         }
 
-        public async Task<IEnumerable<OrderListDto>> GetOrders(DateTime? startDate = null, DateTime? endDate = null, int? Id = null)
+        public async Task<IEnumerable<OrderListDto>> GetOrders(DateOnly? startDate = null, DateOnly? endDate = null, int? Id = null)
         {
             //string sql = @"select * from vOrders o
             //    left outer join vOrderTransactions ot on o.Id = ot.OrderId
@@ -90,7 +89,16 @@ namespace MahantInv.Infrastructure.Data
             //    new { startDate, endDate },
             //    splitOn: "Id",
             //     transaction: t);
-            return await _context.Orders.Where(o => (startDate == null || endDate == null || o.OrderDate >= startDate && o.OrderDate <= endDate) && (Id == null || o.Id == Id))
+            var query = _context.Orders.AsQueryable();
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                query = query.Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate);
+            }
+            if (Id.HasValue)
+            {
+                query = query.Where(o => o.Id == Id.Value);
+            }
+            return await query
                 .ProjectTo<OrderListDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
