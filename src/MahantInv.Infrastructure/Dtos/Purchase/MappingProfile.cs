@@ -39,7 +39,13 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
                 .ForMember(d => d.LastModifiedBy, o => o.MapFrom(s => s.LastModifiedBy.UserName))
                 .ForMember(d => d.OrderDate, o => o.MapFrom(s => s.OrderDate == null ? null : s.OrderDate.Value.ToString("dd/MM/yy")))
                 .ForMember(d => d.ModifiedAt, o => o.MapFrom(s => s.ModifiedAt == null ? null : s.ModifiedAt.Value.ToString("dd/MM/yy")))
-                .ForMember(d => d.ReceivedDate, o => o.MapFrom(s => s.ReceivedDate == null ? null : s.ReceivedDate.Value.ToString("dd/MM/yy")));
+                .ForMember(d => d.ReceivedDate, o => o.MapFrom(s => s.ReceivedDate == null ? null : s.ReceivedDate.Value.ToString("dd/MM/yy")))
+                .ForMember(d => d.OrderTransactions, o => o.MapFrom(s => s.OrderTransactions));
+            CreateMap<OrderTransaction, OrderListTransactionDto>()
+                .ForMember(d => d.Party, o => o.MapFrom(s => s.Party.Name))
+                .ForMember(d => d.PaymentType, o => o.MapFrom(s => s.PaymentType.Title))
+                .ForMember(d => d.PaymentDate, o => o.MapFrom(s => s.PaymentDate == null ? null : s.PaymentDate.Value.ToString("dd/MM/yy")));
+
         }
     }
 }

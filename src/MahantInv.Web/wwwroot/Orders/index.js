@@ -35,7 +35,7 @@ var orderGridOptions = {
     // define grid columns
     columnDefs: [
         {
-            headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name'
+            headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name', cellRenderer: "agGroupCellRenderer"
         },
         {
             headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
@@ -93,7 +93,6 @@ var orderGridOptions = {
         }
     ],
     sideBar: { toolPanels: ['columns', 'filters'] },
-
     defaultColDef: {
         editable: false,
         enableRowGroup: true,
@@ -107,14 +106,31 @@ var orderGridOptions = {
         //autoHeight: true,
         floatingFilter: true,
     },
+    masterDetail: true,
+    detailCellRendererParams: {
+        suppressDetailGrid: true // This ensures detail rows are collapsed by default
+    },
+    detailCellRendererParams: {
+        detailGridOptions: {
+            columnDefs: [
+                { field: "party" },
+                { field: "paymentType" },
+                { field: "amount" },
+                { field: "paymentDate" },
+            ],
+            defaultColDef: {
+                flex: 1,
+            },
+        },
+        getDetailRowData: (params) => {
+            params.successCallback(params.data.orderTransactions);
+        },
+    },
     suppressRowTransform: true,
     pagination: true,
     paginationAutoPageSize: true,
     animateRows: true,
-    defaultColGroupDef: {
-        marryChildren: true
-    },
-
+    
     getRowId: params => {
         return params.data.id;
     },
@@ -547,7 +563,7 @@ class Common {
         //order.OrderTransactions = orderTransaction;
         for (var i = 0; i < orderTransaction.length; i++) {
             order.OrderTransactions.push(new OrderTransaction(orderTransaction[i].Id, orderTransaction[i].PartyId, orderTransaction[i].Party,
-                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate, 'DD/MM/YYYY').format('MM/DD/YYYY')))
+                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate, 'DD/MM/YYYY').format('YYYY-MM-DD')))
         }
         return order;
     }
