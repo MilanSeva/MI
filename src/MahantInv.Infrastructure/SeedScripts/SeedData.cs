@@ -88,6 +88,18 @@ namespace MahantInv.Infrastructure.SeedScripts
                 await userManager.CreateAsync(user, "M@hant@1309");
                 await userManager.AddToRoleAsync(user, Meta.Roles.Admin);
             }
+            if (userManager.Users.All(u => u.UserName != "admin"))
+            {
+                var user = new MIIdentityUser
+                {
+                    UserName = "admin",
+                    Email = "admin@system.com",
+                    EmailConfirmed = true
+                };
+
+                await userManager.CreateAsync(user, "Pramukh@100");
+                await userManager.AddToRoleAsync(user, Meta.Roles.Admin);
+            }
         }
         private static async Task SeedOrderStatuses(MIDbContext _context)
         {
