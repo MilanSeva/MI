@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahantInv.Infrastructure.Migrations
 {
     [DbContext(typeof(MIDbContext))]
-    [Migration("20241002060333_Initial")]
+    [Migration("20241002073134_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -374,10 +374,10 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<string>("LastModifiedById")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<double?>("Quantity")
+                    b.Property<double>("Quantity")
                         .HasColumnType("REAL");
 
                     b.Property<string>("RefNo")

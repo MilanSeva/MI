@@ -13,10 +13,10 @@ namespace MahantInv.Infrastructure.Entities
     {
         [Key]
         public int ProductId { get; set; }
-        public double? Quantity { get; set; }
+        public double Quantity { get; set; }
         public string RefNo { get; set; }
         public string LastModifiedById { get; set; }
-        public DateTime? ModifiedAt { get; set; }
+        public DateTime ModifiedAt { get; set; }
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("LastModifiedById")]

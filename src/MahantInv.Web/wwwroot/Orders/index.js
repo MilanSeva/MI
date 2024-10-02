@@ -291,7 +291,7 @@ class Common {
     static LoadDataInGrid(startDate, endDate) {
         fetch(baseUrl + 'api/orders', {
             method: 'POST',
-            body: JSON.stringify({ startDate: startDate, endDate: endDate }),
+            body: JSON.stringify({ startDate: startDate.format('YYYY-MM-DD'), endDate: endDate.format('YYYY-MM-DD') }),
             headers: {
                 //'Accept': 'application/json',
                 'Content-Type': 'application/json'

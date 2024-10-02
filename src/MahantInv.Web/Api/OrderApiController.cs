@@ -131,7 +131,7 @@ namespace MahantInv.Web.Api
             order = _mapper.Map<OrderCreateDto, Order>(orderDto, order);
             order.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             order.ModifiedAt = DateTime.UtcNow;
-            if (order.Status.Title != Meta.OrderStatusTypes.Received)
+            if (orderDto.Id == 0 || order.Status.Title != Meta.OrderStatusTypes.Received)
             {
                 order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
             }
@@ -161,17 +161,16 @@ namespace MahantInv.Web.Api
             }
             if (isReceived)
             {
-                order.ReceivedDate = DateOnly.FromDateTime(Meta.Now);
-                ProductInventory? productInventory = await _context.ProductInventories.SingleOrDefaultAsync(i => i.ProductId == order.ProductId);
+                ProductInventory? productInventory = await _context.ProductInventories.FindAsync(order.ProductId);
                 if (productInventory == null)
                 {
                     productInventory = new()
                     {
                         LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
                         RefNo = order.RefNo,
-                        ModifiedAt = DateTime.UtcNow,
+                        ModifiedAt = Meta.Now,
                         ProductId = order.ProductId.Value,
-                        Quantity = order.Quantity.Value
+                        Quantity = order.ReceivedQuantity.Value
                     };
                     await _context.ProductInventories.AddAsync(productInventory);
                 }
@@ -180,7 +179,8 @@ namespace MahantInv.Web.Api
                     ProductInventoryHistory piHistory = _mapper.Map<ProductInventoryHistory>(productInventory);
                     _context.ProductInventoryHistories.Add(piHistory);
                     productInventory.RefNo = order.RefNo;
-                    productInventory.ModifiedAt = order.ModifiedAt;
+                    productInventory.ModifiedAt = Meta.Now;
+                    productInventory.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                     productInventory.Quantity += order.ReceivedQuantity.Value;
                 }
             }

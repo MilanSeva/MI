@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -371,10 +371,10 @@ namespace MahantInv.Infrastructure.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Quantity = table.Column<double>(type: "REAL", nullable: true),
+                    Quantity = table.Column<double>(type: "REAL", nullable: false),
                     RefNo = table.Column<string>(type: "TEXT", nullable: true),
                     LastModifiedById = table.Column<string>(type: "TEXT", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

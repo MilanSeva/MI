@@ -4,6 +4,7 @@ using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -130,12 +131,21 @@ namespace MahantInv.Web.Api
                 }
                 if (input.Id == 0)
                 {
-                    await _context.Products.AddAsync(product);
+                   ProductInventory productInventory = new()
+                    {
+                        LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                        RefNo = Guid.NewGuid().ToString(),
+                        ModifiedAt = Meta.Now,
+                        Quantity = 0
+                    };
+                    product.ProductInventory = productInventory;
+
+                    await _context.AddAsync(product);
                 }
-                else
-                {
-                    //_context.Products.Update(product);
-                }
+                //else
+                //{
+                //    //_context.Products.Update(product);
+                //}
                 await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);

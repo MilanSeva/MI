@@ -39,7 +39,11 @@ string connectionString = builder.Configuration.GetConnectionString("MahantInven
 
 services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
-    options => options.UseSqlite(connectionString));
+    options =>
+    {
+        options.UseSqlite(connectionString,mh=>mh.MigrationsHistoryTable("MigrationHistory"));
+        options.EnableDetailedErrors(true);
+    });
 
 services.AddControllersWithViews().AddNewtonsoftJson();
 
