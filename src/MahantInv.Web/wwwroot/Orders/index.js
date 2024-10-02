@@ -130,6 +130,7 @@ var orderGridOptions = {
             minWidth: 130,
         }
     },
+    onStateUpdated: onStateUpdated,
     onGridReady: function (params) {
         //const allColumnIds = [];
         //orderGridAPI.getAllGridColumns().forEach((column) => {
@@ -146,6 +147,10 @@ var orderGridOptions = {
             </div>`
 };
 
+function onStateUpdated(event) {
+    var state = orderGridAPI.getState();
+    localStorage.setItem("9427363582ba4ccda0a9aa2fcd422bc77", JSON.stringify(state));
+}
 class Product {
     constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
@@ -282,9 +287,16 @@ class Common {
         $('#ReceivedDate').val(moment().format("YYYY-MM-DD"));
         $('#Remark').val(rowData.remark);
     }
-
+    static ResetGrid(mthis) {
+        localStorage.removeItem('9427363582ba4ccda0a9aa2fcd422bc77');
+        window.location.reload();
+    }
     static ApplyAGGrid() {
         var gridDiv = document.querySelector('#ordersdata');
+        var state = localStorage.getItem("9427363582ba4ccda0a9aa2fcd422bc77");
+        if (state) {
+            orderGridOptions.initialState=JSON.parse(state);
+        }
         orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
     }
 
@@ -299,6 +311,7 @@ class Common {
         })
             .then((response) => response.json())
             .then(data => {
+               
                 orderGridAPI.setGridOption("rowData", data);
             })
             .catch(error => {
