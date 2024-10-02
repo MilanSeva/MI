@@ -38,9 +38,9 @@ namespace MahantInv.Infrastructure.Data
             ProductInventory productInventory = await GetByProductId(productId);
 
             Product product = await _productRepository.GetByIdAsync(productId);
-            if (productInventory.Quantity.HasValue && product.ReorderLevel.HasValue)
+            if (product.ReorderLevel.HasValue)
             {
-                if ((decimal)productInventory.Quantity.Value < product.ReorderLevel.Value)
+                if ((decimal)productInventory.Quantity < product.ReorderLevel.Value)
                 {
                     Email email = new()
                     {

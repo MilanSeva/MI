@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
@@ -70,7 +71,7 @@ namespace MahantInv.Web.Api
 
                 ProductInventoryHistory productInventoryHistory = new()
                 {
-                    ProductId = productInventory.ProductId.Value,
+                    ProductId = productInventory.ProductId,
                     LastModifiedById = productInventory.LastModifiedById,
                     ModifiedAt = productInventory.ModifiedAt,
                     Quantity = productInventory.Quantity,
@@ -80,7 +81,7 @@ namespace MahantInv.Web.Api
                 productInventory.Quantity -= productUsageModel.Quantity;
                 productInventory.RefNo = productUsage.RefNo;
                 productInventory.LastModifiedById = productUsage.LastModifiedById;
-                productInventory.ModifiedAt = productUsage.ModifiedAt;
+                productInventory.ModifiedAt = Meta.Now;
 
                 await _unitOfWork.BeginAsync();
                 await _productInventoryHistoryRepository.AddAsync(productInventoryHistory);

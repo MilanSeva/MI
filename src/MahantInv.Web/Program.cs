@@ -1,6 +1,5 @@
 ﻿using Ardalis.ListStartupServices;
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
@@ -8,26 +7,20 @@ using MahantInv.Infrastructure.Identity;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.SeedScripts;
 using MahantInv.SharedKernel.Filter;
-using MahantInv.Web;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Formatting.Compact;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,14 +35,17 @@ services.AddControllers(options =>
     options.Filters.Add<HttpGlobalExceptionFilter>();
 });
 services.AddControllers(options => { options.Filters.Add<HttpGlobalExceptionFilter>(); });
-string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB"); 
+string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB");
 
 services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
-    options => options.UseSqlite(connectionString));
+    options =>
+    {
+        options.UseSqlite(connectionString,mh=>mh.MigrationsHistoryTable("MigrationHistory"));
+        options.EnableDetailedErrors(true);
+    });
 
 services.AddControllersWithViews().AddNewtonsoftJson();
-
 
 services.AddRazorPages();
 services.AddIdentity<MIIdentityUser, IdentityRole>()
@@ -83,7 +79,8 @@ services.Configure<ServiceConfig>(config =>
     // optional - default path to view services is /listallservices - recommended to choose your own path
     config.Path = "/listservices";
 });
-services.AddAutoMapper(typeof(Program));
+
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
@@ -105,9 +102,14 @@ builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductUsageRepository, ProductUsageRepository>();
 builder.Services.AddTransient<IStorageRepository, StorageRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-//builder.Services.AddScoped<IEmailService, NotificationRe>();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 //builder.Host.ConfigureContainer<ContainerBuilder>(cb => cb.Populate(builder.Services));
+// Register Autofac modules
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+{
+    containerBuilder.RegisterModule(new DefaultInfrastructureModule(false));
+});
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
@@ -133,7 +135,8 @@ using (var scope = app.Services.CreateScope())
 
     var userManager = seedService.GetRequiredService<UserManager<MIIdentityUser>>();
     var roleManager = seedService.GetRequiredService<RoleManager<IdentityRole>>();
-    await SeedData.Initialize(seedService, userManager, roleManager);
+    var mediator = seedService.GetRequiredService<IMediator>();
+    await SeedData.Initialize(seedService, mediator, userManager, roleManager);
 }
 
 app.UseRouting();

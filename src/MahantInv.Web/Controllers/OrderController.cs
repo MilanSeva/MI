@@ -47,7 +47,7 @@ namespace MahantInv.Web.Controllers
 
                 ViewBag.Storages = await _storageRepository.ListAllAsync();
                 ViewBag.UnitTypes = await _unitTypeRepository.ListAllAsync();
-                ViewBag.Buyers = new SelectList((await _productUsageRepository.ListAllAsync()), "Buyer", "Buyer");
+                ViewBag.Buyers = new SelectList(await _productUsageRepository.ListAllAsync(), "Buyer", "Buyer");
                 return View();
             }
             catch (Exception e)

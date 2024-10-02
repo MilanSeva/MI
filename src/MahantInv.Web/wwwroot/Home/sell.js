@@ -105,6 +105,7 @@ var productUsageGridOptions = {
             floatingFilter: true,
         }
     },
+    onStateUpdated: onStateUpdated,
     onGridReady: function (params) {
         productUsageAPI.sizeColumnsToFit();
         //const allColumnIds = [];
@@ -121,7 +122,10 @@ var productUsageGridOptions = {
                 <h5 class="text-center"><b>Data will be appear here.</b></h5>
             </div>`
 };
-
+function onStateUpdated(event) {
+    var state = productUsageAPI.getState();
+    localStorage.setItem("612bd1bf907e4d08a2a86799e193ecfb", JSON.stringify(state));
+}
 class ProductUsageModel {
     constructor(ProductId, Quantity, Buyer, UsageDate) {
         this.ProductId = ProductId;
@@ -154,10 +158,17 @@ class Common {
             Common.GetProductById(id);
         }
     }
-
+    static ResetGrid(mthis) {
+        localStorage.removeItem('612bd1bf907e4d08a2a86799e193ecfb');
+        window.location.reload();
+    }
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#usagedata');
+        var state = localStorage.getItem("612bd1bf907e4d08a2a86799e193ecfb");
+        if (state) {
+            productUsageGridOptions.initialState = JSON.parse(state);
+        }
         productUsageAPI = new agGrid.createGrid(gridDiv, productUsageGridOptions);
         fetch(baseUrl + 'api/usages')
             .then((response) => response.json())
@@ -190,7 +201,7 @@ class Common {
 
     static init() {
         $('#usagedata').height(Common.calcDataTableHeight(27));
-        Common.GetAllProducts();
+        Common.ProductSearchSelect2();
     }
 
     //static BindSelectData() {
@@ -201,41 +212,42 @@ class Common {
     //    });
     //    return result;
     //}
-    static async GetAllProducts() {
-        let response = await fetch(baseUrl + 'api/products', {
+    static async ProductSearchSelect2() {
+        let response = await fetch(baseUrl + 'api/product/search', {
             method: 'GET',
-            //body: JSON.stringify(order),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
         }).then(response => { return response.json() });
+        
         $('#ProductUsageSelect').select2({
             placeholder: 'Search Product',
             closeOnSelect: true,
             allowClear: true,
             data: response,
-            //language: "in-gu",
             templateResult: function (repo) {
                 if (repo.loading) {
-                    return repo.fullName;
+                    return repo.name;
                 }
                 var $container = $(
                     "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__title'></div>" +
-                    "<div class='select2-result-repository__description' style='color:#000;'></div>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath +"'></div>" +
+                    "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__title'>"+repo.name+"</div>" +
+                    "<div class='select2-result-repository__description'>"+repo.description+"</div>" +
                     "<div class='select2-result-repository__statistics'>" +
+                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode +"</div>" +
+                    "<div class='select2-result-repository__stargazers'>"+repo.company+"</div>" +
+                    "<div class='select2-result-repository__watchers'>"+repo.storage+"</div>" +
+                    "</div>" +
+                    "</div>" +
                     "</div>"
                 );
-
-                $container.find(".select2-result-repository__title").text(repo.fullName);
-                let detail = ' Size : ' + repo.sizeUnitTypeCode;
-                $container.find(".select2-result-repository__description").text((repo.description == null ? "" : repo.description + ',' ?? '') + '' + detail);
-
                 return $container;
             },
             templateSelection: function (repo) {
-                return repo.fullName
+                return repo.name
             }
         });
     }

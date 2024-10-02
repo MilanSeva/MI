@@ -2,16 +2,16 @@
     ViewData["Title"] = "Parties";
 }
 
-<div class="card border-dark">
+<div class="card bg-dark border-dark">
     <div class="card-header">
-        <span class="font-weight-bold">Parties</span>
+        <span class="font-weight-bold text-white">Parties</span>
         <span class="float-right">
             <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-id="0" data-target="AddEditParty">
                 <span>New</span>
                 </button>
         </span>
     </div>
-    <div class="card-body ag-theme-balham" id="partiesdata">
+    <div class="card-body ag-theme-balham-auto-dark" id="partiesdata">
     </div>
 </div>
 @await Html.PartialAsync("_AddEditParty",new MahantInv.Infrastructure.Entities.Party())

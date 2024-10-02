@@ -2,16 +2,16 @@
     ViewData["Title"] = "Unit Type";
 }
 
-<div class="card border-dark">
+<div class="card bg-dark border-dark">
     <div class="card-header">
-        <span class="font-weight-bold">Unit Types</span>
+        <span class="font-weight-bold text-white">Unit Types</span>
         <span class="float-right">
             <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-code="" data-target="AddUnitType">
                 <span>New</span>
             </button>
         </span>
     </div>
-    <div class="card-body ag-theme-balham" id="unittypedata">
+    <div class="card-body ag-theme-balham-auto-dark" id="unittypedata">
     </div>
 </div>
 @await Html.PartialAsync("_AddUnitType",new MahantInv.Infrastructure.Entities.UnitType())

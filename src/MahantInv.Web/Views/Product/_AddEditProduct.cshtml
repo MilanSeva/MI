@@ -1,4 +1,4 @@
-﻿@model MahantInv.Infrastructure.Entities.Product
+﻿@model MahantInv.Infrastructure.Dtos.Product.ProductCreateDto
 
 <div id="AddEditProduct" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -37,6 +37,20 @@
                                     <option value="@item.Code">@item.Name</option>
                                 }
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="@Model.OrderBulkName"></label>
+                            <input type="text" asp-for="@Model.OrderBulkName" class="form-control form-control-sm" placeholder="Order Bulk Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="@Model.OrderBulkQuantity"></label>
+                            <input type="number" asp-for="@Model.OrderBulkQuantity" class="form-control form-control-sm" placeholder="Order Bulk Quantity" />
                         </div>
                     </div>
                 </div>

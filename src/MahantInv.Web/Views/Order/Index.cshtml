@@ -3,7 +3,7 @@
 }
 <style>
     .sick-days-warning {
-        background-color: #ffcccb !important;
+        color: red !important;
     }
 
     .cell-span {
@@ -16,17 +16,20 @@
         align-items: center;
     }
 </style>
-<div class="card border-dark">
+<div class="card bg-dark border-dark">
     <div class="card-header">
         <div class="form-inline">
             <div class="col-md-4 col-sm-4 col-lg-4">
-                <span class="font-weight-bold">Orders</span>
+                <span class="font-weight-bold text-white">Orders</span>
             </div>
             <div class="form-group col-md-4 col-sm-12 col-lg-4">
-                 <label for="staticEmail" class="col-sm-4 col-form-label">Order Date</label>
+                <label for="staticEmail" class="col-sm-4 col-form-label text-white">Order Date</label>
                 <input type="text" class="form-control form-control-sm" id="ordersdaterange" style="width:50%"/>
             </div>
             <div class="col-md-4 col-sm-4 col-lg-4 text-right" style="padding-right:0px !important;">
+                <button class="btn btn-outline-warning btn-sm" type="button" onclick="Common.ResetGrid()">
+                    <span>Reset Grid</span>
+                </button>
                 <button class="btn btn-outline-success btn-sm" type="button" onclick="Common.ExportToExcel()">
                     <span>Export to Excel</span>
                 </button>
@@ -36,7 +39,7 @@
             </div>
         </div>
     </div>
-    <div class="card-body ag-theme-balham" id="ordersdata">
+    <div class="card-body ag-theme-balham-auto-dark" id="ordersdata">
     </div>
 </div>
 
@@ -56,7 +59,7 @@
 </table>
 
 @*@await Html.PartialAsync("_AddEditOrder",new MahantInv.Infrastructure.Entities.Order())*@
-@await Html.PartialAsync("_PlaceOrder",new MahantInv.Infrastructure.Entities.Order())
+@await Html.PartialAsync("_PlaceOrder", new MahantInv.Infrastructure.Dtos.Purchase.OrderCreateDto())
 
 @section Scripts{
 <script src="~/Orders/index.js" type="text/javascript" asp-append-version="true"></script>

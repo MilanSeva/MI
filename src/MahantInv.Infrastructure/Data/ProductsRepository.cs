@@ -23,13 +23,14 @@ namespace MahantInv.Infrastructure.Data
             return db.QuerySingleAsync<ProductVM>(@"
                         with storagecte as
                         (
-                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as StorageNames from ProductStorages ps
+                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as Storage from ProductStorages ps
                             left outer join Storages s on ps.StorageId = s.Id
                             where ps.ProductId = @productId
                             group by ps.ProductId
                         )
-                        select p.Id,p.Name, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
-                    s.StorageIds,s.StorageNames, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] from Products p
+                        select p.Id,p.Name, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
+                    s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] 
+                        from Products p
                         inner join AspNetUsers u on p.LastModifiedById = u.Id
                         left outer join storagecte s on p.Id = s.ProductId
                         left outer join UnitTypes ut on p.UnitTypeCode = ut.Code
@@ -41,12 +42,12 @@ namespace MahantInv.Infrastructure.Data
         {
             return db.QueryAsync<ProductVM>(@"with storagecte as
                         (
-                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as StorageNames from ProductStorages ps
+                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as Storage from ProductStorages ps
                             left outer join Storages s on ps.StorageId = s.Id
                             group by ps.ProductId
                         )
-                        select p.Id,p.Name, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
-                        s.StorageIds,s.StorageNames, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] from Products p
+                        select p.Id,p.Name, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
+                        s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] from Products p
                         inner join AspNetUsers u on p.LastModifiedById = u.Id
                         left outer join storagecte s on p.Id = s.ProductId
                         left outer join UnitTypes ut on p.UnitTypeCode = ut.Code

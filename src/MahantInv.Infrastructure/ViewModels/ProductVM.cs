@@ -4,7 +4,8 @@ namespace MahantInv.Infrastructure.ViewModels
 {
     public class ProductVM : Product
     {
-        public string Storage { get; set; }
+        public string? Storage { get; set; }
+        public string? StorageIds { get; set; }
         public string LastModifiedBy { get; set; }
         public decimal CurrentStock { get; set; }
         public string UnitTypeName { get; set; }

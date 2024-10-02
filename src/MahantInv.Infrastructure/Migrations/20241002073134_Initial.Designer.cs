@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahantInv.Infrastructure.Migrations
 {
     [DbContext(typeof(MIDbContext))]
-    [Migration("20240922094922_Initial")]
+    [Migration("20241002073134_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -87,8 +87,11 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<double?>("NetAmount")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime?>("OrderDate")
+                    b.Property<DateOnly?>("OrderDate")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaymentStatus")
                         .HasColumnType("TEXT");
 
                     b.Property<double?>("PricePerItem")
@@ -100,6 +103,12 @@ namespace MahantInv.Infrastructure.Migrations
 
                     b.Property<double?>("Quantity")
                         .IsRequired()
+                        .HasColumnType("REAL");
+
+                    b.Property<DateOnly?>("ReceivedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("ReceivedQuantity")
                         .HasColumnType("REAL");
 
                     b.Property<string>("RefNo")
@@ -187,7 +196,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<int>("PartyId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("PaymentDate")
+                    b.Property<DateOnly?>("PaymentDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentTypeId")
@@ -318,13 +327,6 @@ namespace MahantInv.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("StorageIds")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StorageNames")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("UnitTypeCode")
                         .HasColumnType("TEXT");
 
@@ -342,6 +344,9 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("ExpiryDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsArchive")
                         .HasColumnType("INTEGER");
@@ -363,30 +368,27 @@ namespace MahantInv.Infrastructure.Migrations
 
             modelBuilder.Entity("MahantInv.Infrastructure.Entities.ProductInventory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastModifiedById")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double?>("Quantity")
+                    b.Property<double>("Quantity")
                         .HasColumnType("REAL");
 
                     b.Property<string>("RefNo")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId");
 
                     b.HasIndex("LastModifiedById");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("ProductInventory");
                 });
@@ -711,6 +713,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.Product", "Product")
                         .WithMany("Orders")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Party", "Seller")
@@ -735,6 +738,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.Order", "Order")
                         .WithMany("OrderDocuments")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -745,11 +749,13 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.Order", "Order")
                         .WithMany("OrderTransactions")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Party", "Party")
                         .WithMany("OrderTransactions")
                         .HasForeignKey("PartyId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Entities.PaymentType", "PaymentType")
@@ -768,6 +774,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.PartyCategory", "Category")
                         .WithMany("Parties")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Identity.MIIdentityUser", "LastModifiedBy")
@@ -799,11 +806,13 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.Order", "Order")
                         .WithMany("ProductExpiries")
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Product", "Product")
                         .WithMany("ProductExpiries")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -818,8 +827,10 @@ namespace MahantInv.Infrastructure.Migrations
                         .HasForeignKey("LastModifiedById");
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Product", "Product")
-                        .WithMany("ProductInventories")
-                        .HasForeignKey("ProductId");
+                        .WithOne("ProductInventory")
+                        .HasForeignKey("MahantInv.Infrastructure.Entities.ProductInventory", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LastModifiedBy");
 
@@ -846,11 +857,13 @@ namespace MahantInv.Infrastructure.Migrations
                     b.HasOne("MahantInv.Infrastructure.Entities.Product", "Product")
                         .WithMany("ProductStorages")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Storage", "Storage")
                         .WithMany()
                         .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -961,7 +974,7 @@ namespace MahantInv.Infrastructure.Migrations
 
                     b.Navigation("ProductExpiries");
 
-                    b.Navigation("ProductInventories");
+                    b.Navigation("ProductInventory");
 
                     b.Navigation("ProductInventoryHistories");
 

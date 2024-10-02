@@ -15,17 +15,18 @@ namespace MahantInv.Infrastructure.Entities
         public int? ProductId { get; set; }
         [Required, Display(Name = "Quantity")]
         public double? Quantity { get; set; }
-        //[Display(Name = "Received Quantity")]
-        //public double? ReceivedQuantity { get; set; }
+        [Display(Name = "Received Quantity")]
+        public double? ReceivedQuantity { get; set; }
         public string RefNo { get; set; }
         [Display(Name = "Status")]
         public string StatusId { get; set; }
+        public string PaymentStatus { get; set; }
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
         [Required, Display(Name = "Order Date")]
-        public DateTime? OrderDate { get; set; }
-        //[Display(Name = "Received Date")]
-        //public DateTime? ReceivedDate { get; set; }
+        public DateOnly? OrderDate { get; set; }
+        [Display(Name = "Received Date")]
+        public DateOnly? ReceivedDate { get; set; }
         [Display(Name = "Price Per Item")]
         public double? PricePerItem { get; set; }
         [Display(Name = "Discount(%)")]
@@ -49,7 +50,7 @@ namespace MahantInv.Infrastructure.Entities
 
         [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("Order")]
-        public virtual ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+        public virtual List<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
@@ -66,8 +67,8 @@ namespace MahantInv.Infrastructure.Entities
         [InverseProperty("Orders")]
         public virtual OrderStatusType Status { get; set; }
         [InverseProperty("Order")]
-        public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
+        public virtual List<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
         [InverseProperty("Order")]
-        public virtual ICollection<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
+        public virtual List<OrderDocument> OrderDocuments { get; set; } = new List<OrderDocument>();
     }
 }
