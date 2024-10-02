@@ -117,35 +117,20 @@ namespace MahantInv.Web.Api
                     }
                     else
                     {
-                        //if (!(input.Id != 0 && product.ProductStorages.Any(s => s.StorageId == storage.Id)))
-                        //{
                         product.ProductStorages.Add(new ProductStorage
                         {
                             ProductId = product.Id,
                             StorageId = storage.Id
                         });
-                        //}
                         storage.Enabled = true;
                         _context.Storages.Update(storage);
                     }
                 }
                 if (input.Id == 0)
                 {
-                   ProductInventory productInventory = new()
-                    {
-                        LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                        RefNo = Guid.NewGuid().ToString(),
-                        ModifiedAt = Meta.Now,
-                        Quantity = 0
-                    };
-                    product.ProductInventory = productInventory;
-
                     await _context.AddAsync(product);
                 }
-                //else
-                //{
-                //    //_context.Products.Update(product);
-                //}
+                
                 await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);
