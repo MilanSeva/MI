@@ -479,6 +479,8 @@ class Common {
                 return $container;
             },
             templateSelection: function (repo) {
+                let qty = repo.size * repo.orderBulkQuantity;
+                $('#Quantity').val(qty);
                 return repo.name
             }
         });
