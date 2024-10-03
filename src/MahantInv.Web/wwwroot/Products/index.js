@@ -152,6 +152,7 @@ var productGridAPIOptions = {
         //});
         //productGridAPIOptions.columnApi.autoSizeColumns(allColumnIds, false);
     },
+    onStateUpdated: onStateUpdated,
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your products are loading</span>',
     overlayNoRowsTemplate:
@@ -160,7 +161,10 @@ var productGridAPIOptions = {
             </div>`
 };
 
-
+function onStateUpdated(event) {
+    var state = productGridAPI.getState();
+    localStorage.setItem("f840074316684a1d9074edcd72023fb3", JSON.stringify(state));
+}
 class Product {
     constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
@@ -209,10 +213,16 @@ class Common {
             Common.GetProductById(id);
         }
     }
-
+    static ResetGrid(mthis) {
+        localStorage.removeItem('f840074316684a1d9074edcd72023fb3');
+        window.location.reload();
+    }
     static ApplyAGGrid() {
-
         var gridDiv = document.querySelector('#productsdata');
+        var state = localStorage.getItem("f840074316684a1d9074edcd72023fb3");
+        if (state) {
+            productGridAPIOptions.initialState = JSON.parse(state);
+        }
         productGridAPI = new agGrid.createGrid(gridDiv, productGridAPIOptions);
         fetch(baseUrl + 'api/products')
             .then((response) => response.json())

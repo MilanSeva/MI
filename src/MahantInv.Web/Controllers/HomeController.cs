@@ -26,9 +26,13 @@ namespace MahantInv.Web.Controllers
             _logger = logger;
             _productUsageRepository = productUsageRepository;
         }
-
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
+        {
+            return View();
+        }
+        [Authorize]
+        public async Task<IActionResult> Sell()
         {
             try
             {
@@ -43,7 +47,7 @@ namespace MahantInv.Web.Controllers
                 return BadRequest("Unexpected Error " + GUID);
             }
         }
-
+        
         public IActionResult Error()
         {
             return View();

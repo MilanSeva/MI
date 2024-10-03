@@ -105,6 +105,7 @@ var productUsageGridOptions = {
             floatingFilter: true,
         }
     },
+    onStateUpdated: onStateUpdated,
     onGridReady: function (params) {
         productUsageAPI.sizeColumnsToFit();
         //const allColumnIds = [];
@@ -121,7 +122,10 @@ var productUsageGridOptions = {
                 <h5 class="text-center"><b>Data will be appear here.</b></h5>
             </div>`
 };
-
+function onStateUpdated(event) {
+    var state = productUsageAPI.getState();
+    localStorage.setItem("612bd1bf907e4d08a2a86799e193ecfb", JSON.stringify(state));
+}
 class ProductUsageModel {
     constructor(ProductId, Quantity, Buyer, UsageDate) {
         this.ProductId = ProductId;
@@ -154,10 +158,17 @@ class Common {
             Common.GetProductById(id);
         }
     }
-
+    static ResetGrid(mthis) {
+        localStorage.removeItem('612bd1bf907e4d08a2a86799e193ecfb');
+        window.location.reload();
+    }
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#usagedata');
+        var state = localStorage.getItem("612bd1bf907e4d08a2a86799e193ecfb");
+        if (state) {
+            productUsageGridOptions.initialState = JSON.parse(state);
+        }
         productUsageAPI = new agGrid.createGrid(gridDiv, productUsageGridOptions);
         fetch(baseUrl + 'api/usages')
             .then((response) => response.json())

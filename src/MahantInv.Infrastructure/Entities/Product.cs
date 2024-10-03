@@ -48,7 +48,7 @@ namespace MahantInv.Infrastructure.Entities
 
         [InverseProperty("Product")]
         [Dapper.Contrib.Extensions.Write(false)]
-        public virtual ICollection<ProductInventory> ProductInventories { get; set; } = new List<ProductInventory>();
+        public virtual ProductInventory ProductInventory { get; set; } = new ProductInventory();
 
         [InverseProperty("Product")]
         [Dapper.Contrib.Extensions.Write(false)]

@@ -4,14 +4,12 @@ using MahantInv.Infrastructure.Dtos.Purchase;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
-using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +43,7 @@ namespace MahantInv.Web.Api
         {
             try
             {
-                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(filterModel.StartDate.Date, filterModel.EndDate.Date);
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(filterModel.StartDate, filterModel.EndDate);
 
                 return Ok(data);
             }
@@ -68,9 +66,32 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(new { success = false, errors });
                 }
-                await LogOrder(orderDto, isReceived: false);
-                OrderCreateDto orderCreateDto = await _orderRepository.GetOrderById(orderDto.Id);
-                return Ok(new { success = true, data = orderCreateDto });
+                if (orderDto.Id != 0)
+                {
+                    var order = await _context.Orders
+                        .Include(o => o.Status)
+                        .SingleOrDefaultAsync(o => o.Id == orderDto.Id);
+                    if (order == null)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Status), "Order not found");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                              .Where(y => y.Count > 0)
+                              .ToList();
+                        return BadRequest(new { success = false, errors });
+
+                    }
+                    if (order.Status.Title == Meta.OrderStatusTypes.Cancelled)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Quantity), "Order is cancelled");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                             .Where(y => y.Count > 0)
+                             .ToList();
+                        return BadRequest(new { success = false, errors });
+                    }
+                }
+                orderDto.Id = await LogOrder(orderDto, isReceived: false);
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
+                return Ok(new { success = true, data });
             }
             catch (Exception e)
             {
@@ -83,7 +104,7 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors });
             }
         }
-        private async Task<IActionResult> LogOrder(OrderCreateDto orderDto, bool isReceived)
+        private async Task<int> LogOrder(OrderCreateDto orderDto, bool isReceived)
         {
             Order order;
             if (orderDto.Id == 0)
@@ -93,6 +114,7 @@ namespace MahantInv.Web.Api
             else
             {
                 order = await _context.Orders
+                    .Include(o => o.Status)
                    .Include(o => o.OrderTransactions)
                    .Include(o => o.ProductExpiries)
                    .SingleOrDefaultAsync(o => o.Id == orderDto.Id);
@@ -106,9 +128,13 @@ namespace MahantInv.Web.Api
                     order.ProductExpiries.RemoveAll(o => true);
                 }
             }
+            order = _mapper.Map<OrderCreateDto, Order>(orderDto, order);
             order.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             order.ModifiedAt = DateTime.UtcNow;
-            order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
+            if (orderDto.Id == 0 || order.Status.Title != Meta.OrderStatusTypes.Received)
+            {
+                order.StatusId = isReceived ? OrderStatusTypes.Received : OrderStatusTypes.Ordered;
+            }
 
             order.RefNo = Guid.NewGuid().ToString();
 
@@ -130,22 +156,21 @@ namespace MahantInv.Web.Api
                 double transAmout = order.OrderTransactions.Sum(e => (double)e.Amount);
                 if (transAmout > 0)
                 {
-                    order.PaymentStatus = transAmout >= order.NetAmount ? Meta.PaymentStatuses.Paid : Meta.PaymentStatuses.PartiallyPaid;
+                    order.PaymentStatus = transAmout >= (order.NetAmount.HasValue ? Math.Truncate(order.NetAmount.Value) : order.NetAmount) ? Meta.PaymentStatuses.Paid : Meta.PaymentStatuses.PartiallyPaid;
                 }
             }
             if (isReceived)
             {
-                order.ReceivedDate = Meta.Now;
-                ProductInventory? productInventory = await _context.ProductInventories.SingleOrDefaultAsync(i => i.ProductId == order.ProductId);
+                ProductInventory? productInventory = await _context.ProductInventories.FindAsync(order.ProductId);
                 if (productInventory == null)
                 {
                     productInventory = new()
                     {
                         LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
                         RefNo = order.RefNo,
-                        ModifiedAt = DateTime.UtcNow,
+                        ModifiedAt = Meta.Now,
                         ProductId = order.ProductId.Value,
-                        Quantity = order.Quantity.Value
+                        Quantity = order.ReceivedQuantity.Value
                     };
                     await _context.ProductInventories.AddAsync(productInventory);
                 }
@@ -154,7 +179,8 @@ namespace MahantInv.Web.Api
                     ProductInventoryHistory piHistory = _mapper.Map<ProductInventoryHistory>(productInventory);
                     _context.ProductInventoryHistories.Add(piHistory);
                     productInventory.RefNo = order.RefNo;
-                    productInventory.ModifiedAt = order.ModifiedAt;
+                    productInventory.ModifiedAt = Meta.Now;
+                    productInventory.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                     productInventory.Quantity += order.ReceivedQuantity.Value;
                 }
             }
@@ -164,7 +190,7 @@ namespace MahantInv.Web.Api
             }
 
             await _context.SaveChangesAsync();
-            return null;
+            return order.Id;
 
         }
         [HttpGet("order/byid/{orderId}")]
@@ -213,7 +239,7 @@ namespace MahantInv.Web.Api
                 }
                 else
                 {
-                    if (orderDto.OrderDate.Value > DateTime.Today.Date)
+                    if (orderDto.OrderDate.Value > DateOnly.FromDateTime(DateTime.Today))
                     {
                         ModelState.AddModelError(nameof(orderDto.OrderDate), "Order Date can't be future date");
                     }
@@ -227,15 +253,29 @@ namespace MahantInv.Web.Api
                 }
                 if (orderDto.Id != 0)
                 {
-                    var existingOrder = await _context.Orders.FindAsync(orderDto.Id);
+                    var existingOrder = await _context.Orders.Include(o => o.Status).SingleOrDefaultAsync(o => o.Id == orderDto.Id);
                     if (existingOrder == null)
                     {
-                        ModelState.AddModelError(nameof(orderDto.Id), "Order not found");
+                        ModelState.AddModelError(nameof(orderDto.Status), "Order not found");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                              .Where(y => y.Count > 0)
+                              .ToList();
+                        return BadRequest(new { success = false, errors });
+
                     }
+                    if (existingOrder.Status.Title == Meta.OrderStatusTypes.Cancelled || existingOrder.Status.Title == Meta.OrderStatusTypes.Received)
+                    {
+                        ModelState.AddModelError(nameof(orderDto.Quantity), "Order is cancelled/received");
+                        List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                             .Where(y => y.Count > 0)
+                             .ToList();
+                        return BadRequest(new { success = false, errors });
+                    }
+
                 }
-                await LogOrder(orderDto, isReceived: false);
-                OrderCreateDto orderVM = await _orderRepository.GetOrderById(orderDto.Id);
-                return Ok(new { success = true, data = orderVM });
+                orderDto.Id = await LogOrder(orderDto, isReceived: true);
+                IEnumerable<OrderListDto> data = await _orderRepository.GetOrders(null, null, orderDto.Id);
+                return Ok(new { success = true, data });
             }
             catch (Exception e)
             {

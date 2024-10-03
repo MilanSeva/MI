@@ -277,7 +277,8 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_Parties_PartyCategories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "PartyCategories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -323,10 +324,13 @@ namespace MahantInv.Infrastructure.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false),
                     Quantity = table.Column<double>(type: "REAL", nullable: false),
+                    ReceivedQuantity = table.Column<double>(type: "REAL", nullable: true),
                     RefNo = table.Column<string>(type: "TEXT", nullable: true),
                     StatusId = table.Column<string>(type: "VARCHAR (50)", nullable: true),
+                    PaymentStatus = table.Column<string>(type: "TEXT", nullable: true),
                     SellerId = table.Column<int>(type: "INTEGER", nullable: true),
-                    OrderDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    OrderDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    ReceivedDate = table.Column<DateOnly>(type: "TEXT", nullable: true),
                     PricePerItem = table.Column<double>(type: "REAL", nullable: true),
                     Discount = table.Column<double>(type: "REAL", nullable: true),
                     Tax = table.Column<double>(type: "REAL", nullable: true),
@@ -358,24 +362,23 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_Orders_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ProductInventory",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ProductId = table.Column<int>(type: "INTEGER", nullable: true),
-                    Quantity = table.Column<double>(type: "REAL", nullable: true),
+                    ProductId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<double>(type: "REAL", nullable: false),
                     RefNo = table.Column<string>(type: "TEXT", nullable: true),
                     LastModifiedById = table.Column<string>(type: "TEXT", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductInventory", x => x.Id);
+                    table.PrimaryKey("PK_ProductInventory", x => x.ProductId);
                     table.ForeignKey(
                         name: "FK_ProductInventory_AspNetUsers_LastModifiedById",
                         column: x => x.LastModifiedById,
@@ -385,7 +388,8 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_ProductInventory_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -431,12 +435,14 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_ProductStorages_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductStorages_Storages_StorageId",
                         column: x => x.StorageId,
                         principalTable: "Storages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -486,7 +492,8 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_OrderDocuments_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -499,7 +506,7 @@ namespace MahantInv.Infrastructure.Migrations
                     PartyId = table.Column<int>(type: "INTEGER", nullable: false),
                     PaymentTypeId = table.Column<string>(type: "TEXT", nullable: true),
                     Amount = table.Column<decimal>(type: "TEXT", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    PaymentDate = table.Column<DateOnly>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -508,12 +515,14 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_OrderTransactions_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderTransactions_Parties_PartyId",
                         column: x => x.PartyId,
                         principalTable: "Parties",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderTransactions_PaymentTypes_PaymentTypeId",
                         column: x => x.PaymentTypeId,
@@ -527,6 +536,7 @@ namespace MahantInv.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    ExpiryDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false),
                     OrderId = table.Column<int>(type: "INTEGER", nullable: false),
                     IsArchive = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -538,12 +548,14 @@ namespace MahantInv.Infrastructure.Migrations
                         name: "FK_ProductExpiries_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductExpiries_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -651,7 +663,8 @@ namespace MahantInv.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInventory_ProductId",
                 table: "ProductInventory",
-                column: "ProductId");
+                column: "ProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInventoryHistory_LastModifiedById",

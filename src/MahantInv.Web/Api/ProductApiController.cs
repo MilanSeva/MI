@@ -4,6 +4,7 @@ using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -116,26 +117,20 @@ namespace MahantInv.Web.Api
                     }
                     else
                     {
-                        //if (!(input.Id != 0 && product.ProductStorages.Any(s => s.StorageId == storage.Id)))
-                        //{
                         product.ProductStorages.Add(new ProductStorage
                         {
                             ProductId = product.Id,
                             StorageId = storage.Id
                         });
-                        //}
                         storage.Enabled = true;
                         _context.Storages.Update(storage);
                     }
                 }
                 if (input.Id == 0)
                 {
-                    await _context.Products.AddAsync(product);
+                    await _context.AddAsync(product);
                 }
-                else
-                {
-                    //_context.Products.Update(product);
-                }
+                
                 await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);

@@ -98,10 +98,10 @@ namespace MahantInv.Infrastructure.Data
             modelBuilder.Entity<ProductInventory>(entity =>
             {
 
-
+                entity.HasIndex(d => d.ProductId).IsUnique();
                 entity.HasOne(d => d.LastModifiedBy).WithMany(p => p.ProductInventories);
 
-                entity.HasOne(d => d.Product).WithMany(p => p.ProductInventories);
+                entity.HasOne(d => d.Product).WithOne(p => p.ProductInventory);
             });
 
             modelBuilder.Entity<ProductInventoryHistory>(entity =>

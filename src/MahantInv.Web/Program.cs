@@ -3,33 +3,24 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using MahantInv.Infrastructure;
 using MahantInv.Infrastructure.Data;
-using MahantInv.Infrastructure.Dtos.Product;
 using MahantInv.Infrastructure.Identity;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.SeedScripts;
 using MahantInv.SharedKernel.Filter;
-using MahantInv.Web;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Formatting.Compact;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
-using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +39,11 @@ string connectionString = builder.Configuration.GetConnectionString("MahantInven
 
 services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
-    options => options.UseSqlite(connectionString));
+    options =>
+    {
+        options.UseSqlite(connectionString,mh=>mh.MigrationsHistoryTable("MigrationHistory"));
+        options.EnableDetailedErrors(true);
+    });
 
 services.AddControllersWithViews().AddNewtonsoftJson();
 

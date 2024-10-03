@@ -7,7 +7,7 @@ namespace MahantInv.Infrastructure.Entities
     [Table("ProductExpiries")]
     public class ProductExpiry : BaseEntity
     {
-        public DateTime ExpiryDate { get; set; }
+        public DateOnly ExpiryDate { get; set; }
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]

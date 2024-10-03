@@ -1,13 +1,10 @@
-﻿using AutoMapper;
-using MahantInv.Infrastructure.Dtos.Purchase;
-using MahantInv.SharedKernel;
+﻿using MahantInv.SharedKernel;
 using MahantInv.SharedKernel.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MahantInv.Infrastructure.Entities
 {
-    [AutoMap(typeof(OrderTransactionCreateDto))]
     [Table("OrderTransactions")]
     public class OrderTransaction : BaseEntity, IAggregateRoot
     {
@@ -15,7 +12,7 @@ namespace MahantInv.Infrastructure.Entities
         public int PartyId { get; set; }
         public string PaymentTypeId { get; set; }
         public decimal Amount { get; set; }
-        public DateTime? PaymentDate { get; set; }
+        public DateOnly? PaymentDate { get; set; }
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("OrderId")]

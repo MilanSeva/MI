@@ -84,7 +84,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<double?>("NetAmount")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime?>("OrderDate")
+                    b.Property<DateOnly?>("OrderDate")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -102,7 +102,7 @@ namespace MahantInv.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime?>("ReceivedDate")
+                    b.Property<DateOnly?>("ReceivedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<double?>("ReceivedQuantity")
@@ -193,7 +193,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<int>("PartyId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("PaymentDate")
+                    b.Property<DateOnly?>("PaymentDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentTypeId")
@@ -342,7 +342,7 @@ namespace MahantInv.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("ExpiryDate")
+                    b.Property<DateOnly>("ExpiryDate")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsArchive")
@@ -365,30 +365,27 @@ namespace MahantInv.Infrastructure.Migrations
 
             modelBuilder.Entity("MahantInv.Infrastructure.Entities.ProductInventory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastModifiedById")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("ModifiedAt")
+                    b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double?>("Quantity")
+                    b.Property<double>("Quantity")
                         .HasColumnType("REAL");
 
                     b.Property<string>("RefNo")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId");
 
                     b.HasIndex("LastModifiedById");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("ProductInventory");
                 });
@@ -827,8 +824,10 @@ namespace MahantInv.Infrastructure.Migrations
                         .HasForeignKey("LastModifiedById");
 
                     b.HasOne("MahantInv.Infrastructure.Entities.Product", "Product")
-                        .WithMany("ProductInventories")
-                        .HasForeignKey("ProductId");
+                        .WithOne("ProductInventory")
+                        .HasForeignKey("MahantInv.Infrastructure.Entities.ProductInventory", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LastModifiedBy");
 
@@ -972,7 +971,7 @@ namespace MahantInv.Infrastructure.Migrations
 
                     b.Navigation("ProductExpiries");
 
-                    b.Navigation("ProductInventories");
+                    b.Navigation("ProductInventory");
 
                     b.Navigation("ProductInventoryHistories");
 

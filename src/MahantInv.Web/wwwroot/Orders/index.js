@@ -34,15 +34,14 @@ var orderGridOptions = {
 
     // define grid columns
     columnDefs: [
-
         {
-            headerName: 'Order Date', field: 'orderDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
+            headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name', cellRenderer: "agGroupCellRenderer"
         },
         {
-            headerName: 'Product', field: 'productFullName', filter: 'agSetColumnFilter', headerTooltip: 'Name'
+            headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
         },
         {
-            headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Ordered Quantity'
+            headerName: 'Ordered Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Ordered Quantity'
         },
         {
             headerName: 'Received Quantity', field: 'receivedQuantity', filter: 'agNumberColumnFilter', headerTooltip: 'Received Quantity'
@@ -52,6 +51,11 @@ var orderGridOptions = {
         },
         {
             headerName: 'Payment Status', field: 'paymentStatus', filter: 'agSetColumnFilter', headerTooltip: 'Payment Status',
+            cellClassRules: {
+                "text-danger": (params) => params.value == "Unpaid",
+                "text-warning": (params) => params.value == "Partially Paid",
+                "text-success": (params) => params.value == "Paid"
+            },
             //cellRenderer: function (params) {
             //    if (params.value == 'Partially Paid') {
             //        return '<span>' + params.value + '</span> <span class="badge badge-danger">' + params.data.pendingAmount + '</span>';
@@ -60,7 +64,6 @@ var orderGridOptions = {
             //        return params.value;
             //    }
             //},
-            //cellClassRules: spanCellClassRules
         },
         {
             headerName: 'Seller', field: 'seller', filter: 'agTextColumnFilter', headerTooltip: 'Seller',
@@ -73,11 +76,11 @@ var orderGridOptions = {
                 }
 
                 let cls = params.value == 'Received' ? 'success' : 'danger';
-                return '<span class="badge badge-' + cls + '">' + params.value + '</span>';
+                return '<span class="text text-' + cls + '">' + params.value + '</span>';
             }
         },
         {
-            headerName: 'Received date', field: 'receiveddateformat', filter: 'agdatecolumnfilter', headerTooltip: 'received date',
+            headerName: 'Received date', field: 'receivedDate', filter: 'agdatecolumnfilter', headerTooltip: 'received date',
         },
         {
             headerName: 'Remark', field: 'remark', filter: 'agtextcolumnfilter', headerTooltip: 'Remark', minWidth: 100
@@ -90,7 +93,6 @@ var orderGridOptions = {
         }
     ],
     sideBar: { toolPanels: ['columns', 'filters'] },
-
     defaultColDef: {
         editable: false,
         enableRowGroup: true,
@@ -104,14 +106,31 @@ var orderGridOptions = {
         //autoHeight: true,
         floatingFilter: true,
     },
+    masterDetail: true,
+    detailCellRendererParams: {
+        suppressDetailGrid: true // This ensures detail rows are collapsed by default
+    },
+    detailCellRendererParams: {
+        detailGridOptions: {
+            columnDefs: [
+                { field: "party" },
+                { field: "paymentType" },
+                { field: "amount" },
+                { field: "paymentDate" },
+            ],
+            defaultColDef: {
+                flex: 1,
+            },
+        },
+        getDetailRowData: (params) => {
+            params.successCallback(params.data.orderTransactions);
+        },
+    },
     suppressRowTransform: true,
     pagination: true,
     paginationAutoPageSize: true,
     animateRows: true,
-    defaultColGroupDef: {
-        marryChildren: true
-    },
-
+    
     getRowId: params => {
         return params.data.id;
     },
@@ -127,6 +146,7 @@ var orderGridOptions = {
             minWidth: 130,
         }
     },
+    onStateUpdated: onStateUpdated,
     onGridReady: function (params) {
         //const allColumnIds = [];
         //orderGridAPI.getAllGridColumns().forEach((column) => {
@@ -136,13 +156,17 @@ var orderGridOptions = {
         //orderGridAPI.autoSizeColumns(allColumnIds, false);
     },
     overlayLoadingTemplate:
-        '<span class="ag-overlay-loading-center">Please wait while your orders are loading</span>',
+        '<span class="ag-overlay-loading-center">Loading your orders, please wait…</span>',
     overlayNoRowsTemplate:
         `<div class="text-center">
-                <h5 class="text-center"><b>Orders will be appear here.</b></h5>
+                <h5 class="text-center"><b>Oops! We couldn’t find any records matching your search.</b></h5>
             </div>`
 };
 
+function onStateUpdated(event) {
+    var state = orderGridAPI.getState();
+    localStorage.setItem("9427363582ba4ccda0a9aa2fcd422bc77", JSON.stringify(state));
+}
 class Product {
     constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
@@ -279,16 +303,23 @@ class Common {
         $('#ReceivedDate').val(moment().format("YYYY-MM-DD"));
         $('#Remark').val(rowData.remark);
     }
-
+    static ResetGrid(mthis) {
+        localStorage.removeItem('9427363582ba4ccda0a9aa2fcd422bc77');
+        window.location.reload();
+    }
     static ApplyAGGrid() {
         var gridDiv = document.querySelector('#ordersdata');
+        var state = localStorage.getItem("9427363582ba4ccda0a9aa2fcd422bc77");
+        if (state) {
+            orderGridOptions.initialState=JSON.parse(state);
+        }
         orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
     }
 
     static LoadDataInGrid(startDate, endDate) {
         fetch(baseUrl + 'api/orders', {
             method: 'POST',
-            body: JSON.stringify({ startDate: startDate, endDate: endDate }),
+            body: JSON.stringify({ startDate: startDate.format('YYYY-MM-DD'), endDate: endDate.format('YYYY-MM-DD') }),
             headers: {
                 //'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -296,8 +327,7 @@ class Common {
         })
             .then((response) => response.json())
             .then(data => {
-                var gridData = [];
-                //Common.BuildGridData(data, gridData);
+               
                 orderGridAPI.setGridOption("rowData", data);
             })
             .catch(error => {
@@ -308,58 +338,7 @@ class Common {
                 //});
             });
     }
-    static BuildGridData(data, gridData) {
-        $.each(data, function (i, v) {
-            if (v.orderTransactionVMs == null || v.orderTransactionVMs.length == 0) {
-                var gData = {};
-                gData.orderTransactionsCount = v.orderTransactionsCount;
-                gData.productFullName = v.productFullName;
-                gData.productName = v.productName;
-                gData.orderDateFormat = v.orderDateFormat;
-                gData.id = v.id;
-                //gData.receivedDateFormat = v.receivedDateFormat;
-                gData.orderDateFormat = v.orderDateFormat;
-                gData.status = v.status;
-                gData.seller = v.seller;
-                gData.reorderLevel = v.reorderLevel;
-                gData.currentStock = v.currentStock;
-                gData.receivedQuantity = v.receivedQuantity;
-                gData.quantity = v.quantity;
-                gData.netAmount = v.netAmount;
-                gData.paymentStatus = v.paymentStatus;
-                gData.pendingAmount = v.pendingAmount;
-                gData.orderDateFormat = v.orderDateFormat;
-
-                gridData.push(gData);
-            }
-            else {
-                let idx = 0;
-                $.each(v.orderTransactionVMs, function (oti, otv) {
-                    var gData = { payer: otv.party, paymentType: otv.paymentType, amount: otv.amount, paymentDateFormat: otv.paymentDateFormat, orderTransactionsCount: 1 };
-                    if (idx == 0) {
-                        gData.orderTransactionsCount = v.orderTransactionsCount;
-                        gData.productFullName = v.productFullName;
-                        gData.productName = v.productName;
-                        gData.orderDateFormat = v.orderDateFormat;
-                        gData.id = v.id;
-                        //gData.receivedDateFormat = v.receivedDateFormat;
-                        gData.orderDateFormat = v.orderDateFormat;
-                        gData.status = v.status;
-                        gData.seller = v.seller;
-                        gData.reorderLevel = v.reorderLevel;
-                        gData.currentStock = v.currentStock;
-                        gData.receivedQuantity = v.receivedQuantity;
-                        gData.quantity = v.quantity;
-                        gData.netAmount = v.netAmount;
-                        gData.paymentStatus = v.paymentStatus;
-                        gData.pendingAmount = v.pendingAmount;
-                    }
-                    gridData.push(gData);
-                    idx++;
-                });
-            }
-        });
-    }
+    
 
     static BindValuesToOrderForm(model) {
         $('#OrderErrorSection').empty();
@@ -370,7 +349,7 @@ class Common {
         $('#OrderDate').val(moment(model.OrderDate).format("YYYY-MM-DD"));
         $('#Remark').val(model.Remark);
         $('#ReceivedQuantity').val(model.ReceivedQuantity);
-        $('#ReceivedDate').val(model.receivedDate == null ? null : moment(model.ReceivedDate).format("YYYY-MM-DD"));
+        $('#ReceivedDate').val(model.ReceivedDate == null ? null : moment(model.ReceivedDate).format("YYYY-MM-DD"));
         $('#PricePerItem').val(model.PricePerItem);
         $('#Discount').val(model.Discount == null ? 0 : model.Discount == model.DiscountAmount ? model.Discount : model.Discount.toString().concat('%'));
         $('#Tax').val(model.Tax);
@@ -378,6 +357,7 @@ class Common {
         $('#NetAmount').val(model.NetAmount);
         $('#OrderTransactionSummarySectionPaidAmount').html(0);
         $('#OrderTransactionSummarySectionPendingAmount').html(model.NetAmount ?? 0);
+        
         if (model.OrderTransactions.length == 0) {
             $('#OrderTransactionBody').html("<tr><td colspan='5' class='text-center alert alert-info'>Transaction(s) will be appear here.</td></tr>");
         }
@@ -385,14 +365,14 @@ class Common {
             orderTransaction = [];
             for (var i = 0; i < model.OrderTransactions.length; i++) {
                 orderTransaction.push(new OrderTransaction(model.OrderTransactions[i].Id, model.OrderTransactions[i].PartyId, model.OrderTransactions[i].Party,
-                    model.OrderTransactions[i].PaymentTypeId, model.OrderTransactions[i].PaymentType, model.OrderTransactions[i].Amount, moment(model.OrderTransactions[i].PaymentDate, 'DD/MM/YYYY').format('DD/MM/YYYY')))
+                    model.OrderTransactions[i].PaymentTypeId, model.OrderTransactions[i].PaymentType, model.OrderTransactions[i].Amount, moment(model.OrderTransactions[i].PaymentDate, 'YYYY-MM-DD').format('DD/MM/YYYY')))
             }
-            //orderTransaction = model.OrderTransactions;
+            //orderTransaction = model.orderTransactions;
             Common.UpdateOrderTransactionGrid();
         }
     }
     static BindSelectData() {
-        var result = ',India,Afghanistan,Aland Islands,Albania,Algeria,American Samoa,Andorra,Angola,Anguilla,Antarctica,Antigua and Barbuda,Argentina,Armenia,Aruba,Australia,Austria,Azerbaijan,Bahamas,Bahrain,Bangladesh,Barbados,Belarus,Belgium,Belize,Benin,Bermuda,Bhutan,Bolivia,Bosnia and Herzegovina,Botswana,Bouvet Island,Brazil,British Indian Ocean Territory,British Virgin Islands,Brunei,Bulgaria,Burkina Faso,Burundi,Cambodia,Cameroon,Canada,Cape Verde,Caribbean Netherlands,Cayman Islands,Central African Republic,Chad,Chile,China,Christmas Island,Cocos (Keeling) Islands,Colombia,Comoros,Cook Islands,Costa Rica,Croatia,Cuba,Curaçao,Cyprus,Czechia,Denmark,Djibouti,Dominica,Dominican Republic,DR Congo,Ecuador,Egypt,El Salvador,Equatorial Guinea,Eritrea,Estonia,Eswatini,Ethiopia,Falkland Islands,Faroe Islands,Fiji,Finland,France,French Guiana,French Polynesia,French Southern and Antarctic Lands,Gabon,Gambia,Georgia,Germany,Ghana,Gibraltar,Greece,Greenland,Grenada,Guadeloupe,Guam,Guatemala,Guernsey,Guinea,Guinea-Bissau,Guyana,Haiti,Heard Island and McDonald Islands,Honduras,Hong Kong,Hungary,Iceland,Indonesia,Iran,Iraq,Ireland,Isle of Man,Israel,Italy,Ivory Coast,Jamaica,Japan,Jersey,Jordan,Kazakhstan,Kenya,Kiribati,Kosovo,Kuwait,Kyrgyzstan,Laos,Latvia,Lebanon,Lesotho,Liberia,Libya,Liechtenstein,Lithuania,Luxembourg,Macau,Madagascar,Malawi,Malaysia,Maldives,Mali,Malta,Marshall Islands,Martinique,Mauritania,Mauritius,Mayotte,Mexico,Micronesia,Moldova,Monaco,Mongolia,Montenegro,Montserrat,Morocco,Mozambique,Myanmar,Namibia,Nauru,Nepal,Netherlands,New Caledonia,New Zealand,Nicaragua,Niger,Nigeria,Niue,Norfolk Island,North Korea,North Macedonia,Northern Mariana Islands,Norway,Oman,Pakistan,Palau,Palestine,Panama,Papua New Guinea,Paraguay,Peru,Philippines,Pitcairn Islands,Poland,Portugal,Puerto Rico,Qatar,Republic of the Congo,Réunion,Romania,Russia,Rwanda,Saint Barthélemy,Saint Helena, Ascension and Tristan da Cunha,Saint Kitts and Nevis,Saint Lucia,Saint Martin,Saint Pierre and Miquelon,Saint Vincent and the Grenadines,Samoa,San Marino,São Tomé and Príncipe,Saudi Arabia,Senegal,Serbia,Seychelles,Sierra Leone,Singapore,Sint Maarten,Slovakia,Slovenia,Solomon Islands,Somalia,South Africa,South Georgia,South Korea,South Sudan,Spain,Sri Lanka,Sudan,Suriname,Svalbard and Jan Mayen,Sweden,Switzerland,Syria,Taiwan,Tajikistan,Tanzania,Thailand,Timor-Leste,Togo,Tokelau,Tonga,Trinidad and Tobago,Tunisia,Turkey,Turkmenistan,Turks and Caicos Islands,Tuvalu,Uganda,Ukraine,United Arab Emirates,United Kingdom,United States,United States Minor Outlying Islands,United States Virgin Islands,Uruguay,Uzbekistan,Vanuatu,Vatican City,Venezuela,Vietnam,Wallis and Futuna,Western Sahara,Yemen,Zambia,Zimbabwe';
+        var result = 'India,Afghanistan,Aland Islands,Albania,Algeria,American Samoa,Andorra,Angola,Anguilla,Antarctica,Antigua and Barbuda,Argentina,Armenia,Aruba,Australia,Austria,Azerbaijan,Bahamas,Bahrain,Bangladesh,Barbados,Belarus,Belgium,Belize,Benin,Bermuda,Bhutan,Bolivia,Bosnia and Herzegovina,Botswana,Bouvet Island,Brazil,British Indian Ocean Territory,British Virgin Islands,Brunei,Bulgaria,Burkina Faso,Burundi,Cambodia,Cameroon,Canada,Cape Verde,Caribbean Netherlands,Cayman Islands,Central African Republic,Chad,Chile,China,Christmas Island,Cocos (Keeling) Islands,Colombia,Comoros,Cook Islands,Costa Rica,Croatia,Cuba,Curaçao,Cyprus,Czechia,Denmark,Djibouti,Dominica,Dominican Republic,DR Congo,Ecuador,Egypt,El Salvador,Equatorial Guinea,Eritrea,Estonia,Eswatini,Ethiopia,Falkland Islands,Faroe Islands,Fiji,Finland,France,French Guiana,French Polynesia,French Southern and Antarctic Lands,Gabon,Gambia,Georgia,Germany,Ghana,Gibraltar,Greece,Greenland,Grenada,Guadeloupe,Guam,Guatemala,Guernsey,Guinea,Guinea-Bissau,Guyana,Haiti,Heard Island and McDonald Islands,Honduras,Hong Kong,Hungary,Iceland,Indonesia,Iran,Iraq,Ireland,Isle of Man,Israel,Italy,Ivory Coast,Jamaica,Japan,Jersey,Jordan,Kazakhstan,Kenya,Kiribati,Kosovo,Kuwait,Kyrgyzstan,Laos,Latvia,Lebanon,Lesotho,Liberia,Libya,Liechtenstein,Lithuania,Luxembourg,Macau,Madagascar,Malawi,Malaysia,Maldives,Mali,Malta,Marshall Islands,Martinique,Mauritania,Mauritius,Mayotte,Mexico,Micronesia,Moldova,Monaco,Mongolia,Montenegro,Montserrat,Morocco,Mozambique,Myanmar,Namibia,Nauru,Nepal,Netherlands,New Caledonia,New Zealand,Nicaragua,Niger,Nigeria,Niue,Norfolk Island,North Korea,North Macedonia,Northern Mariana Islands,Norway,Oman,Pakistan,Palau,Palestine,Panama,Papua New Guinea,Paraguay,Peru,Philippines,Pitcairn Islands,Poland,Portugal,Puerto Rico,Qatar,Republic of the Congo,Réunion,Romania,Russia,Rwanda,Saint Barthélemy,Saint Helena, Ascension and Tristan da Cunha,Saint Kitts and Nevis,Saint Lucia,Saint Martin,Saint Pierre and Miquelon,Saint Vincent and the Grenadines,Samoa,San Marino,São Tomé and Príncipe,Saudi Arabia,Senegal,Serbia,Seychelles,Sierra Leone,Singapore,Sint Maarten,Slovakia,Slovenia,Solomon Islands,Somalia,South Africa,South Georgia,South Korea,South Sudan,Spain,Sri Lanka,Sudan,Suriname,Svalbard and Jan Mayen,Sweden,Switzerland,Syria,Taiwan,Tajikistan,Tanzania,Thailand,Timor-Leste,Togo,Tokelau,Tonga,Trinidad and Tobago,Tunisia,Turkey,Turkmenistan,Turks and Caicos Islands,Tuvalu,Uganda,Ukraine,United Arab Emirates,United Kingdom,United States,United States Minor Outlying Islands,United States Virgin Islands,Uruguay,Uzbekistan,Vanuatu,Vatican City,Venezuela,Vietnam,Wallis and Futuna,Western Sahara,Yemen,Zambia,Zimbabwe';
         return result.split(',');
     }
 
@@ -510,15 +490,13 @@ class Common {
             toastr.success("Order Saved", '', { positionClass: 'toast-top-center' });
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
-            let gridData = [];
-            //Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridAPI.applyTransaction({ add: [response.data], addIndex: 0 });
+                orderGridAPI.applyTransaction({ add: response.data, addIndex: 0 });
             }
             else {
                 orderGridAPI.applyTransaction({ update: response.data });
             }
-            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {
@@ -540,12 +518,10 @@ class Common {
             .then(data => {
                 var order = new Order(data.id, data.productId, data.quantity, data.sellerId, data.orderDate, data.remark, data.pricePerItem, data.discount, data.tax, data.discountAmount, data.netAmount, data.receivedQuantity, data.receivedDate);
                 order.OrderTransactions = [];
-                if (data.orderTransactionVMs != null) {
-                    if (data.orderTransactionVMs.length > 0) {
-                        $.each(data.orderTransactionVMs, function (i, v) {
-                            order.OrderTransactions.push(new OrderTransaction(v.id, v.partyId, v.party, v.paymentTypeId, v.paymentType, v.amount, v.paymentDateFormat));
-                        });
-                    }
+                if (data.orderTransactions != null && data.orderTransactions.length > 0) {
+                    $.each(data.orderTransactions, function (i, v) {
+                        order.OrderTransactions.push(new OrderTransaction(v.id, v.partyId, v.party, v.paymentTypeId, v.paymentType, v.amount, v.paymentDate));
+                    });
                 }
                 Common.BindValuesToOrderForm(order);
 
@@ -555,7 +531,7 @@ class Common {
                 else {
                     $('#ReceivedQuantity').attr('readonly', false);
                 }
-
+                console.log();
                 if (data.status == 'Ordered') {
                     $('.cancelbtn').show();
                     $('.saveorderbtn').show();
@@ -589,7 +565,7 @@ class Common {
         //order.OrderTransactions = orderTransaction;
         for (var i = 0; i < orderTransaction.length; i++) {
             order.OrderTransactions.push(new OrderTransaction(orderTransaction[i].Id, orderTransaction[i].PartyId, orderTransaction[i].Party,
-                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate, 'DD/MM/YYYY').format('MM/DD/YYYY')))
+                orderTransaction[i].PaymentTypeId, orderTransaction[i].PaymentType, orderTransaction[i].Amount, moment(orderTransaction[i].PaymentDate, 'DD/MM/YYYY').format('YYYY-MM-DD')))
         }
         return order;
     }
@@ -618,17 +594,14 @@ class Common {
             toastr.success("Order has been received", '', { positionClass: 'toast-top-center' });
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
-            //let row = Common.BuildGridData([response.data], gridData);
-            let gridData = [];
-            //Common.BuildGridData([response.data], gridData);
             if (order.Id == 0) {
-                orderGridAPI.applyTransaction({ add: [response.data] });
+                orderGridAPI.applyTransaction({ add: response.data });
             }
             else {
-                orderGridAPI.applyTransaction({ update: [response.data] });
+                orderGridAPI.applyTransaction({ update: response.data });
             }
             //orderGridAPI.applyTransaction({ update: [response.data] });
-            let rowNode = orderGridAPI.getRowNode(response.data.id);
+            let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
         }
         if (response.success == false) {
@@ -730,6 +703,9 @@ class Common {
             orderTransaction[editModeIdx].PaymentType = PaymentType;
             orderTransaction[editModeIdx].Amount = Amount;
             orderTransaction[editModeIdx].PaymentDate = moment(PaymentDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            if (orderTransaction[editModeIdx].PaymentDate == "Invalid date") {
+                orderTransaction[editModeIdx].PaymentDate = moment(PaymentDate, 'YYYY-MM-DDTHH-mm-ss').format('DD/MM/YYYY');
+            }
             editModeIdx = -1;
         }
         Common.UpdateOrderTransactionGrid();
@@ -792,6 +768,7 @@ class Common {
             var result = Common.CalculateDiscountAndNetPay();
             $('#DiscountAmount').val(result.DiscountAmount);
             $('#NetAmount').val(result.NetAmount);
+            Common.UpdateOrderTransactionGrid();
         });
     }
     static async SaveParty(mthis) {
