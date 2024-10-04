@@ -107,6 +107,7 @@ var orderGridOptions = {
         floatingFilter: true,
     },
     masterDetail: true,
+    detailRowAutoHeight: true,
     detailCellRendererParams: {
         suppressDetailGrid: true // This ensures detail rows are collapsed by default
     },
