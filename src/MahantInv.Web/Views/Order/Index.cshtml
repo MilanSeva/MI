@@ -5,37 +5,35 @@
     .sick-days-warning {
         color: red !important;
     }
-
-    .cell-span {
-        background: white;
-        border-left: 1px solid lightgrey !important;
-        border-right: 1px solid lightgrey !important;
-        border-bottom: 1px solid lightgrey !important;
-        display: flex;
-        justify-content: left; /* align horizontal*/
-        align-items: center;
-    }
 </style>
 <div class="card bg-dark border-dark">
     <div class="card-header">
-        <div class="form-inline">
+        <div class="row g-3 align-items-center">
             <div class="col-md-4 col-sm-4 col-lg-4">
                 <span class="font-weight-bold text-white">Orders</span>
             </div>
-            <div class="form-group col-md-4 col-sm-12 col-lg-4">
-                <label for="staticEmail" class="col-sm-4 col-form-label text-white">Order Date</label>
-                <input type="text" class="form-control form-control-sm" id="ordersdaterange" style="width:50%"/>
+            <div class="col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label for="ordersdaterange" class="col-form-label text-white">Order Date</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" class="form-control form-control-sm" id="ordersdaterange" />
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4 col-sm-4 col-lg-4 text-right" style="padding-right:0px !important;">
-                <button class="btn btn-outline-warning btn-sm" type="button" onclick="Common.ResetGrid()">
-                    <span>Reset Grid</span>
-                </button>
-                <button class="btn btn-outline-success btn-sm" type="button" onclick="Common.ExportToExcel()">
-                    <span>Export to Excel</span>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-id="0" data-target="PlaceOrder">
-                    <span>New</span>
-                </button>
+            <div class="col-md-4">
+                <div class="col-auto float-end">
+                    <button class="btn btn-outline-warning btn-sm" type="button" onclick="Common.ResetGrid()">
+                        <span>Reset Grid</span>
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" type="button" onclick="Common.ExportToExcel()">
+                        <span>Export to Excel</span>
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-id="0" data-target="PlaceOrder">
+                        <span>New</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +59,6 @@
 @*@await Html.PartialAsync("_AddEditOrder",new MahantInv.Infrastructure.Entities.Order())*@
 @await Html.PartialAsync("_PlaceOrder", new MahantInv.Infrastructure.Dtos.Purchase.OrderCreateDto())
 
-@section Scripts{
-<script src="~/Orders/index.js" type="text/javascript" asp-append-version="true"></script>
+@section Scripts {
+    <script src="~/Orders/index.js" type="text/javascript" asp-append-version="true"></script>
 }

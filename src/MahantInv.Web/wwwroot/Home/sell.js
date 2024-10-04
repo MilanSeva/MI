@@ -260,7 +260,7 @@ class Common {
         //});
         $('#BuyersSelect').select2({
             placeholder: 'Search Buyer',
-            theme: "bootstrap4",
+            //theme: "bootstrap4",
             closeOnSelect: true,
             tags: true
         });
