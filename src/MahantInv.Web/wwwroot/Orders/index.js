@@ -754,7 +754,7 @@ class Common {
         Common.UpdateOrderTransactionGrid();
     }
     static CalculateDiscountAndNetPay() {
-        let Quantity = $('#Quantity').val() || 0;
+        let Quantity = $('#ReceivedQuantity').val() || $('#Quantity').val() || 0;
         let PricePerItem = $('#PricePerItem').val() || 0;
         let Discount = $('#Discount').val() || '0';
         let Tax = $('#Tax').val() || 0;
@@ -765,7 +765,7 @@ class Common {
         return new DiscountAndNetPay(DiscountAmount, NetAmount);
     }
     static async InitCountable() {
-        $(".countable").on("change", function () {
+        $(".countable").on("input", function () {
             var result = Common.CalculateDiscountAndNetPay();
             $('#DiscountAmount').val(result.DiscountAmount);
             $('#NetAmount').val(result.NetAmount);
