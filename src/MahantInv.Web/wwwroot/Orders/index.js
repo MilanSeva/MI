@@ -1,6 +1,8 @@
 ﻿let orderGridAPI;
 var orderTransaction = [];
 let editModeIdx = -1;
+let bulkOrderName = '';
+let bulkOrderQuantity = 1;
 function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
@@ -245,6 +247,8 @@ class Common {
         $('#' + target).modal('show');
         editModeIdx = -1;
         orderTransaction = [];
+        $('#BulkNameQuantity').val('');
+        $('#BulkNameQuantityLabel').html('.');
         if (id == 0) {
             $('#actionsection').find('.cancelbtn').hide();
             Common.BindValuesToOrderForm(new Order(0, null, null, null, moment().format("YYYY-MM-DD"), null, null, null, null, null, null, null, null, null, null));
@@ -460,13 +464,16 @@ class Common {
                 return $container;
             },
             templateSelection: function (repo) {
-                let qty = repo.size * repo.orderBulkQuantity;
-                $('#Quantity').val(qty);
+                bulkOrderName = repo.orderBulkName;
+                bulkOrderQuantity = repo.orderBulkQuantity;
+                Common.SetBulkNameAndQuantity();
                 return repo.name
             }
         });
-    } name
-
+    } 
+    static SetBulkNameAndQuantity() {
+        $('#BulkNameQuantityLabel').html(bulkOrderName);
+    }
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
         let order = Common.BuildOrderValues();
@@ -766,6 +773,12 @@ class Common {
     }
     static async InitCountable() {
         $(".countable").on("input", function () {
+            if ($(this).attr('id') === 'BulkNameQuantity') {
+                var bulkQuantity = $(this).val(); // Get the value of BulkNameQuantity
+                if (bulkQuantity >= 0) {
+                    $('#Quantity').val(bulkQuantity * bulkOrderQuantity);
+                }
+            }
             var result = Common.CalculateDiscountAndNetPay();
             $('#DiscountAmount').val(result.DiscountAmount);
             $('#NetAmount').val(result.NetAmount);

@@ -14,6 +14,8 @@ namespace MahantInv.Infrastructure.Dtos.Purchase
         [Display(Name = "Received Quantity")]
         public double? ReceivedQuantity { get; set; }
         public string RefNo { get; set; }
+        [Display(Name="Bulk Quantity")]
+        public string BulkNameQuantity { get; set; }
         [Display(Name = "Seller")]
         public int? SellerId { get; set; }
         [Required, Display(Name = "Order Date *")]

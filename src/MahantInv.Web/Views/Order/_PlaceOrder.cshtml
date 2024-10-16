@@ -15,7 +15,7 @@
                         <div id="OrderErrorSection" class="text-danger"></div>
                         <input type="hidden" asp-for="@Model.Id" />
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-9">
                                 <div class="form-group">
                                     <label asp-for="@Model.ProductId"></label>
                                     <a href="#" class="pl-2" onclick="Common.OpenProductModal(this)" data-target="AddProduct" data-type="s">(New)</a>
@@ -23,14 +23,14 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label asp-for="@Model.OrderDate"></label>
-                                    <input type="date" asp-for="@Model.OrderDate" class="form-control" placeholder="Order Date" />
+                                    <input type="date" asp-for="@Model.OrderDate" class="form-control form-control-sm" placeholder="Order Date" />
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="@Model.SellerId"></label>
@@ -42,6 +42,17 @@
                                             <option value="@item.Id">@item.Name</option>
                                         }
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label asp-for="@Model.BulkNameQuantity"></label>
+                                    <div class="input-group">
+                                        <input type="number" asp-for="@Model.BulkNameQuantity" class="form-control countable" placeholder="Bulk Quantity" />
+                                        <div class="input-group-append">
+                                            <div id="BulkNameQuantityLabel" class="input-group-text"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
