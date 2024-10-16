@@ -215,12 +215,11 @@ class OrderTransaction {
     }
 }
 class Party {
-    constructor(Id, Name, Type, CategoryId, PrimaryContact, City, Country) {
+    constructor(Id, Name, Type, CategoryId, City, Country) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.Type = Common.ParseValue(Type);
         this.CategoryId = CategoryId;
-        this.PrimaryContact = Common.ParseValue(PrimaryContact);
         this.City = Common.ParseValue(City);
         this.Country = Common.ParseValue(Country);
     }
@@ -286,7 +285,6 @@ class Common {
         $('#ProductName').val('');
         $('#Type').val('');
         $('#CategoryId').val('');
-        $('#PrimaryContact').val('');
         $('#City').val('');
         $('#Country').val('');
 
@@ -790,10 +788,9 @@ class Common {
         let Name = $('#Name').val();
         let Type = $('#Type').val();
         let CategoryId = $('#CategoryId').val();
-        let PrimaryContact = $('#PrimaryContact').val();
         let City = $('#City').val();
         let Country = $('#Country').val();
-        let party = new Party(0, Name, Type, CategoryId, PrimaryContact, City, Country);
+        let party = new Party(0, Name, Type, CategoryId, City, Country);
 
         var response = await fetch(baseUrl + 'api/party/save', {
             method: 'POST',

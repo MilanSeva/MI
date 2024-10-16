@@ -26,9 +26,6 @@ var partyGridOptions = {
             headerName: 'Category', field: 'category', filter: 'agSetColumnFilter', headerTooltip: 'Category'
         },
         {
-            headerName: 'Primary Contact', field: 'primaryContact', filter: 'agTextColumnFilter', headerTooltip: 'Primary Contact'
-        },
-        {
             headerName: 'City', field: 'city', filter: 'agTextColumnFilter', headerTooltip: 'City'
         },
         {
@@ -118,12 +115,11 @@ var partyGridOptions = {
 
 
 class Party {
-    constructor(Id, Name, Type, CategoryId, PrimaryContact, City, Country) {
+    constructor(Id, Name, Type, CategoryId, City, Country) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.Type = Common.ParseValue(Type);
         this.CategoryId = CategoryId;
-        this.PrimaryContact = Common.ParseValue(PrimaryContact);
         this.City = Common.ParseValue(City);
         this.Country = Common.ParseValue(Country);
     }
@@ -179,7 +175,6 @@ class Common {
         $('#Name').val(model.Name);
         $('#Type').val(model.Type);
         $('#CategoryId').val(model.CategoryId);
-        $('#PrimaryContact').val(model.PrimaryContact);
         $('#City').val(model.City);
         $('#Country').val(model.Country);
     }
@@ -194,10 +189,9 @@ class Common {
         let Name = $('#Name').val();
         let Type = $('#Type').val();
         let CategoryId = $('#CategoryId').val();
-        let PrimaryContact = $('#PrimaryContact').val();
         let City = $('#City').val();
         let Country = $('#Country').val();
-        let party = new Party(Id, Name, Type, CategoryId, PrimaryContact, City, Country);
+        let party = new Party(Id, Name, Type, CategoryId, City, Country);
 
         var response = await fetch(baseUrl + 'api/party/save', {
             method: 'POST',
@@ -250,7 +244,7 @@ class Common {
         }).then(response => { return response.json() })
             .then(data => {
                 $('#AddEditParty').modal('show');
-                Common.BindValuesToPartyForm(new Party(data.id, data.name, data.type, data.categoryId, data.primaryContact, data.city, data.country));
+                Common.BindValuesToPartyForm(new Party(data.id, data.name, data.type, data.categoryId, data.city, data.country));
             })
             .catch(error => {
                 console.log(error);
