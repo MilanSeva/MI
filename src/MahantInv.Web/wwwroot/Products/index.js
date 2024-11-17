@@ -66,7 +66,7 @@ ImageCellRenderer.prototype.init = function (params) {
         fileInput.click();
     });
 
-    img.title = "Click to Edit";
+    img.title = "Click to Change";
     // Add a click event listener to the image
     //img.addEventListener('click', function (event) {
     //    // Your custom click event logic here
