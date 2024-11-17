@@ -11,7 +11,37 @@ ActionCellRenderer.prototype.init = function (params) {
 ActionCellRenderer.prototype.getGui = function () {
     return this.eGui;
 }
+// Function to handle the file change event
+function handleFileChange(event, rowId) {
+    let file = event.target.files[0]; // Get the selected file
 
+    if (file) {
+        // Create FormData for uploading the file
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('id', rowId); // Include row ID or other relevant data
+
+        // Send file to the server using Fetch API
+        fetch(baseUrl + 'api/product/image', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success("File uploaded successfully!", '', { positionClass: 'toast-top-center' });
+                    productGridAPI.applyTransaction({ update: [data.data] });
+                }
+                else {
+                    toastr.error(data.message, '', { positionClass: 'toast-top-center' });
+                }
+
+            })
+            .catch(error => {
+                toastr.error("Unexpected error", '', { positionClass: 'toast-top-center' });
+            });
+    }
+}
 function ImageCellRenderer() { }
 
 ImageCellRenderer.prototype.init = function (params) {
@@ -19,6 +49,30 @@ ImageCellRenderer.prototype.init = function (params) {
     let img = document.createElement('img');
     img.src = params.value == null ? "/img/default.jpg" : params.value;
     img.setAttribute('class', 'agimg');
+    // Apply cursor pointer for hover effect
+    img.style.cursor = 'pointer';
+
+    // Create a hidden file input element
+    let fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    fileInput.accept = 'image/*'; // Accept only image files
+
+    // Attach the change event to the separate function
+    fileInput.addEventListener('change', (event) => handleFileChange(event, params.data.id));
+
+    // Trigger file input click on image click
+    img.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    img.title = "Click to Edit";
+    // Add a click event listener to the image
+    //img.addEventListener('click', function (event) {
+    //    // Your custom click event logic here
+    //    console.log('Image clicked!', params);
+    //    alert(`Image URL: ${img.src}`);
+    //});
     this.eGui = document.createElement('span');
     this.eGui.setAttribute('class', 'agimgSpanLogo');
     this.eGui.appendChild(img);

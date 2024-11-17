@@ -7,12 +7,15 @@ using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,7 +29,15 @@ namespace MahantInv.Web.Api
         private readonly IStorageRepository _storageRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly MIDbContext _context;
-
+        // Allowed image MIME types for validation
+        private static readonly string[] AllowedImageMimeTypes = new[]
+        {
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/bmp",
+        "image/svg+xml"
+        };
         public ProductApiController(MIDbContext context, IUnitOfWork unitOfWork, IStorageRepository storageRepository, IMapper mapper, ILogger<ProductApiController> logger, IProductsRepository productRepository) : base(mapper)
         {
             _logger = logger;
@@ -130,7 +141,7 @@ namespace MahantInv.Web.Api
                 {
                     await _context.AddAsync(product);
                 }
-                
+
                 await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);
@@ -159,7 +170,65 @@ namespace MahantInv.Web.Api
             }
         }
 
+        [HttpPost("product/image")]
+        public async Task<IActionResult> ChangeProductImage(ChangeProductImageRequest request)
+        {
+            if (request.File == null || request.File.Length == 0)
+            {
+                return BadRequest(new { success = false, message = "No file uploaded." });
+            }
+            // Validate the MIME type of the uploaded file
+            if (!IsImageFile(request.File))
+            {
+                return BadRequest(new { success = false, message = "Only image files are allowed." });
+            }
+            // Optionally, check the file extension if needed
+            string extension = Path.GetExtension(request.File.FileName).ToLower();
+            if (!IsValidImageExtension(extension))
+            {
+                return BadRequest(new { success = false, message = "Invalid image file extension." });
+            }
+            Product product = await _context.Products.FindAsync(request.Id);
+            if (product == null)
+            {
+                return BadRequest(new { success = false, message = "Product not found" });
+            }
 
+            // Save file to a specific location
+            var uploadsFolder = Path.Combine("wwwroot", "ProductImages");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            // Create a relative path for the file
+            var relativeFilePath = Path.Combine(uploadsFolder, $"{product.Id}_{Guid.NewGuid():N}{Path.GetExtension(request.File.FileName)}");
+
+            // Save the file to the relative path
+            var absoluteFilePath = Path.Combine(Directory.GetCurrentDirectory(), relativeFilePath);
+            using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+            {
+                await request.File.CopyToAsync(stream);
+            }
+            product.PicturePath = $"{relativeFilePath}".Replace("wwwroot", string.Empty);
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+
+            ProductVM productVM = await _productRepository.GetProductById(product.Id);
+            return Ok(new { success = true, data = productVM });
+        }
+        // Check if the file is a valid image based on MIME type
+        private bool IsImageFile(IFormFile file)
+        {
+            // Check if the MIME type starts with "image/"
+            return file.ContentType.StartsWith("image/");
+        }
+
+        // Optionally validate file extension to ensure it's an image
+        private bool IsValidImageExtension(string extension)
+        {
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg" };
+            return allowedExtensions.Contains(extension);
+        }
     }
 
 }
