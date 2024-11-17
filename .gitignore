@@ -399,3 +399,4 @@ FodyWeavers.xsd
 /src/MahantInv.Web/MahantInventory.db
 /src/MahantInv.Web/MahantInventory.db-shm
 /src/MahantInv.Web/MahantInventory.db-wal
+/src/MahantInv.Web/wwwroot/ProductImages
