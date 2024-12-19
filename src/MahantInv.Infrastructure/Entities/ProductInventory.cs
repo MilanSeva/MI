@@ -12,6 +12,7 @@ namespace MahantInv.Infrastructure.Entities
     public class ProductInventory : IAggregateRoot
     {
         [Key]
+        [Dapper.Contrib.Extensions.ExplicitKey]
         public int ProductId { get; set; }
         public double Quantity { get; set; }
         public string RefNo { get; set; }
