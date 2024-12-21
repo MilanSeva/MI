@@ -211,11 +211,10 @@ namespace MahantInv.Web.Api
 
             // Save the file to the relative path
             var absoluteFilePath = Path.Combine(Directory.GetCurrentDirectory(), relativeFilePath);
-            //using Image image = await Image.L
-            //using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
-            //{
-            //    await request.File.CopyToAsync(stream);
-            //}
+            using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+            {
+                await request.File.CopyToAsync(stream);
+            }
             product.PicturePath = $"{relativeFilePath}".Replace("wwwroot", string.Empty);
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
