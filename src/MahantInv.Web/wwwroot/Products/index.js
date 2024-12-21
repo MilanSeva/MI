@@ -13,7 +13,7 @@ ActionCellRenderer.prototype.getGui = function () {
 }
 // Function to handle the file change event
 function handleFileChange(event, rowId) {
-    if (fileInput.files.length === 0) {
+    if (event.target.files.length === 0) {
         toastr.error("Please select a file.", '', { positionClass: 'toast-top-center' });
         return;
     }
