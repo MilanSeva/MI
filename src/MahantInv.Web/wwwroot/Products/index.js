@@ -13,34 +13,50 @@ ActionCellRenderer.prototype.getGui = function () {
 }
 // Function to handle the file change event
 function handleFileChange(event, rowId) {
-    let file = event.target.files[0]; // Get the selected file
-
-    if (file) {
-        // Create FormData for uploading the file
-        let formData = new FormData();
-        formData.append('file', file);
-        formData.append('id', rowId); // Include row ID or other relevant data
-
-        // Send file to the server using Fetch API
-        fetch(baseUrl + 'api/product/image', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success("File uploaded successfully!", '', { positionClass: 'toast-top-center' });
-                    productGridAPI.applyTransaction({ update: [data.data] });
-                }
-                else {
-                    toastr.error(data.message, '', { positionClass: 'toast-top-center' });
-                }
-
-            })
-            .catch(error => {
-                toastr.error("Unexpected error", '', { positionClass: 'toast-top-center' });
-            });
+    if (fileInput.files.length === 0) {
+        toastr.error("Please select a file.", '', { positionClass: 'toast-top-center' });
+        return;
     }
+    let file = event.target.files[0]; // Get the selected file
+    // Validate file size (2 MB = 2 * 1024 * 1024 bytes)
+    var maxSize = 2 * 1024 * 1024; // 2 MB
+    if (file.size > maxSize) {
+        toastr.error("File size must not exceed 2 MB.", '', { positionClass: 'toast-top-center' });
+        return;
+    }
+    // Validate file type
+    var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        $('#message').html('<p style="color: red;">Invalid file type. Only JPG, PNG, and GIF are allowed.</p>');
+        return;
+    }
+
+
+    // Create FormData for uploading the file
+    let formData = new FormData();
+    formData.append('file', file);
+    formData.append('id', rowId); // Include row ID or other relevant data
+
+    // Send file to the server using Fetch API
+    fetch(baseUrl + 'api/product/image', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                toastr.success("File uploaded successfully!", '', { positionClass: 'toast-top-center' });
+                productGridAPI.applyTransaction({ update: [data.data] });
+            }
+            else {
+                toastr.error(data.message, '', { positionClass: 'toast-top-center' });
+            }
+
+        })
+        .catch(error => {
+            toastr.error("Unexpected error", '', { positionClass: 'toast-top-center' });
+        });
+
 }
 function ImageCellRenderer() { }
 

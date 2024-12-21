@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -21,10 +22,12 @@ namespace MahantInv.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductUsageRepository _productUsageRepository;
-        public HomeController(ILogger<HomeController> logger, IProductUsageRepository productUsageRepository, IMapper mapper) : base(mapper)
+        private readonly GoogleCaptchaService _captchaService;
+        public HomeController(ILogger<HomeController> logger, GoogleCaptchaService captchaService, IProductUsageRepository productUsageRepository, IMapper mapper) : base(mapper)
         {
             _logger = logger;
             _productUsageRepository = productUsageRepository;
+            _captchaService = captchaService;
         }
         [Authorize]
         public IActionResult Index()
@@ -47,7 +50,26 @@ namespace MahantInv.Web.Controllers
                 return BadRequest("Unexpected Error " + GUID);
             }
         }
-        
+        [HttpPost]
+        public async Task<IActionResult> VerifyCaptcha(string gRecaptchaResponse)
+        {
+            if (string.IsNullOrWhiteSpace(gRecaptchaResponse))
+            {
+                ModelState.AddModelError(string.Empty, "Captcha is required.");
+                return View("Index");
+            }
+
+            var captchaResult = await _captchaService.VerifyCaptchaAsync(gRecaptchaResponse);
+
+            if (!captchaResult.Success || captchaResult.Score < 0.5)
+            {
+                // Show visible reCAPTCHA v2 or reject the request
+                return View("CaptchaRequired");
+            }
+
+            // Proceed with form submission
+            return RedirectToAction("Success");
+        }
         public IActionResult Error()
         {
             return View();

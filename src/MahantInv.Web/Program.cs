@@ -7,10 +7,12 @@ using MahantInv.Infrastructure.Identity;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.SeedScripts;
 using MahantInv.SharedKernel.Filter;
+using MahantInv.Web.Service;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -71,6 +73,11 @@ services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
+services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 2 * 1024 * 1024; // 2 MB
+});
+
 // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
 services.Configure<ServiceConfig>(config =>
 {
@@ -102,6 +109,7 @@ builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductUsageRepository, ProductUsageRepository>();
 builder.Services.AddTransient<IStorageRepository, StorageRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<GoogleCaptchaService>();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 //builder.Host.ConfigureContainer<ContainerBuilder>(cb => cb.Populate(builder.Services));
 // Register Autofac modules

@@ -148,6 +148,10 @@
     </nav>
     <div class="container-fluid">
         @RenderBody()
+        <form id="myForm" method="post" action="/Home/VerifyCaptcha" style="display:none">
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+            <button type="submit">Submit</button>
+        </form>
     </div>
 
     @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
@@ -159,7 +163,7 @@
     <script src="~/lib/toastr/toastr.min.js" asp-append-version="true"></script>
     <script src="~/lib/select2/js/select2.min.js" asp-append-version="true"></script>
     <script src="~/lib/daterangepicker/daterangepicker.js" asp-append-version="true"></script>
-
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lc0gKAqAAAAAEQxmKiHtpSyV_WXojjc0ccWbUaK"></script>
     <script type="text/javascript">
         var baseUrl = '@Url.Content("~/")';
         Array.prototype.uniquePush = function (item) {
@@ -187,6 +191,17 @@
                 );
             };
         }
+        $(document).ready(function () {
+            $('#myForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Generate reCAPTCHA token
+                grecaptcha.execute('6Lc0gKAqAAAAAEQxmKiHtpSyV_WXojjc0ccWbUaK', { action: 'submit' }).then(function (token) {
+                    $('#g-recaptcha-response').val(token); // Set the token in the hidden field
+                    $('#myForm')[0].submit(); // Submit the form
+                });
+            });
+        });
         //        $(document).ready(function(){
 
 
@@ -217,6 +232,5 @@
     <script src="~/Notification/mynotification.js" asp-append-version="true"></script>
     @await RenderSectionAsync("scripts", required: false).ConfigureAwait(false)
     <script src="~/lib/aggrid/ag-grid-enterprise.min.js"></script>
-
 </body>
 </html>

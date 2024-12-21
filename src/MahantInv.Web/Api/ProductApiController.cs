@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -188,6 +189,11 @@ namespace MahantInv.Web.Api
             {
                 return BadRequest(new { success = false, message = "Invalid image file extension." });
             }
+            const long maxFileSize = 2 * 1024 * 1024; // 2 MB
+            if (request.File.Length > maxFileSize)
+            {
+                return BadRequest(new { success = false, message = "File size exceeds 2 MB." });
+            }
             Product product = await _context.Products.FindAsync(request.Id);
             if (product == null)
             {
@@ -205,10 +211,11 @@ namespace MahantInv.Web.Api
 
             // Save the file to the relative path
             var absoluteFilePath = Path.Combine(Directory.GetCurrentDirectory(), relativeFilePath);
-            using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
-            {
-                await request.File.CopyToAsync(stream);
-            }
+            //using Image image = await Image.L
+            //using (var stream = new FileStream(absoluteFilePath, FileMode.Create))
+            //{
+            //    await request.File.CopyToAsync(stream);
+            //}
             product.PicturePath = $"{relativeFilePath}".Replace("wwwroot", string.Empty);
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
