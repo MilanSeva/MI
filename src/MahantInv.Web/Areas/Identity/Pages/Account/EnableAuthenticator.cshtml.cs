@@ -40,7 +40,7 @@
 
         private string GenerateQrCode(string email, string key)
         {
-            var qrCodeUri = $"otpauth://totp/MyApp:{email}?secret={key}&issuer=MyApp&digits=6";
+            var qrCodeUri = $"otpauth://totp/Mahant Kothar:{email}?secret={key}&issuer=Mahant Kothar&digits=6";
 
             using var qrGenerator = new QRCodeGenerator();
             using var qrCodeData = qrGenerator.CreateQrCode(qrCodeUri, QRCodeGenerator.ECCLevel.Q);

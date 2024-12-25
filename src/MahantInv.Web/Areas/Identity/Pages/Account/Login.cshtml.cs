@@ -89,10 +89,13 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
                 {
                     return RedirectToPage("VerifyAuthenticator");
                 }
-                if (identityUser.TwoFactorEnabled)
-                {
-                    return RedirectToAction("SendCode", new { RememberMe = Input.RememberMe });
-                }
+                // Check if MFA is enabled & uncomment below code
+                //if (!identityUser.IsMfaEnabled)
+                //{
+                //    // Sign in user partially to access EnableAuthenticator page
+                //    await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                //    return RedirectToPage("/Account/EnableAuthenticator");
+                //}
                 await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 return RedirectToPage("/Index");
 

@@ -7,7 +7,7 @@
 <h2>Enable Authenticator</h2>
 
 <p>Scan the QR Code below with your authenticator app:</p>
-<img src="@Model.QrCodeImage" alt="QR Code" />
+<img src="@Model.QrCodeImage" alt="QR Code" class="img-responsive" style="height:100px" />
 <p>Or manually enter the key: <strong>@Model.SharedKey</strong></p>
 
 <form method="post" asp-page="VerifyAuthenticator">
