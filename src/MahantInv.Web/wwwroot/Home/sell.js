@@ -294,9 +294,9 @@ class Common {
         }
         if (response.success) {
             toastr.success("Saved", '', { positionClass: 'toast-top-center' });
-            productUsageGridOptions.api.applyTransaction({ add: [response.data], addIndex: 0 });
-            let rowNode = productUsageGridOptions.api.getRowNode(response.data.id);
-            productUsageGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            productUsageAPI.applyTransaction({ add: [response.data], addIndex: 0 });
+            let rowNode = productUsageAPI.getRowNode(response.data.id);
+            productUsageAPI.flashCells({ rowNodes: [rowNode] });
 
             $('#ProductUsageSelect').val('').trigger('change');
             $('#UsageQuantity').val('');
