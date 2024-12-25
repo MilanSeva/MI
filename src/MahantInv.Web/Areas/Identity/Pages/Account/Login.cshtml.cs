@@ -85,17 +85,17 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
+                await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 if (identityUser.IsMfaEnabled)
                 {
                     return RedirectToPage("VerifyAuthenticator");
                 }
                 // Check if MFA is enabled & uncomment below code
-                //if (!identityUser.IsMfaEnabled)
-                //{
-                //    // Sign in user partially to access EnableAuthenticator page
-                //    await _signInManager.SignInAsync(identityUser, Input.RememberMe);
-                //    return RedirectToPage("/Account/EnableAuthenticator");
-                //}
+                if (!identityUser.IsMfaEnabled)
+                {
+                    // Sign in user partially to access EnableAuthenticator page
+                    return RedirectToPage("/Account/EnableAuthenticator");
+                }
                 await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 return RedirectToPage("/Index");
 

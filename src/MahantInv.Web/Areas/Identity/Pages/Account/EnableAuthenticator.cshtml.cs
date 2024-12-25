@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
     using System;
     using MahantInv.Infrastructure.Identity;
+    using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
     public class EnableAuthenticatorModel : PageModel
     {
@@ -15,6 +16,7 @@
 
         public string QrCodeImage { get; set; }
         public string SharedKey { get; set; }
+        public string Code { get; set; }
 
         public EnableAuthenticatorModel(UserManager<MIIdentityUser> userManager)
         {
@@ -36,6 +38,33 @@
             QrCodeImage = GenerateQrCode(user.Email, authenticatorKey);
 
             return Page();
+        }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var isCodeValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user, TokenOptions.DefaultAuthenticatorProvider, Code);
+
+            if (!isCodeValid)
+            {
+                ModelState.AddModelError("Code", "Invalid code.");
+                var authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+                if (string.IsNullOrEmpty(authenticatorKey))
+                {
+                    await _userManager.ResetAuthenticatorKeyAsync(user);
+                    authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+                }
+
+                SharedKey = authenticatorKey;
+                QrCodeImage = GenerateQrCode(user.Email, authenticatorKey);
+                return Page();
+            }
+
+            user.IsMfaEnabled = true;
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToPage("/Index");
         }
 
         private string GenerateQrCode(string email, string key)

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Verify Authenticator";
 }
 
-<h2>Verify Authenticator</h2>
+@* <h2>Verify Authenticator</h2>
 
 <form method="post">
     <div class="form-group">
@@ -12,4 +12,42 @@
         <input type="text" id="code" name="Code" class="form-control" required />
     </div>
     <button type="submit" class="btn btn-primary">Verify</button>
-</form>
+</form> *@
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-success text-white">
+                    <h3>Verify Authenticator</h3>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4 text-center">
+                        Enter the 6-digit code from your Authenticator App to verify the setup. Once verified, two-factor authentication will be enabled for your account.
+                    </p>
+                <!-- Error Section -->
+                @if (!ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="verificationCode" class="form-label">Verification Code</label>
+                            <input type="text" id="Code" name="Code" class="form-control" placeholder="Enter 6-digit code" required>
+                            <div class="form-text">
+                                Check your Authenticator App for the code.
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary px-4">Verify</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
