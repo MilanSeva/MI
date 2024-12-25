@@ -81,7 +81,7 @@ namespace MahantInv.Infrastructure.SeedScripts
                 var user = new MIIdentityUser
                 {
                     UserName = "system",
-                    Email = "admin@system.com",
+                    Email = "system@system.com",
                     EmailConfirmed = true
                 };
 
