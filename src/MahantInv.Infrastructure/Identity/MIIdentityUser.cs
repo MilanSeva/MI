@@ -7,6 +7,9 @@ namespace MahantInv.Infrastructure.Identity
 {
     public class MIIdentityUser : IdentityUser
     {
+        public string AuthenticatorKey { get; set; }
+        public bool IsMfaEnabled { get; set; }
+
         [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("LastModifiedBy")]
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();

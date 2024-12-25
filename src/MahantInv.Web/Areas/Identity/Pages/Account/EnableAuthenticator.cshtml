@@ -1,0 +1,19 @@
+﻿@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Enable Authenticator";
+}
+
+<h2>Enable Authenticator</h2>
+
+<p>Scan the QR Code below with your authenticator app:</p>
+<img src="@Model.QrCodeImage" alt="QR Code" />
+<p>Or manually enter the key: <strong>@Model.SharedKey</strong></p>
+
+<form method="post" asp-page="VerifyAuthenticator">
+    <div class="form-group">
+        <label for="code">Enter the code from your app:</label>
+        <input type="text" id="code" name="code" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>

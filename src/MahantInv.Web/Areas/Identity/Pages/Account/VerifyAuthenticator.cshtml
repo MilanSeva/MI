@@ -1,0 +1,15 @@
+﻿@page
+@model VerifyAuthenticatorModel
+@{
+    ViewData["Title"] = "Verify Authenticator";
+}
+
+<h2>Verify Authenticator</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="code">Enter the code from your app:</label>
+        <input type="text" id="code" name="Code" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>

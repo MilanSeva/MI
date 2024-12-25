@@ -50,7 +50,11 @@ services.AddDbContext<MIDbContext>(
 services.AddControllersWithViews().AddNewtonsoftJson();
 
 services.AddRazorPages();
-services.AddIdentity<MIIdentityUser, IdentityRole>()
+services.AddIdentity<MIIdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+})
     .AddEntityFrameworkStores<MIDbContext>()
     .AddDefaultTokenProviders();
 

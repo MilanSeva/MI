@@ -80,18 +80,25 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
                 {
                     identityUser = await _userManager.FindByEmailAsync(Input.Email);
                 }
-                if (identityUser == null)
+                if (identityUser == null || !await _userManager.CheckPasswordAsync(identityUser, Input.Password))
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
+                if (identityUser.IsMfaEnabled)
+                {
+                    return RedirectToPage("VerifyAuthenticator");
+                }
+
+                await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                return RedirectToPage("/Index");
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(identityUser, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                if (result.Succeeded && identityUser.IsMfaEnabled)
                 {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("VerifyMfa");
                 }
                 if (result.RequiresTwoFactor)
                 {

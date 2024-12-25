@@ -5,7 +5,6 @@ using MahantInv.Infrastructure.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +50,7 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(errors);
                 }
-                party.Country = party.Country.IsNullOrEmpty() ? "India" : party.Country;
+                party.Country = string.IsNullOrEmpty(party.Country) ? "India" : party.Country;
                 party.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 party.ModifiedAt = DateTime.UtcNow;
                 if (party.Id == 0)
