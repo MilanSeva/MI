@@ -35,6 +35,17 @@
                         Alternatively, use this key manually in your app:
                         <code class="text-danger">@Model.SharedKey</code>
                     </p>
+                @if (!ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
                 <form method="post">
                         <div class="mb-3">
                             <label for="Code" class="form-label">Verification Code</label>

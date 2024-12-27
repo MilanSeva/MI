@@ -16,16 +16,24 @@
 
         public string QrCodeImage { get; set; }
         public string SharedKey { get; set; }
+        [BindProperty]
         public string Code { get; set; }
+        [BindProperty]
+        public string UserName { get; set; }
 
         public EnableAuthenticatorModel(UserManager<MIIdentityUser> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string userName)
         {
-            var user = await _userManager.GetUserAsync(User);
+            UserName = userName;
+            var user = await _userManager.FindByNameAsync(UserName);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(UserName);
+            }
 
             var authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(authenticatorKey))
@@ -41,7 +49,11 @@
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.FindByNameAsync(UserName);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(UserName);
+            }
 
             var isCodeValid = await _userManager.VerifyTwoFactorTokenAsync(
                 user, TokenOptions.DefaultAuthenticatorProvider, Code);
@@ -64,7 +76,7 @@
             user.IsMfaEnabled = true;
             await _userManager.UpdateAsync(user);
 
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Account/Login");
         }
 
         private string GenerateQrCode(string email, string key)

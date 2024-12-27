@@ -85,18 +85,17 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
-                await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                //await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 if (identityUser.IsMfaEnabled)
                 {
-                    return RedirectToPage("VerifyAuthenticator");
+                    return RedirectToPage("VerifyAuthenticator", new { UserName = identityUser.Email, Input.RememberMe });
                 }
-                // Check if MFA is enabled & uncomment below code
-                if (!identityUser.IsMfaEnabled)
+                else
                 {
                     // Sign in user partially to access EnableAuthenticator page
-                    return RedirectToPage("/Account/EnableAuthenticator");
+                    return RedirectToPage("/Account/EnableAuthenticator", new { UserName = identityUser.Email });
                 }
-                await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                //await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 return RedirectToPage("/Index");
 
                 // This doesn't count login failures towards account lockout
