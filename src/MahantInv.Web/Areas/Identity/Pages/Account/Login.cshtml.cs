@@ -1,4 +1,5 @@
 ﻿using MahantInv.Infrastructure.Identity;
+using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,14 +17,16 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
         private readonly UserManager<MIIdentityUser> _userManager;
         private readonly SignInManager<MIIdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly GoogleCaptchaService _captchaService;
 
         public LoginModel(SignInManager<MIIdentityUser> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<MIIdentityUser> userManager)
+            UserManager<MIIdentityUser> userManager, GoogleCaptchaService captchaService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _captchaService = captchaService;
         }
 
         [BindProperty]
@@ -47,6 +50,8 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+            [Required]
+            public string gRecaptchaResponse { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -70,10 +75,15 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            //ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             if (ModelState.IsValid)
             {
+                var captchaResult = await _captchaService.VerifyCaptchaAsync(Input.gRecaptchaResponse);
+
+                //if (!captchaResult.Success || captchaResult.Score < 0.5)
+                //{
+                //    // Show visible reCAPTCHA v2 or reject the request
+                //    return Page();
+                //}
                 MIIdentityUser identityUser;
                 identityUser = await _userManager.FindByNameAsync(Input.Email);
                 if (identityUser == null)

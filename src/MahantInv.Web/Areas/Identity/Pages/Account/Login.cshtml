@@ -8,47 +8,50 @@
 <br />
 <div class="row">
     <div class="col-md-4 col-sm-12 offset-md-4 offset-sm-0">
-            <form id="account" method="post">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Log In</h2>
-                        <h5 class="card-subtitle mb-2 text-muted">Use a local account to log in.</h5>
+        <form id="account" method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Log In</h2>
+                    <h5 class="card-subtitle mb-2 text-muted">Use a local account to log in.</h5>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.Email"></label>
+                        <input asp-for="Input.Email" class="form-control form-control-sm" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
-                    <div class="card-body">                        
-                        <div asp-validation-summary="All" class="text-danger"></div>
-                        <div class="form-group">
-                            <label asp-for="Input.Email"></label>
-                            <input asp-for="Input.Email" class="form-control form-control-sm" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Input.Password"></label>
-                            <input asp-for="Input.Password" class="form-control form-control-sm" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label asp-for="Input.RememberMe">
-                                    <input asp-for="Input.RememberMe" />
-                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
-                                </label>
-                            </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" class="form-control form-control-sm" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label asp-for="Input.RememberMe">
+                                <input asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                            </label>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-success">Log in</button>
-                        </div>
-                        @* <div class="form-group">
-                            
+                    <div class="form-group">
+                        <input type="hidden" asp-for="Input.gRecaptchaResponse">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Log in</button>
+                    </div>
+                    @* <div class="form-group">
+
                              <p>
                                 <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                             </p> 
                         </div> *@
-                    </div>
                 </div>
-               
-            </form>
+            </div>
+
+        </form>
     </div>
 
 </div>
@@ -56,4 +59,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+         $(document).ready(function () {
+            $('#account').on('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+                // Generate reCAPTCHA token
+                grecaptcha.execute('6Lc0gKAqAAAAAEQxmKiHtpSyV_WXojjc0ccWbUaK', { action: 'submit' }).then(function (token) {
+                    $('#Input_gRecaptchaResponse').val(token); // Set the token in the hidden field
+                    $('#account')[0].submit(); // Submit the form
+                });
+            });
+        });
+    </script>
 }
