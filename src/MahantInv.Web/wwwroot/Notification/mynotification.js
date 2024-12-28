@@ -82,8 +82,8 @@ class MyNotification {
     }
 
     static async ViewNotificationModal(mthis) {
+        return false;
         if (down) {
-
             $('#NotificationMessages').css('height', '0px');
             $('#NotificationMessages').css('opacity', '0');
             down = false;
