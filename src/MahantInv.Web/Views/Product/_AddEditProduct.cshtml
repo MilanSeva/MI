@@ -43,7 +43,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="@Model.OrderBulkName"></label>
-                            <input type="text" asp-for="@Model.OrderBulkName" class="form-control form-control-sm" placeholder="Order Bulk Name" />
+                            <select id="OrderBulkName" class="form-control form-control-sm" placeholder="OrderBulkName" multiple>
+                                @foreach (var item in (ViewBag.OrderBulkNames as ICollection<string>))
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                            @* <input type="text" asp-for="@Model.OrderBulkName" class="form-control form-control-sm" placeholder="Order Bulk Name" /> *@
                         </div>
                     </div>
                     <div class="col-md-6">

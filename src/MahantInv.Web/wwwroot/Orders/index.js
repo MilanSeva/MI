@@ -133,7 +133,7 @@ var orderGridOptions = {
     pagination: true,
     paginationAutoPageSize: true,
     animateRows: true,
-    
+
     getRowId: params => {
         return params.data.id;
     },
@@ -283,7 +283,7 @@ class Common {
         //$('#PartyErrorSection').empty();
         //$('#Id').val(model.Id);
         $('#ProductName').val('');
-        $('#Type').val('');
+        $('#Type').val('Both');
         $('#CategoryId').val('');
         $('#City').val('');
         $('#Country').val('');
@@ -314,7 +314,7 @@ class Common {
         var gridDiv = document.querySelector('#ordersdata');
         var state = localStorage.getItem("9427363582ba4ccda0a9aa2fcd422bc77");
         if (state) {
-            orderGridOptions.initialState=JSON.parse(state);
+            orderGridOptions.initialState = JSON.parse(state);
         }
         orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
     }
@@ -330,7 +330,7 @@ class Common {
         })
             .then((response) => response.json())
             .then(data => {
-               
+
                 orderGridAPI.setGridOption("rowData", data);
             })
             .catch(error => {
@@ -341,7 +341,7 @@ class Common {
                 //});
             });
     }
-    
+
 
     static BindValuesToOrderForm(model) {
         $('#OrderErrorSection').empty();
@@ -360,7 +360,7 @@ class Common {
         $('#NetAmount').val(model.NetAmount);
         $('#OrderTransactionSummarySectionPaidAmount').html(0);
         $('#OrderTransactionSummarySectionPendingAmount').html(model.NetAmount ?? 0);
-        
+
         if (model.OrderTransactions.length == 0) {
             $('#OrderTransactionBody').html("<tr><td colspan='5' class='text-center alert alert-info'>Transaction(s) will be appear here.</td></tr>");
         }
@@ -468,9 +468,12 @@ class Common {
                 return repo.name
             }
         });
-    } 
+    }
     static SetBulkNameAndQuantity() {
-        $('#BulkNameQuantityLabel').html(bulkOrderName);
+        bulkOrderName = bulkOrderName == null || bulkOrderName == "" ? "-" : bulkOrderName;
+        bulkOrderQuantity = bulkOrderQuantity == null || bulkOrderQuantity == "" ? "-" : bulkOrderQuantity;
+        let bulkDispLabel = bulkOrderName + "(" + bulkOrderQuantity + ")";
+        $('#BulkNameQuantityLabel').html(bulkDispLabel);
     }
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
@@ -537,7 +540,6 @@ class Common {
                 else {
                     $('#ReceivedQuantity').attr('readonly', false);
                 }
-                console.log();
                 if (data.status == 'Ordered') {
                     $('.cancelbtn').show();
                     $('.saveorderbtn').show();

@@ -317,12 +317,18 @@ class Common {
         $('#Name').val(model.Name);
         $('#Description').val(model.Description);
         $('#Size').val(model.Size);
-        $('#OrderBulkName').val(model.OrderBulkName);
+        //$('#OrderBulkName').val(model.OrderBulkName);
         $('#OrderBulkQuantity').val(model.OrderBulkQuantity);
         $('#UnitTypeCode').val(model.UnitTypeCode);
         $('#ReorderLevel').val(model.ReorderLevel);
         $('#IsDisposable').prop("checked", model.IsDisposable);
         $('#Company').val(model.Company);
+        if (model.OrderBulkName != null) {
+            $('#OrderBulkName').val(model.OrderBulkName).trigger('change');
+        }
+        else {
+            $('#OrderBulkName').val('').trigger('change');
+        }
         if (model.StorageNames != null) {
             $('#StorageNames').val(model.StorageNames.split(',')).trigger('change');
         }
@@ -342,7 +348,7 @@ class Common {
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
-        let OrderBulkName = $('#OrderBulkName').val();
+        let OrderBulkName = $('#OrderBulkName option:selected').val();
         let OrderBulkQuantity = $('#OrderBulkQuantity').val();
         let ReorderLevel = $('#ReorderLevel').val();
         let IsDisposable = $('#IsDisposable').is(':checked');
@@ -435,6 +441,14 @@ class Common {
             //theme: "bootstrap4",
             closeOnSelect: true,
             tags: true
+        });
+        $('#OrderBulkName').select2({
+            dropdownParent: $('#AddEditProduct'),
+            placeholder: 'Search OrderBulkName',
+            //theme: "bootstrap4",
+            closeOnSelect: true,
+            tags: true,
+            maximumSelectionLength: 1
         });
 
         $(document).on('select2:open', () => {

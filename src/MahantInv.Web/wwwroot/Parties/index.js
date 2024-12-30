@@ -142,7 +142,7 @@ class Common {
         $('#' + target).modal('show');
         if (id == 0) {
             $('#ModalTitle').html('Add Party');
-            Common.BindValuesToPartyForm(new Party(0, null, null, null, null, null, null, null, null, null, null, null, null));
+            Common.BindValuesToPartyForm(new Party(0, null, "Both", null, null, null, null, null, null, null, null, null, null));
         }
         else {
             $('#ModalTitle').html('Edit Party');
@@ -258,7 +258,7 @@ class Common {
     }
     static async InitSelect2() {
         $('#Country').select2({
-            placeholder: 'Search Counry',
+            placeholder: 'Search Country',
             data: Common.BindSelectData(),
             theme: "bootstrap4",
             dropdownParent: $("#AddEditParty")
