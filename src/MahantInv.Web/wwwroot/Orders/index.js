@@ -507,6 +507,7 @@ class Common {
             }
             let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
+            $('#NewOrderBtn').click();
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -611,6 +612,7 @@ class Common {
             //orderGridAPI.applyTransaction({ update: [response.data] });
             let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
+            $('#NewOrderBtn').click();
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -769,7 +771,24 @@ class Common {
         let DiscountAmount = Discount.toString().indexOf('%') == -1 ? Discount : (TotalAmount * parseFloat(Discount)) / 100;
         let NetTax = ((TotalAmount - DiscountAmount) * Tax) / 100;
         let NetAmount = (TotalAmount - DiscountAmount) + NetTax;
-        return new DiscountAndNetPay(DiscountAmount, NetAmount);
+        $('#DiscountAmount').val(DiscountAmount);
+        $('#NetAmount').val(NetAmount);
+    }
+    static CalculatePricePerItem(mthis) {
+        let Quantity = $('#ReceivedQuantity').val() || $('#Quantity').val() || 0;
+        let NetAmount = $('#NetAmount').val();
+        NetAmount = parseFloat(NetAmount);
+        let Tax = $('#Tax').val() || 0;
+        let Discount = $('#Discount').val() || '0';
+        let DiscountAmount = Discount.toString().indexOf('%') == -1 ? Discount : (NetAmount * parseFloat(Discount)) / 100;
+        Quantity = Quantity == null ? 1 : Quantity;
+        DiscountAmount = DiscountAmount == null ? 0 : DiscountAmount;
+        Quantity = parseFloat(Quantity);
+        DiscountAmount = parseFloat(DiscountAmount);
+        let actualAmount = NetAmount / (1 + (Tax / 100));
+        let PricePerItem = (actualAmount + DiscountAmount) / Quantity;
+        $('#PricePerItem').val(parseFloat(PricePerItem).toFixed(2));
+        //return PricePerItem;
     }
     static async InitCountable() {
         $(".countable").on("input", function () {
@@ -779,11 +798,17 @@ class Common {
                     $('#Quantity').val(bulkQuantity * bulkOrderQuantity);
                 }
             }
-            var result = Common.CalculateDiscountAndNetPay();
-            $('#DiscountAmount').val(result.DiscountAmount);
-            $('#NetAmount').val(result.NetAmount);
+            Common.CalculateDiscountAndNetPay();
+
             Common.UpdateOrderTransactionGrid();
         });
+    }
+    static async InitPricePerItemInput(mthis) {
+        Common.CalculateDiscountAndNetPay();
+    }
+    static async InitNetAmountInput(mthis) {
+
+        Common.CalculatePricePerItem();
     }
     static async SaveParty(mthis) {
         $('#PartyErrorSection').empty();
