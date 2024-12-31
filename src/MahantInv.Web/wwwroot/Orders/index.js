@@ -771,8 +771,8 @@ class Common {
         let DiscountAmount = Discount.toString().indexOf('%') == -1 ? Discount : (TotalAmount * parseFloat(Discount)) / 100;
         let NetTax = ((TotalAmount - DiscountAmount) * Tax) / 100;
         let NetAmount = (TotalAmount - DiscountAmount) + NetTax;
-        $('#DiscountAmount').val(DiscountAmount);
-        $('#NetAmount').val(NetAmount);
+        $('#DiscountAmount').val(parseFloat(DiscountAmount).toFixed(2));
+        $('#NetAmount').val(parseFloat(NetAmount).toFixed(2));
     }
     static CalculatePricePerItem(mthis) {
         let Quantity = $('#ReceivedQuantity').val() || $('#Quantity').val() || 0;
