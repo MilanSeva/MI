@@ -17,6 +17,8 @@ namespace MahantInv.Infrastructure.Entities
         public string? PicturePath { get; set; }
         [Required(ErrorMessage = "Product Name field is required"), Display(Name = "Product Name")]
         public string Name { get; set; }
+        [Required(ErrorMessage = "Product Gujarati Name field is required"), Display(Name = "Product Gujarati Name")]
+        public string GujaratiName { get; set; }
         [Required(ErrorMessage = "Size field is required"), Display(Name = "Size")]
         public decimal? Size { get; set; }
         public string Description { get; set; }

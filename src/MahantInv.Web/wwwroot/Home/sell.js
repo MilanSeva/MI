@@ -234,7 +234,7 @@ class Common {
                     "<div class='select2-result-repository clearfix'>" +
                     "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath +"'></div>" +
                     "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'>"+repo.name+"</div>" +
+                    "<div class='select2-result-repository__title'>"+repo.gujaratiName+"</div>" +
                     "<div class='select2-result-repository__description'>"+repo.description+"</div>" +
                     "<div class='select2-result-repository__statistics'>" +
                     "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode +"</div>" +

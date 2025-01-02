@@ -11,10 +11,21 @@
             <div class="modal-body">
                 <div id="ProductErrorSection" class="text-danger"></div>
                 <input type="hidden" asp-for="@Model.Id" />
-                <div class="form-group">
-                    <label asp-for="@Model.Name"></label>
-                    <input asp-for="@Model.Name" class="form-control form-control-sm" placeholder="Name" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="@Model.Name"></label>
+                            <input asp-for="@Model.Name" class="form-control form-control-sm" placeholder="Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="@Model.GujaratiName"></label>
+                            <input asp-for="@Model.GujaratiName" class="form-control form-control-sm" placeholder="ગુજરાતી નામ" />
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-group">
                     <label asp-for="@Model.Description"></label>
                     <textarea rows="3" asp-for="@Model.Description" class="form-control form-control-sm" placeholder="Description"></textarea>

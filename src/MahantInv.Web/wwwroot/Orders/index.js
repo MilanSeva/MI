@@ -171,9 +171,10 @@ function onStateUpdated(event) {
     localStorage.setItem("9427363582ba4ccda0a9aa2fcd422bc77", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
+        this.GujaratiName = Common.ParseValue(GujaratiName);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
@@ -263,6 +264,7 @@ class Common {
         $('#ProductErrorSection').empty();
         //$('#Id').val(model.Id);
         $('#Name').val('');
+        $('#GujaratiName').val('');
         $('#Description').val('');
         $('#Size').val('');
         $('#UnitTypeCode').val('');
@@ -449,7 +451,7 @@ class Common {
                     "<div class='select2-result-repository clearfix'>" +
                     "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath + "'></div>" +
                     "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'>" + repo.name + "</div>" +
+                    "<div class='select2-result-repository__title'>" + repo.gujaratiName + "</div>" +
                     "<div class='select2-result-repository__description'>" + repo.description + "</div>" +
                     "<div class='select2-result-repository__statistics'>" +
                     "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode + "</div>" +
@@ -865,6 +867,7 @@ class Common {
     static async SaveProduct(mthis) {
         $('#ProductErrorSection').empty();
         let Name = $('#ProductName').val();
+        let GujaratiName = $('#GujaratiName').val();
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
@@ -874,7 +877,7 @@ class Common {
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(0, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(0, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',

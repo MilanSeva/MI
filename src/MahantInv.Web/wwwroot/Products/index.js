@@ -115,6 +115,9 @@ var productGridAPIOptions = {
             headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
         },
         {
+            headerName: 'ગુજરાતી નામ', field: 'gujaratiName', filter: 'agTextColumnFilter', headerTooltip: 'Gujarati Name'
+        },
+        {
             headerName: 'Company', field: 'company', filter: 'agTextColumnFilter', headerTooltip: 'Company'
         },
         {
@@ -236,9 +239,10 @@ function onStateUpdated(event) {
     localStorage.setItem("f840074316684a1d9074edcd72023fb3", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
+        this.GujaratiName = Common.ParseValue(GujaratiName);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
@@ -276,7 +280,7 @@ class Common {
         $('#' + target).modal('show');
         if (id == 0) {
             $('#ModalTitle').html('Add Product');
-            Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null));
+            Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null, null));
         }
         else {
             $('#ModalTitle').html('Edit Product');
@@ -315,6 +319,7 @@ class Common {
         $('#ProductErrorSection').empty();
         $('#Id').val(model.Id);
         $('#Name').val(model.Name);
+        $('#GujaratiName').val(model.GujaratiName);
         $('#Description').val(model.Description);
         $('#Size').val(model.Size);
         //$('#OrderBulkName').val(model.OrderBulkName);
@@ -345,6 +350,7 @@ class Common {
         $('#ProductErrorSection').empty();
         let Id = $('#Id').val();
         let Name = $('#Name').val();
+        let GujaratiName = $('#GujaratiName').val();
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
@@ -354,7 +360,7 @@ class Common {
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -401,7 +407,7 @@ class Common {
             },
         }).then(response => { return response.json() })
             .then(data => {
-                Common.BindValuesToProductForm(new Product(data.id, data.name, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
+                Common.BindValuesToProductForm(new Product(data.id, data.name, data.gujaratiName, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
             })
             .catch(error => {
                 console.log(error);
