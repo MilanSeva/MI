@@ -20,23 +20,23 @@ var partyGridOptions = {
             headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
         },
         {
-            headerName: 'Payer Type', field: 'type', filter: 'agSetColumnFilter', headerTooltip: 'Payer Type'
+            headerName: 'Payer Type', field: 'type', filter: 'agTextColumnFilter', headerTooltip: 'Payer Type'
         },
         {
-            headerName: 'Category', field: 'category', filter: 'agSetColumnFilter', headerTooltip: 'Category'
+            headerName: 'Category', field: 'category', filter: 'agTextColumnFilter', headerTooltip: 'Category'
         },
         {
             headerName: 'City', field: 'city', filter: 'agTextColumnFilter', headerTooltip: 'City'
         },
         {
-            headerName: 'Country', field: 'country', filter: 'agSetColumnFilter', headerTooltip: 'Country'
+            headerName: 'Country', field: 'country', filter: 'agTextColumnFilter', headerTooltip: 'Country'
         },
         {
             headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     rowClassRules: {
         'sick-days-warning': function (params) {
             return params.data.currentStock < params.data.reorderLevel;
@@ -44,9 +44,6 @@ var partyGridOptions = {
     },
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -67,34 +64,6 @@ var partyGridOptions = {
     suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer
-    },
-    columnTypes: {
-        numberColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 50,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        },
-        dateColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 130,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        }
     },
     onGridReady: function (params) {
         partyGridAPI.sizeColumnsToFit();
@@ -154,6 +123,16 @@ class Common {
 
         var gridDiv = document.querySelector('#partiesdata');
         partyGridAPI = new agGrid.createGrid(gridDiv, partyGridOptions);
+        partyGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
         fetch(baseUrl + 'api/parties')
             .then((response) => response.json())
             .then(data => {

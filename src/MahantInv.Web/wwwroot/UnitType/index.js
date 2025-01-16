@@ -27,7 +27,7 @@ var unitTypeGridOptions = {
         //    cellRenderer: 'actionCellRenderer',
         //}
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     rowClassRules: {
         'sick-days-warning': function (params) {
             return params.data.currentStock < params.data.reorderLevel;
@@ -35,9 +35,6 @@ var unitTypeGridOptions = {
     },
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -100,6 +97,16 @@ class Common {
 
         var gridDiv = document.querySelector('#unittypedata');
         unitTypeGridAPI = new agGrid.createGrid(gridDiv, unitTypeGridOptions);
+        unitTypeGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
         fetch(baseUrl + 'api/unittypes')
             .then((response) => response.json())
             .then(data => {

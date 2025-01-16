@@ -37,7 +37,8 @@ var orderGridOptions = {
     // define grid columns
     columnDefs: [
         {
-            headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name', cellRenderer: "agGroupCellRenderer"
+            headerName: 'Product', field: 'product', filter: 'agTextColumnFilter', headerTooltip: 'Name'
+            //, cellRenderer: "agGroupCellRenderer"
         },
         {
             headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
@@ -52,7 +53,7 @@ var orderGridOptions = {
             headerName: 'Net Amount', field: 'netAmount', filter: 'agNumberColumnFilter', headerTooltip: 'Net Amount'
         },
         {
-            headerName: 'Payment Status', field: 'paymentStatus', filter: 'agSetColumnFilter', headerTooltip: 'Payment Status',
+            headerName: 'Payment Status', field: 'paymentStatus', filter: 'agTextColumnFilter', headerTooltip: 'Payment Status',
             cellClassRules: {
                 "text-danger": (params) => params.value == "Unpaid",
                 "text-warning": (params) => params.value == "Partially Paid",
@@ -71,7 +72,7 @@ var orderGridOptions = {
             headerName: 'Seller', field: 'seller', filter: 'agTextColumnFilter', headerTooltip: 'Seller',
         },
         {
-            headerName: 'Order Status', field: 'status', filter: 'agSetColumnFilter', headerTooltip: 'Status',
+            headerName: 'Order Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status',
             cellRenderer: function (params) {
                 if (params.value == 'Ordered') {
                     return '<button type="button" class="btn btn-link btn-sm" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">' + params.value + '</button>'
@@ -94,12 +95,9 @@ var orderGridOptions = {
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -108,27 +106,27 @@ var orderGridOptions = {
         //autoHeight: true,
         floatingFilter: true,
     },
-    masterDetail: true,
-    detailRowAutoHeight: true,
-    detailCellRendererParams: {
-        suppressDetailGrid: true // This ensures detail rows are collapsed by default
-    },
-    detailCellRendererParams: {
-        detailGridOptions: {
-            columnDefs: [
-                { field: "party" },
-                { field: "paymentType" },
-                { field: "amount" },
-                { field: "paymentDate" },
-            ],
-            defaultColDef: {
-                flex: 1,
-            },
-        },
-        getDetailRowData: (params) => {
-            params.successCallback(params.data.orderTransactions);
-        },
-    },
+    //masterDetail: true,
+    //detailRowAutoHeight: true,
+    //detailCellRendererParams: {
+    //    suppressDetailGrid: true // This ensures detail rows are collapsed by default
+    //},
+    //detailCellRendererParams: {
+    //    detailGridOptions: {
+    //        columnDefs: [
+    //            { field: "party" },
+    //            { field: "paymentType" },
+    //            { field: "amount" },
+    //            { field: "paymentDate" },
+    //        ],
+    //        defaultColDef: {
+    //            flex: 1,
+    //        },
+    //    },
+    //    getDetailRowData: (params) => {
+    //        params.successCallback(params.data.orderTransactions);
+    //    },
+    //},
     suppressRowTransform: true,
     pagination: true,
     paginationAutoPageSize: true,
@@ -319,6 +317,16 @@ class Common {
             orderGridOptions.initialState = JSON.parse(state);
         }
         orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
+        orderGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
     }
 
     static LoadDataInGrid(startDate, endDate) {

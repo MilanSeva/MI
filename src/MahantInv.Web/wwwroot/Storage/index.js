@@ -20,14 +20,14 @@ var storageGridOptions = {
             headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
         },
         {
-            headerName: 'Status', field: 'status', filter: 'agSetColumnFilter', headerTooltip: 'Status'
+            headerName: 'Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status'
         },
         {
             headerName: '', field: 'id', headerTooltip: 'Action', width: 80, suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     rowClassRules: {
         'sick-days-warning': function (params) {
             return params.data.currentStock < params.data.reorderLevel;
@@ -35,9 +35,6 @@ var storageGridOptions = {
     },
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -58,34 +55,6 @@ var storageGridOptions = {
     suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer
-    },
-    columnTypes: {
-        numberColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 50,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        },
-        dateColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 130,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        }
     },
     onGridReady: function (params) {
         storageGridAPI.sizeColumnsToFit();
@@ -133,6 +102,16 @@ class Common {
 
         var gridDiv = document.querySelector('#storagedata');
         storageGridAPI = new agGrid.createGrid(gridDiv, storageGridOptions);
+        storageGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
         fetch(baseUrl + 'api/storages')
             .then((response) => response.json())
             .then(data => {                

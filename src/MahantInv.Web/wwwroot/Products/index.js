@@ -141,7 +141,7 @@ var productGridAPIOptions = {
             field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level'
         },
         {
-            headerName: 'Is Disposable?', field: 'disposable', filter: 'agSetColumnFilter', headerTooltip: 'Is Disposable'
+            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable'
         },
         {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
@@ -151,7 +151,7 @@ var productGridAPIOptions = {
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     //rowClassRules: {
     //    'sick-days-warning': function (params) {
     //        return params.data.currentStock < params.data.reorderLevel;
@@ -159,9 +159,6 @@ var productGridAPIOptions = {
     //},
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -171,15 +168,12 @@ var productGridAPIOptions = {
         floatingFilter: true,
     },
     animateRows: true,
-    rowSelection: 'single',
+    rowSelection: {
+        mode: 'singleRow',
+    },
     pagination: true,
     paginationAutoPageSize: true,
-    animateRows: true,
-    defaultColGroupDef: {
-        marryChildren: true
-    },
     onCellClicked: onCellClickedEvent,
-    //onSelectionChanged: onSelectionChanged,
     getRowId: params => {
         return params.data.id;
     },
@@ -187,34 +181,6 @@ var productGridAPIOptions = {
     components: {
         actionCellRenderer: ActionCellRenderer,
         imageCellRenderer: ImageCellRenderer
-    },
-    columnTypes: {
-        numberColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 50,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        },
-        dateColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 130,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        }
     },
     onGridReady: function (params) {
         productGridAPI.sizeColumnsToFit();
@@ -298,6 +264,17 @@ class Common {
             productGridAPIOptions.initialState = JSON.parse(state);
         }
         productGridAPI = new agGrid.createGrid(gridDiv, productGridAPIOptions);
+        productGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
+
         fetch(baseUrl + 'api/products')
             .then((response) => response.json())
             .then(data => {
