@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +40,14 @@ services.AddControllers(options =>
 });
 services.AddControllers(options => { options.Filters.Add<HttpGlobalExceptionFilter>(); });
 string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB");
-
+//Db Connection
+builder.Services.AddTransient<DbConnection>(sp =>
+{
+    var dbProviderFactory = SqliteFactory.Instance;
+    var connection = dbProviderFactory.CreateConnection();
+    connection.ConnectionString = connectionString;
+    return connection;
+});
 services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
     options =>
@@ -114,6 +123,7 @@ builder.Services.AddTransient<IProductUsageRepository, ProductUsageRepository>()
 builder.Services.AddTransient<IStorageRepository, StorageRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient<GoogleCaptchaService>();
+builder.Services.AddScoped<IAdHocRepo, AdHocRepo>();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 //builder.Host.ConfigureContainer<ContainerBuilder>(cb => cb.Populate(builder.Services));
 // Register Autofac modules
@@ -143,7 +153,7 @@ using (var scope = app.Services.CreateScope())
 {
     var seedService = scope.ServiceProvider;
     var context = seedService.GetRequiredService<MIDbContext>();
-    context.Database.EnsureCreated();
+    await context.Database.EnsureCreatedAsync();
 
     var userManager = seedService.GetRequiredService<UserManager<MIIdentityUser>>();
     var roleManager = seedService.GetRequiredService<RoleManager<IdentityRole>>();

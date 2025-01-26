@@ -73,5 +73,9 @@ namespace MahantInv.Web.Controllers
         {
             return View();
         }
+        public IActionResult Users()
+        {
+            return View();
+        }
     }
 }

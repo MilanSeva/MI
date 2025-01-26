@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Query";
+}
+
+<!-- Page Heading -->
+<div class="d-sm-flex justify-content-md-center align-self-center mb-4">
+    <h3 class="h3 mb-0 text-gray-800">
+        Sql Query
+        <button type="button" class="btn btn-outline-success float-end ms-5" title="Download Excel" onclick="Report.DownloadExcel(this)">
+            Download <i class="fa-solid fa-file-excel"></i>
+        </button>
+    </h3>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <table id="" class="table table-bordered table-sm">
+            <tr>
+                <th>Tabel Name</th>
+            </tr>
+            @foreach (var name in ViewBag.Tables)
+            {
+                <tr>
+                    <td>@name</td>
+                </tr>
+            }
+        </table>
+
+    </div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="fa9f3be62c748689d5b041dadf4ccf9" method="post">
+                    <textarea class="form-control" name="query" id="query" rows="3">@ViewBag?.Query</textarea>
+                    <button class="btn btn-primary mt-1" id="run" onclick="Report.ApplyAGGrid()" type="button"> Run</button>
+                    <div id="resultGrid" style="width:100%;" class="ag-theme-balham mt-2"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/js/report.js" asp-append-version="true"></script>
+    <script>
+
+        var observe;
+        if (window.attachEvent) {
+            observe = function (element, event, handler) {
+                element.attachEvent('on' + event, handler);
+            };
+        }
+        else {
+            observe = function (element, event, handler) {
+                element.addEventListener(event, handler, false);
+            };
+        }
+        function initTextArea() {
+            var text = document.getElementById('query');
+            function resize() {
+                text.style.height = 'auto';
+                text.style.height = text.scrollHeight + 'px';
+            }
+            /* 0-timeout to get the already changed text */
+            function delayedResize() {
+                window.setTimeout(resize, 0);
+            }
+            observe(text, 'change', resize);
+            observe(text, 'cut', delayedResize);
+            observe(text, 'paste', delayedResize);
+            observe(text, 'drop', delayedResize);
+            observe(text, 'keydown', delayedResize);
+
+            resize();
+            text.focus();
+        }
+        jQuery(document).ready(async function () {
+            initTextArea();
+        });
+    </script>
+}

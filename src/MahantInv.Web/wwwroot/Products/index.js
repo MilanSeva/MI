@@ -168,16 +168,16 @@ var productGridAPIOptions = {
         floatingFilter: true,
     },
     animateRows: true,
-    rowSelection: {
-        mode: 'singleRow',
-    },
+    //rowSelection: {
+    //    mode: 'singleRow',
+    //},
     pagination: true,
     paginationAutoPageSize: true,
     onCellClicked: onCellClickedEvent,
     getRowId: params => {
         return params.data.id;
     },
-    suppressContextMenu: true,
+    //suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer,
         imageCellRenderer: ImageCellRenderer
