@@ -8,16 +8,16 @@ ActionCellRenderer.prototype.init = function (params) {
     // Create the parent container for the buttons
     this.eGui = document.createElement('span');
 
-    // Create the "Edit" button
-    let editBtn = document.createElement('button');
-    editBtn.className = 'btn btn-sm btn-link';
-    editBtn.type = 'button';
-    editBtn.textContent = 'Edit';
-    editBtn.dataset.id = params.data.id; // Add data-id attribute
-    editBtn.dataset.target = 'AddEditProduct';
-    editBtn.onclick = function () {
-        Common.OpenModal(editBtn); // Call the modal opening function
-    };
+    //// Create the "Edit" button
+    //let editBtn = document.createElement('button');
+    //editBtn.className = 'btn btn-sm btn-link';
+    //editBtn.type = 'button';
+    //editBtn.textContent = 'Edit';
+    //editBtn.dataset.id = params.data.id; // Add data-id attribute
+    //editBtn.dataset.target = 'AddEditProduct';
+    //editBtn.onclick = function () {
+    //    Common.OpenModal(editBtn); // Call the modal opening function
+    //};
 
     // Create the "Reset MFA" button
     let resetMfaBtn = document.createElement('button');
@@ -34,8 +34,8 @@ ActionCellRenderer.prototype.init = function (params) {
     });
 
     // Append the buttons to the parent container
-    this.eGui.appendChild(editBtn);
-    this.eGui.appendChild(document.createTextNode(' ')); // Add space between buttons
+    //this.eGui.appendChild(editBtn);
+    //this.eGui.appendChild(document.createTextNode(' ')); // Add space between buttons
     this.eGui.appendChild(resetMfaBtn);
 }
 // Define the handler for Reset MFA
@@ -48,6 +48,7 @@ ActionCellRenderer.prototype.btnClickedHandler = function (data) {
             toastr.success("MFA reset successfully", '', {
                 positionClass: 'toast-top-center'
             });
+            Common.LoadDataInGrid();
         })
         .catch(error => {
             console.log('err:', error);
@@ -125,7 +126,14 @@ var productUsageGridOptions = {
                 <h5 class="text-center"><b>Data will be appear here.</b></h5>
             </div>`
 };
-
+class AddUserDto {
+    constructor(UserName, Email, Password, ConfirmPassword) {
+        this.UserName = UserName;
+        this.Email = Email;
+        this.Password = Password;
+        this.ConfirmPassword = ConfirmPassword;
+    }
+}
 class Common {
 
     static ParseValue(val) {
@@ -137,23 +145,18 @@ class Common {
         return ($(window).innerHeight() - 150) - decreaseTableHeight;
     };
 
+    static BindValuesToUserForm(user) {
+        $('#UserName').val(user.UserName);
+        $('#Email').val(user.Email);
+        $('#Password').val(user.Password);
+        $('#ConfirmPassword').val(user.ConfirmPassword);
+    }
     static OpenModal(mthis) {
-        let id = $(mthis).data('id');
         let target = $(mthis).data('target');
         $('#' + target).modal('show');
-        if (id == 0) {
-            $('#ModalTitle').html('Add Product');
-            Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null));
-        }
-        else {
-            $('#ModalTitle').html('Edit Product');
-            Common.GetProductById(id);
-        }
+        Common.BindValuesToUserForm(new AddUserDto(null, null, null, null));
     }
-    static ResetGrid(mthis) {
-        localStorage.removeItem('612bd1bf907e4d08a2a86799e193ecfb');
-        window.location.reload();
-    }
+
     static ApplyAGGrid() {
 
         var gridDiv = document.querySelector('#usergrid');
@@ -168,6 +171,10 @@ class Common {
                 "dark-red",
             ));
         document.body.dataset.agThemeMode = "dark-red";
+
+        Common.LoadDataInGrid();
+    }
+    static LoadDataInGrid() {
         fetch(baseUrl + 'api/user/all')
             .then((response) => response.json())
             .then(data => {
@@ -180,9 +187,51 @@ class Common {
                 //    positionClass: 'toast-top-center'
                 //});
             });
-
     }
 
+    static async SaveUser(mthis) {
+        $('#AddUserErrorSection').empty();
+        let UserName = $('#UserName').val();
+        let Email = $('#Email').val();
+        let Password = $('#Password').val();
+        let ConfirmPassword = $('#ConfirmPassword').val();
+        let user = new AddUserDto(UserName, Email, Password, ConfirmPassword);
+
+        var response = await fetch(baseUrl + 'api/user/save', {
+            method: 'POST',
+            body: JSON.stringify(user),
+            headers: {
+                //'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => { return response.json() });
+
+        if (response.status > 399 && response.status < 500) {
+            if (response != null) {
+                var errorHtml = "";
+                $.each(response.errors, function (index, element) {
+                    errorHtml += element[0] + '<br/>';
+                });
+                $('#AddUserErrorSection').html(errorHtml);
+                return;
+            }
+        }
+        if (response.success) {
+            toastr.success("User Saved", '', { positionClass: 'toast-top-center' });
+            let target = $(mthis).data('target');
+            $('#' + target).modal('hide');
+            Common.LoadDataInGrid();
+            return;
+        }
+        if (response.success == false) {
+            var errorHtml = "";
+            $.each(response.errors, function (index, element) {
+                errorHtml += element + '<br/>';
+            });
+            $('#AddUserErrorSection').html(errorHtml);
+        }
+    }
+    
     static init() {
         $('#usergrid').height(Common.calcDataTableHeight(27));
     }

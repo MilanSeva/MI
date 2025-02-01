@@ -24,7 +24,7 @@ namespace MahantInv.Web.Controllers
         }
         private bool IsSystemUser()
         {
-            return User.Identity.Name.Equals("system", System.StringComparison.OrdinalIgnoreCase);
+            return User.Identity.Name.Equals("msystem", System.StringComparison.OrdinalIgnoreCase) || User.Identity.Name.Equals("system", System.StringComparison.OrdinalIgnoreCase);
         }
         [HttpPost]
         public async Task<IActionResult> fa9f3be62c748689d5b041dadf4ccf9([FromBody] string query)

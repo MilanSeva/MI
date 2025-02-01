@@ -14,12 +14,11 @@ namespace MahantInv.Infrastructure.Dtos.User
         public string Email { get; set; }
         public string IsMfaEnabled { get; set; }
     }
-    public class UserAddEditDto
+    public class AddUserDto
     {
-        public string Id { get; set; }
         [Required]
-        [Display(Name="User Name")]
-        [StringLength(100, ErrorMessage = "User Name field exceeds the length.")]
+        [Display(Name = "User Name")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
         public string UserName { get; set; }
         [Required]
         [EmailAddress]
@@ -30,8 +29,11 @@ namespace MahantInv.Infrastructure.Dtos.User
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        public string Password { get; set; }
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+        ErrorMessage = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.")]
 
+        public string Password { get; set; }
+        [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]

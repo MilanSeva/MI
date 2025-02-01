@@ -4,10 +4,16 @@
 <div class="card bg-dark border-dark">
     <div class="card-header">
         <span class="font-weight-bold text-white">Users</span>
+        <span class="float-end">
+            <button class="btn btn-outline-primary btn-sm" type="button" onclick="Common.OpenModal(this)" data-id="0" data-target="AddUser">
+                <span>New</span>
+            </button>
+        </span>
     </div>
     <div class="card-body ag-theme-balham-auto-dark" id="usergrid">
     </div>
 </div>
+@await Html.PartialAsync("_AddUser", new MahantInv.Infrastructure.Dtos.User.AddUserDto())
 @section Scripts {
     <script src="~/Home/users.js" type="text/javascript" asp-append-version="true"></script>
 }
