@@ -529,6 +529,9 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsMfaEnabled")
                         .HasColumnType("INTEGER");
 

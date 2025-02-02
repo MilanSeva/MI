@@ -44,6 +44,7 @@ namespace MahantInv.Web.Api
                         Id = u.Id,
                         UserName = u.UserName,
                         Email = u.Email,
+                        Status = u.IsActive ? "Active" : "Inactive",
                         IsMfaEnabled = u.IsMfaEnabled ? "Enable" : "Disable"
                     })
                     .ToListAsync();
@@ -107,7 +108,8 @@ namespace MahantInv.Web.Api
                 {
                     Email = request.Email,
                     UserName = request.UserName,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    IsActive = true,
                 }, request.Password);
 
                 return Ok(new { success = true });

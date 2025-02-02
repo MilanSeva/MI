@@ -9,6 +9,7 @@ namespace MahantInv.Infrastructure.Identity
     {
         public string AuthenticatorKey { get; set; }
         public bool IsMfaEnabled { get; set; }
+        public bool IsActive { get; set; }
 
         [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("LastModifiedBy")]

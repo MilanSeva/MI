@@ -23,4 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MahantInv.SharedKernel\MahantInv.SharedKernel.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>

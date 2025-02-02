@@ -32,7 +32,6 @@ namespace MahantInv.Infrastructure.Entities
         [Display(Name = "Is Disposable?")]
         public bool IsDisposable { get; set; }
         public string Company { get; set; }
-        [Required(ErrorMessage = "Storage field is required"), Display(Name = "Storage")]
         public bool Enabled { get; set; }
         public string LastModifiedById { get; set; }
         public DateTime? ModifiedAt { get; set; }

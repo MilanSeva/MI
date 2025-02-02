@@ -7,6 +7,7 @@ using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -23,6 +24,7 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Web.Api
 {
+    [Authorize]
     public class ProductApiController : BaseApiController
     {
         private readonly ILogger<ProductApiController> _logger;

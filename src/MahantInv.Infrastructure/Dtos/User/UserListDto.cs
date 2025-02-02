@@ -13,6 +13,7 @@ namespace MahantInv.Infrastructure.Dtos.User
         public string UserName { get; set; }
         public string Email { get; set; }
         public string IsMfaEnabled { get; set; }
+        public string Status { get; set; }
     }
     public class AddUserDto
     {

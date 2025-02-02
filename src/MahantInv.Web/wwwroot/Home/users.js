@@ -76,6 +76,9 @@ var productUsageGridOptions = {
             headerName: 'Email', field: 'email', filter: 'agTextColumnFilter', headerTooltip: 'Email'
         },
         {
+            headerName: 'Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status'
+        },
+        {
             headerName: 'Is MFA Enabled?', field: 'isMfaEnabled', filter: 'agTextColumnFilter', headerTooltip: 'Is MFA Enabled?'
         },
         {
