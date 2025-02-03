@@ -5,6 +5,7 @@ using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Web.Api
 {
+    [Authorize]
     public class HomeApiController : BaseApiController
     {
         private readonly ILogger<HomeApiController> _logger;

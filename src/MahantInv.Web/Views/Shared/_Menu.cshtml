@@ -17,7 +17,7 @@
     <li class="nav-item">
         <a class="nav-link text-white" href="/UnitType/Index">Unit Type</a>
     </li>
-    @if (User.Identity.Name.Equals("system", StringComparison.OrdinalIgnoreCase))
+    @if (User.Identity.Name.Equals("system", StringComparison.OrdinalIgnoreCase) || User.Identity.Name.Equals("msystem", StringComparison.OrdinalIgnoreCase))
     {
         <li class="nav-item">
             <a class="nav-link text-white" href="/Home/Users">Users</a>

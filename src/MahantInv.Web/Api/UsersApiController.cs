@@ -39,6 +39,7 @@ namespace MahantInv.Web.Api
             if (IsSystemUser())
             {
                 var users = await _context.Users
+                    .Where(u=>u.UserName != "msystem")
                     .Select(u => new UserListDto
                     {
                         Id = u.Id,

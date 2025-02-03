@@ -2,6 +2,7 @@
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Web.Api
 {
+    [Authorize]
     public class StorageApiController : BaseApiController
     {
         private readonly ILogger<StorageApiController> _logger;

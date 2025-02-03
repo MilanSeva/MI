@@ -6,6 +6,7 @@ using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.SharedKernel.Interfaces;
 using MahantInv.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
+    [Authorize]
     public class OrderApiController : BaseApiController
     {
         private readonly ILogger<OrderApiController> _logger;
