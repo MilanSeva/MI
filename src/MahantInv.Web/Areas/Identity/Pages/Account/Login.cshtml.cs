@@ -95,6 +95,11 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
+                if (!identityUser.IsActive)
+                {
+                    ModelState.AddModelError(string.Empty, "Account Deactivated. Please contact Admin.");
+                    return Page();
+                }
                 //await _signInManager.SignInAsync(identityUser, Input.RememberMe);
                 if (identityUser.IsMfaEnabled)
                 {

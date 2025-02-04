@@ -254,7 +254,7 @@ class Common {
         let quantity = $('#UsageQuantity').val();
         let Buyer = $('#BuyersSelect').val();
         let UsageDate = $('#UsageDate').val();
-        var productUsageModel = new ProductUsageModel(productId[0], quantity, Buyer, UsageDate);
+        var productUsageModel = new ProductUsageModel(productId, quantity, Buyer, UsageDate);
         var response = await fetch(baseUrl + 'api/product/usage', {
             method: 'POST',
             body: JSON.stringify(productUsageModel),
