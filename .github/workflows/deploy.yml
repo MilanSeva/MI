@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.AWS_HOST }}
           username: ${{ secrets.AWS_USERNAME }}
-          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          #key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/MI
             git pull origin main
