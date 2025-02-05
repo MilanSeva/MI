@@ -21,6 +21,7 @@ jobs:
           password: ${{ secrets.MI_PASSWORD }}
           key: ${{ secrets.MI_PRIVATE_KEY }}
           port: ${{ secrets.MI_PORT }}
+          passphrase: ${{ secrets.MI_PASSPHRASE }}
           script: |
             whoami
             ls -al
