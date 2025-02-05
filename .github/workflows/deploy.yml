@@ -12,20 +12,18 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: currdir
-        run: |
-            ls
-            whoami
-            
+      
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          #key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.MI_HOST }}
+          username: ${{ secrets.MI_USERNAME }}
+          password: ${{ secrets.MI_PASSWORD }}
+          key: ${{ secrets.MI_PRIVATE_KEY }}
+          port: ${{ secrets.MI_PORT }}
           script: |
+            whoami
+            ls -al
             cd /var/www/MI
             git pull origin main
             dotnet build -c Release
