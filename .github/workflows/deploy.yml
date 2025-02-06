@@ -23,7 +23,7 @@ jobs:
         passphrase: ${{ secrets.MI_PASSPHRASE }}
         script: |
           echo "🔄 Pulling latest code..."
-          cd /home/ubuntu/MI
+          cd /home/ubuntu/GitMI
           git reset --hard
           git pull origin main
 
