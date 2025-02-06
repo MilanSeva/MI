@@ -23,7 +23,7 @@ jobs:
         passphrase: ${{ secrets.MI_PASSPHRASE }}
         script: |
           echo "🔄 Pulling latest code..."
-          cd /home/ubuntu/GitMI
+          cd /home/ubuntu/MI
           git reset --hard
           git pull origin main
 
@@ -31,7 +31,7 @@ jobs:
           dotnet restore
 
           echo "🚀 Building .NET application..."
-          dotnet publish -c Release -o /var/www/MHI
+          dotnet publish -c Release -o /var/www/MI
 
           echo "⚡ Restarting the application..."
           sudo systemctl restart kestrel-miapp.service
