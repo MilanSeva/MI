@@ -1,4 +1,4 @@
-name: Deploy to AWS EC2
+name: Deploy .NET App to EC2
 
 on:
   push:
@@ -10,17 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USERNAME }}
-          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-          script: |
-            cd /var/www/MI
-            git pull origin main
-            dotnet build -c Release
-            sudo systemctl restart kestrel-miapp.service
+    - name: Deploy to EC2 and Build
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.MI_HOST }}
+        username: ${{ secrets.MI_USERNAME }}
+        key: ${{ secrets.MI_PRIVATE_KEY }}
+        port: ${{ secrets.MI_PORT }}
+        passphrase: ${{ secrets.MI_PASSPHRASE }}
+        script: |
+          echo "🔄 Pulling latest code..."
+          cd /home/ubuntu/MI
+          git reset --hard
+          git pull origin main
+          cd src
+          echo "🔧 Restoring dependencies..."
+          dotnet restore
+
+          echo "🚀 Building .NET application..."
+          dotnet publish -c Release -o /var/www/MI
+
+          echo "⚡ Restarting the application..."
+          sudo systemctl restart kestrel-miapp.service
+
+          echo "✅ Deployment completed!"
