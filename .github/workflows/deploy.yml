@@ -3,58 +3,17 @@ name: Deploy .NET App to EC2
 on:
   push:
     branches:
-      - main  # Runs when code is pushed to the 'main' branch
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0'  # Use your project's .NET version
-
-    - name: Restore Dependencies
-      run: dotnet restore
-
-    - name: Build and Publish
-      run: |
-        dotnet publish -c Release -o publish
-        ls -al publish  # List files in publish directory
-
-    - name: Upload Published Files
-      uses: actions/upload-artifact@v4
-      with:
-        name: published-app
-        path: publish/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download Published Files
-      uses: actions/download-artifact@v3
-      with:
-        name: published-app
-        path: publish/
-
-    - name: Deploy to EC2
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.MI_HOST }}
-        username: ${{ secrets.MI_USERNAME }}
-        key: ${{ secrets.MI_PRIVATE_KEY }}
-        port: ${{ secrets.MI_PORT }}
-        passphrase: ${{ secrets.MI_PASSPHRASE }}
-        source: "publish/*"
-        target: "/var/www/MI"
-
-    - name: Restart Application on EC2
+    - name: Deploy to EC2 and Build
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.MI_HOST }}
@@ -63,5 +22,18 @@ jobs:
         port: ${{ secrets.MI_PORT }}
         passphrase: ${{ secrets.MI_PASSPHRASE }}
         script: |
-          echo "✅ Deployment successful! Restarting the service..."
+          echo "🔄 Pulling latest code..."
+          cd /home/ubuntu/MI
+          git reset --hard
+          git pull origin main
+
+          echo "🔧 Restoring dependencies..."
+          dotnet restore
+
+          echo "🚀 Building .NET application..."
+          dotnet publish -c Release -o /var/www/MHI
+
+          echo "⚡ Restarting the application..."
           sudo systemctl restart kestrel-miapp.service
+
+          echo "✅ Deployment completed!"
