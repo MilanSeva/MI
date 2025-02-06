@@ -24,16 +24,18 @@ jobs:
         script: |
           echo "🔄 Pulling latest code..."
           cd /home/ubuntu/MI
-          git reset --hard
           git pull origin main
           cd src
           echo "🔧 Restoring dependencies..."
           dotnet restore
 
+          echo "stop service"
+          sudo systemctl stop kestrel-miapp.service
+          
           echo "🚀 Building .NET application..."
           dotnet publish -c Release -o /var/www/MI
 
           echo "⚡ Restarting the application..."
-          sudo systemctl restart kestrel-miapp.service
+          sudo systemctl start kestrel-miapp.service
 
           echo "✅ Deployment completed!"
