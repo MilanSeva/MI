@@ -30,12 +30,13 @@ jobs:
           dotnet restore
 
           echo "stop service"
-          sudo systemctl stop mi.service
+          systemctl stop mi.service
           
           echo "🚀 Building .NET application..."
           dotnet publish -c Release -o /var/www/MI
 
           echo "⚡ Restarting the application..."
-          sudo systemctl start mi.service
-
+          
+          systemctl daemon-reload
+          systemctl start mi.service
           echo "✅ Deployment completed!"
