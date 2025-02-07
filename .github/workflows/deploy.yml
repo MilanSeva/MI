@@ -30,12 +30,12 @@ jobs:
           dotnet restore
 
           echo "stop service"
-          sudo systemctl stop kestrel-miapp.service
+          sudo systemctl stop mi.service
           
           echo "🚀 Building .NET application..."
           dotnet publish -c Release -o /var/www/MI
 
           echo "⚡ Restarting the application..."
-          sudo systemctl start kestrel-miapp.service
+          sudo systemctl start mi.service
 
           echo "✅ Deployment completed!"
