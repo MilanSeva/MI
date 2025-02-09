@@ -31,7 +31,7 @@
     <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" id="logoutForm" class="form-inline navbar-right">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" class="nav-link text-white">Hello @UserManager.GetUserName(User)!</a>
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Manage" class="nav-link text-white">Hello @UserManager.GetUserName(User)!</a>
             </li>
             <li class="nav-item">
                 <button type="submit" class="btn btn-outline-dark text-white">Logout</button>
