@@ -237,6 +237,29 @@ namespace MahantInv.Web.Api
             string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg" };
             return allowedExtensions.Contains(extension);
         }
+        // Delete Product
+        [HttpDelete("product/delete/{productId}")]
+        public async Task<object> DeleteProduct(int productId)
+        {
+            try
+            {
+                Product product = await _context.Products.FindAsync(productId);
+                if (product == null)
+                {
+                    return BadRequest(new { success = false, errors = new[] { "Product not found" } });
+                }
+                product.Enabled = false;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+                return Ok(new { success = true, data = "Product deleted successfully" });
+            }
+            catch (Exception e)
+            {
+                string GUID = Guid.NewGuid().ToString();
+                _logger.LogError(e, GUID, null);
+                return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
+            }
+        }
     }
 
 }

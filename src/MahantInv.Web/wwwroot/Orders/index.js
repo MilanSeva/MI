@@ -14,10 +14,10 @@ ActionCellRenderer.prototype.init = function (params) {
 
     this.eGui = document.createElement('div');
     if (params.data.status != 'Ordered') {
-        this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">View</button>';
+        this.eGui.innerHTML = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder"><i class="bi bi-eye"></i></a>';
     }
     else {
-        this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">Edit</button>';
+        this.eGui.innerHTML = '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder"><i class="bi bi-pencil-square"></i></a>';
     }
 }
 
@@ -805,6 +805,7 @@ class Common {
             if ($(this).attr('id') === 'BulkNameQuantity') {
                 var bulkQuantity = $(this).val(); // Get the value of BulkNameQuantity
                 if (bulkQuantity >= 0) {
+                    bulkOrderQuantity = bulkOrderQuantity == null || bulkOrderQuantity == "" || bulkOrderQuantity == "-" ? 1 : bulkOrderQuantity;
                     $('#Quantity').val(bulkQuantity * bulkOrderQuantity);
                 }
             }

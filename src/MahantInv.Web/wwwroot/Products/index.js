@@ -5,7 +5,9 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('span');
-    this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct">Edit</button>';
+    var btn = '<a href="#" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct"><i class="bi bi-pencil-square"></i></a>';
+    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '"><i class="bi bi-trash3"></i></a>';
+    this.eGui.innerHTML = btn;
 }
 
 ActionCellRenderer.prototype.getGui = function () {
@@ -147,7 +149,7 @@ var productGridAPIOptions = {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
         },
         {
-            headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
+            headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
     ],
@@ -251,6 +253,32 @@ class Common {
         else {
             $('#ModalTitle').html('Edit Product');
             Common.GetProductById(id);
+        }
+    }
+
+    static DeleteProduct(mthis) {
+        let id = $(mthis).data('id');
+        if (confirm('Are you sure you want to delete this record?')) {
+            fetch(baseUrl + 'api/product/delete/' + id, {
+                method: 'DELETE',
+                headers: {
+                    //'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => { return response.json() })
+                .then(data => {
+                    if (data.success) {
+                        toastr.success("Deleted", '', { positionClass: 'toast-top-center' });
+                        productGridAPI.applyTransaction({ remove: [data.data] });
+                    }
+                    else {
+                        toastr.error(data.errors, '', { positionClass: 'toast-top-center' });
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    toastr.success("Unexpected error", '', { positionClass: 'toast-top-center' });
+                });
         }
     }
     static ResetGrid(mthis) {
