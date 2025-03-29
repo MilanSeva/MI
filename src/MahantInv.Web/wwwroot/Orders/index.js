@@ -14,10 +14,10 @@ ActionCellRenderer.prototype.init = function (params) {
 
     this.eGui = document.createElement('div');
     if (params.data.status != 'Ordered') {
-        this.eGui.innerHTML = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder"><i class="bi bi-eye"></i></a>';
+        this.eGui.innerHTML = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="View"><i class="bi bi-eye"></i></a>';
     }
     else {
-        this.eGui.innerHTML = '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder"><i class="bi bi-pencil-square"></i></a>';
+        this.eGui.innerHTML = '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="Edit"><i class="bi bi-pencil-square"></i></a>';
     }
 }
 
@@ -129,7 +129,8 @@ var orderGridOptions = {
     //},
     suppressRowTransform: true,
     pagination: true,
-    paginationAutoPageSize: true,
+    paginationPageSize: 200,
+    //paginationAutoPageSize: true,
     animateRows: true,
 
     getRowId: params => {

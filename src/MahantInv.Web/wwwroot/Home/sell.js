@@ -74,7 +74,7 @@ var productUsageGridOptions = {
     //components: {
     //    actionCellRenderer: ActionCellRenderer
     //},
-    
+
     onStateUpdated: onStateUpdated,
     onGridReady: function (params) {
         productUsageAPI.sizeColumnsToFit();
@@ -200,11 +200,12 @@ class Common {
                 'Content-Type': 'application/json'
             },
         }).then(response => { return response.json() });
-        
+
         $('#ProductUsageSelect').select2({
             placeholder: 'Search Product',
             closeOnSelect: true,
             allowClear: true,
+            minimumResultsForSearch: 10,
             data: response,
             templateResult: function (repo) {
                 if (repo.loading) {
@@ -212,14 +213,14 @@ class Common {
                 }
                 var $container = $(
                     "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath +"'></div>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath + "'></div>" +
                     "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'>"+repo.gujaratiName+"</div>" +
-                    "<div class='select2-result-repository__description'>"+repo.description+"</div>" +
+                    "<div class='select2-result-repository__title'>" + repo.gujaratiName + "</div>" +
+                    "<div class='select2-result-repository__description'>" + repo.description + "</div>" +
                     "<div class='select2-result-repository__statistics'>" +
-                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode +"</div>" +
-                    "<div class='select2-result-repository__stargazers'>"+repo.company+"</div>" +
-                    "<div class='select2-result-repository__watchers'>"+repo.storage+"</div>" +
+                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode + "</div>" +
+                    "<div class='select2-result-repository__stargazers'>" + repo.company + "</div>" +
+                    "<div class='select2-result-repository__watchers'>" + repo.storage + "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>"

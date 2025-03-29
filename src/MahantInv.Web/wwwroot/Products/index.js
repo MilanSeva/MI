@@ -5,8 +5,8 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('span');
-    var btn = '<a href="#" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct"><i class="bi bi-pencil-square"></i></a>';
-    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '"><i class="bi bi-trash3"></i></a>';
+    var btn = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
+    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
     this.eGui.innerHTML = btn;
 }
 
@@ -174,7 +174,8 @@ var productGridAPIOptions = {
     //    mode: 'singleRow',
     //},
     pagination: true,
-    paginationAutoPageSize: true,
+    //paginationAutoPageSize: true,
+    paginationPageSize: 200,
     onCellClicked: onCellClickedEvent,
     getRowId: params => {
         return params.data.id;

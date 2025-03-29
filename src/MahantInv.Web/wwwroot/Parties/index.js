@@ -5,7 +5,7 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('span');
-    this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct">Edit</button>';
+    this.eGui.innerHTML = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
 }
 
 ActionCellRenderer.prototype.getGui = function () {
