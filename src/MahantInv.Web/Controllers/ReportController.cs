@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     public class ReportController : Controller
     {
         private readonly IAdHocRepo _adHocRepo;

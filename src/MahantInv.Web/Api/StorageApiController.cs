@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class StorageApiController : BaseApiController
     {
         private readonly ILogger<StorageApiController> _logger;

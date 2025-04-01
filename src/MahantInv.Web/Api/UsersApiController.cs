@@ -3,24 +3,21 @@ using AutoMapper;
 using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Dtos.User;
 using MahantInv.Infrastructure.Identity;
-using MahantInv.Infrastructure.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
     [Route("api/user")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     public class UsersApiController : BaseApiController
     {
         private readonly MIDbContext _context;

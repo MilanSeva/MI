@@ -1,23 +1,33 @@
-﻿<ul class="navbar-nav me-auto mb-2 mg-lg-0">
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/Home/Sell">Sell</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/Product/Index">Product</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/Order/Index">Purchase</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/Party/Index">Party</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/Storage/Index">Storage</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white" href="/UnitType/Index">Unit Type</a>
-    </li>
-    @if (User.Identity.Name.Equals("system", StringComparison.OrdinalIgnoreCase) || User.Identity.Name.Equals("msystem", StringComparison.OrdinalIgnoreCase))
+﻿@using static MahantInv.Infrastructure.Utility.Meta
+<ul class="navbar-nav me-auto mb-2 mg-lg-0">
+    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Home/Sell">Sell</a>
+        </li>
+    }
+    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User) || User.IsInRole(Roles.ProductView))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Product/Index">Product</a>
+        </li>
+    }
+    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Order/Index">Purchase</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Party/Index">Party</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Storage/Index">Storage</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/UnitType/Index">Unit Type</a>
+        </li>
+    }
+    @if (User.IsInRole(Roles.Admin))
     {
         <li class="nav-item">
             <a class="nav-link text-white" href="/Home/Users">Users</a>

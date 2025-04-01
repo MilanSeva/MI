@@ -20,7 +20,7 @@ using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class OrderApiController : BaseApiController
     {
         private readonly ILogger<OrderApiController> _logger;

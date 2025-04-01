@@ -21,10 +21,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
-    [Authorize]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.ProductView)]
     public class ProductApiController : BaseApiController
     {
         private readonly ILogger<ProductApiController> _logger;
@@ -70,6 +71,7 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         [HttpPost("product/save")]
         public async Task<object> SaveProduct([FromBody] ProductCreateDto input)
         {
@@ -172,7 +174,7 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
-
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         [HttpPost("product/image")]
         public async Task<IActionResult> ChangeProductImage(ChangeProductImageRequest request)
         {
@@ -238,6 +240,7 @@ namespace MahantInv.Web.Api
             return allowedExtensions.Contains(extension);
         }
         // Delete Product
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         [HttpDelete("product/delete/{productId}")]
         public async Task<object> DeleteProduct(int productId)
         {

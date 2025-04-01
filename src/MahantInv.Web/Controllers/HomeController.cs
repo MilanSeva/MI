@@ -34,7 +34,7 @@ namespace MahantInv.Web.Controllers
         {
             return View();
         }
-        [Authorize]
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         public async Task<IActionResult> Sell()
         {
             try
@@ -74,6 +74,7 @@ namespace MahantInv.Web.Controllers
         {
             return View();
         }
+        [Authorize(Roles = Roles.Admin)]
         public IActionResult Users()
         {
             //Create viewbag for roles
