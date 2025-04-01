@@ -303,7 +303,7 @@ class Common {
         $('#PayerId').val(rowData.payerId).trigger('change');
         $('#PaidAmount').val(rowData.paidAmount);
         $('#OrderDate').val(moment(rowData.orderDate).format("YYYY-MM-DD"));
-        $('#ReceivedQuantity').val(rowData.quantity);
+        $('#ReceivedQuantity').val(rowData.receivedQuantity);
         $('#ReceivedDate').val(moment().format("YYYY-MM-DD"));
         $('#Remark').val(rowData.remark);
     }
@@ -810,6 +810,7 @@ class Common {
                     $('#Quantity').val(bulkQuantity * bulkOrderQuantity);
                 }
             }
+            $('#ReceivedQuantity').val($('#Quantity').val());
             Common.CalculateDiscountAndNetPay();
 
             Common.UpdateOrderTransactionGrid();

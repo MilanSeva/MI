@@ -59,7 +59,7 @@ services.AddDbContext<MIDbContext>(
 services.AddControllersWithViews().AddNewtonsoftJson();
 
 services.AddRazorPages();
-services.AddIdentity<MIIdentityUser, IdentityRole>(options =>
+services.AddIdentity<MIIdentityUser, MIIdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
     options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
@@ -156,7 +156,7 @@ using (var scope = app.Services.CreateScope())
     await context.Database.EnsureCreatedAsync();
 
     var userManager = seedService.GetRequiredService<UserManager<MIIdentityUser>>();
-    var roleManager = seedService.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = seedService.GetRequiredService<RoleManager<MIIdentityRole>>();
     var mediator = seedService.GetRequiredService<IMediator>();
     await SeedData.Initialize(seedService, mediator, userManager, roleManager);
 }

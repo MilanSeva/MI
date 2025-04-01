@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {
@@ -75,6 +76,13 @@ namespace MahantInv.Web.Controllers
         }
         public IActionResult Users()
         {
+            //Create viewbag for roles
+            ViewBag.Roles = new SelectList(new List<SelectListItem>
+            {
+                new SelectListItem { Text = Roles.Admin, Value = Roles.Admin },
+                new SelectListItem { Text = Roles.User, Value = Roles.User },
+                new SelectListItem { Text = Roles.ProductView, Value = Roles.ProductView }
+            }, "Value", "Text");
             return View();
         }
     }

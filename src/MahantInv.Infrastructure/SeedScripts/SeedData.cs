@@ -15,7 +15,7 @@ namespace MahantInv.Infrastructure.SeedScripts
 {
     public static class SeedData
     {
-        public static async Task Initialize(IServiceProvider serviceProvider, IMediator mediator, UserManager<MIIdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task Initialize(IServiceProvider serviceProvider, IMediator mediator, UserManager<MIIdentityUser> userManager, RoleManager<MIIdentityRole> roleManager)
         {
             await SeedRoles(roleManager);
             await SeedUsers(userManager);
@@ -62,15 +62,19 @@ namespace MahantInv.Infrastructure.SeedScripts
             }
         }
 
-        private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRoles(RoleManager<MIIdentityRole> roleManager)
         {
             if (!await roleManager.RoleExistsAsync(Meta.Roles.Admin))
             {
-                await roleManager.CreateAsync(new IdentityRole(Meta.Roles.Admin));
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.Admin));
             }
             if (!await roleManager.RoleExistsAsync(Meta.Roles.User))
             {
-                await roleManager.CreateAsync(new IdentityRole(Meta.Roles.User));
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.User));
+            }
+            if (!await roleManager.RoleExistsAsync(Meta.Roles.ProductView))
+            {
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.ProductView));
             }
         }
 

@@ -34,5 +34,26 @@ namespace MahantInv.Infrastructure.Identity
         [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("LastModifiedBy")]
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
+        [Dapper.Contrib.Extensions.Write(false)]
+        //[InverseProperty("UserId")]
+        public virtual ICollection<MIIdentityUserRole> UserRoles { get; set; } = new List<MIIdentityUserRole>();
+
     }
+    public class MIIdentityRole : IdentityRole
+    {
+        public MIIdentityRole() { }
+        public MIIdentityRole(string roleName)
+        {
+            Name = roleName;
+        }
+        public virtual ICollection<MIIdentityUserRole> UserRoles { get; set; }
+    }
+
+    public class MIIdentityUserRole : IdentityUserRole<string>
+    {
+        public virtual MIIdentityUser User { get; set; }
+        public virtual MIIdentityRole Role { get; set; }
+    }
+
 }

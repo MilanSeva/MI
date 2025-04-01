@@ -12,6 +12,7 @@ namespace MahantInv.Infrastructure.Dtos.User
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public string? Role { get; set; }
         public string IsMfaEnabled { get; set; }
         public string Status { get; set; }
     }
@@ -39,5 +40,8 @@ namespace MahantInv.Infrastructure.Dtos.User
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string Role { get; set; }
     }
 }

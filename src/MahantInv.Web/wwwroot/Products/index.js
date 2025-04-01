@@ -114,7 +114,7 @@ var productGridAPIOptions = {
             headerName: 'Img', field: 'picturePath', headerTooltip: 'Image', cellRenderer: "imageCellRenderer"
         },
         {
-            headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
+            headerName: 'Name', field: 'name', wrapText: false, filter: 'agTextColumnFilter', headerTooltip: 'Name'
         },
         {
             headerName: 'ગુજરાતી નામ', field: 'gujaratiName', filter: 'agTextColumnFilter', headerTooltip: 'Gujarati Name'
@@ -185,8 +185,12 @@ var productGridAPIOptions = {
         actionCellRenderer: ActionCellRenderer,
         imageCellRenderer: ImageCellRenderer
     },
+    autoSizeStrategy: {
+        type: 'fitCellContents'
+    },
     onGridReady: function (params) {
-        productGridAPI.sizeColumnsToFit();
+        //productGridAPI.sizeColumnsToFit();
+        productGridAPI.autoSizeAllColumns();
         //const allColumnIds = [];
         //productGridAPIOptions.columnApi.getAllColumns().forEach((column) => {
         //    if (column.colId != 'id')

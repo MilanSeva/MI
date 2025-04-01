@@ -79,6 +79,9 @@ var productUsageGridOptions = {
             headerName: 'Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status'
         },
         {
+            headerName: 'Role', field: 'role', filter: 'agTextColumnFilter', headerTooltip: 'Role'
+        },
+        {
             headerName: 'Is MFA Enabled?', field: 'isMfaEnabled', filter: 'agTextColumnFilter', headerTooltip: 'Is MFA Enabled?'
         },
         {
@@ -130,9 +133,10 @@ var productUsageGridOptions = {
             </div>`
 };
 class AddUserDto {
-    constructor(UserName, Email, Password, ConfirmPassword) {
+    constructor(UserName, Email, Role, Password, ConfirmPassword) {
         this.UserName = UserName;
         this.Email = Email;
+        this.Role = Role;
         this.Password = Password;
         this.ConfirmPassword = ConfirmPassword;
     }
@@ -151,6 +155,7 @@ class Common {
     static BindValuesToUserForm(user) {
         $('#UserName').val(user.UserName);
         $('#Email').val(user.Email);
+        $('#Role').val(user.Role);
         $('#Password').val(user.Password);
         $('#ConfirmPassword').val(user.ConfirmPassword);
     }
@@ -196,9 +201,10 @@ class Common {
         $('#AddUserErrorSection').empty();
         let UserName = $('#UserName').val();
         let Email = $('#Email').val();
+        let Role = $('#Role option:selected').val();
         let Password = $('#Password').val();
         let ConfirmPassword = $('#ConfirmPassword').val();
-        let user = new AddUserDto(UserName, Email, Password, ConfirmPassword);
+        let user = new AddUserDto(UserName, Email, Role, Password, ConfirmPassword);
 
         var response = await fetch(baseUrl + 'api/user/save', {
             method: 'POST',
@@ -209,6 +215,7 @@ class Common {
             },
         }).then(response => { return response.json() });
 
+        console.log(response);
         if (response.status > 399 && response.status < 500) {
             if (response != null) {
                 var errorHtml = "";
@@ -234,7 +241,7 @@ class Common {
             $('#AddUserErrorSection').html(errorHtml);
         }
     }
-    
+
     static init() {
         $('#usergrid').height(Common.calcDataTableHeight(27));
     }

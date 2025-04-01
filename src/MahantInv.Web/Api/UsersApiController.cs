@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,14 +40,17 @@ namespace MahantInv.Web.Api
             if (IsSystemUser())
             {
                 var users = await _context.Users
-                    .Where(u=>u.UserName != "msystem")
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.UserName != "msystem")
                     .Select(u => new UserListDto
                     {
                         Id = u.Id,
                         UserName = u.UserName,
                         Email = u.Email,
                         Status = u.IsActive ? "Active" : "Inactive",
-                        IsMfaEnabled = u.IsMfaEnabled ? "Enable" : "Disable"
+                        IsMfaEnabled = u.IsMfaEnabled ? "Enable" : "Disable",
+                        Role = u.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault()
                     })
                     .ToListAsync();
 
@@ -85,7 +89,7 @@ namespace MahantInv.Web.Api
                     List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
                           .Where(y => y.Count > 0)
                           .ToList();
-                    return BadRequest(errors);
+                    return BadRequest(new { success = false, errors = errors.SelectMany(e => e.Select(r => r.ErrorMessage)) });
                 }
                 List<ModelErrorCollection> newErrors = new();
                 var userName = await _userManager.FindByNameAsync(request.UserName);
@@ -100,20 +104,28 @@ namespace MahantInv.Web.Api
                 }
                 if (!ModelState.IsValid)
                 {
-                    List<ModelErrorCollection> errors = ModelState.Select(x => x.Value.Errors)
+                    List<ModelErrorCollection> errors = ModelState
+                          .Select(x => x.Value.Errors)
                           .Where(y => y.Count > 0)
                           .ToList();
-                    return BadRequest(errors);
+                    return BadRequest(new { success = false, errors = errors.SelectMany(e => e.Select(r => r.ErrorMessage)) });
                 }
-                var user = await _userManager.CreateAsync(new MIIdentityUser
+                MIIdentityUser user = new()
                 {
                     Email = request.Email,
                     UserName = request.UserName,
                     EmailConfirmed = true,
                     IsActive = true,
-                }, request.Password);
+                };
+                var userResult = await _userManager.CreateAsync(user, request.Password);
 
-                return Ok(new { success = true });
+                if (userResult.Succeeded)
+                {
+                    var r = await _userManager.AddToRoleAsync(user, request.Role);
+
+                    return Ok(new { success = true });
+                }
+                return BadRequest(new { success = false, errors = userResult.Errors.Select(e => $"{e.Code}:{e.Description}") });
 
             }
             return Unauthorized();

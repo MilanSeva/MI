@@ -25,6 +25,18 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
+                            <label asp-for="@Model.Role"></label>
+                            <select asp-for="@Model.Role" class="form-control form-control-sm" placeholder="Role">
+                                <option value="">Select Role</option>
+                                @foreach (var item in ViewBag.Roles as SelectList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
                             <label asp-for="@Model.Password"></label>
                             <input type="password" asp-for="@Model.Password" class="form-control form-control-sm" placeholder="Password" />
                         </div>
