@@ -11,7 +11,7 @@
 
         <div class="icon2" id="bell">
             <button class="btn btn-primary" style="background-color:transparent;border:none;" onclick=MyNotification.ViewNotificationModal(this)>
-                <img src="https://i.imgur.com/AC7dgLA.png" alt="" style="width:25px;">
+                <i class="bi bi-bell"></i>
                 <span class="badge badge-danger" style="margin-left:-15px;top:-12px;" id="NotificationPendingCount">0</span>
             </button>
         </div>
@@ -25,7 +25,7 @@
                 <div class="notification-action">
                     <button class="btn btn-light btn-sm">√</button>
                 </div>
-            </div>            
+            </div>
         </div>
     </nav>
     <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" id="logoutForm" class="form-inline navbar-right">
@@ -39,4 +39,19 @@
         </ul>
     </form>
 }
+
+<!-- Create Modal -->
+<div id="NotificationModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Notifications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="notificationgrid" style="height:500px"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
