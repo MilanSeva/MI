@@ -7,8 +7,25 @@
     }
 </style>
 <div class="card bg-dark border-dark">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="m-0 font-weight-bold text-white">Products</h5>
+        <div class="d-flex">
+            <div class="input-group">
+                <span class="input-group-text bg-dark border-light text-white">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control form-control-sm me-2 bg-dark text-white" placeholder="Search..." onkeyup="Common.Search(this)">
+            </div>
+            <button class="btn btn-outline-warning btn-sm me-2 text-nowrap" onclick="Common.ResetGrid()">Reset Grid</button>
+            <button class="btn btn-outline-success btn-sm me-2 text-nowrap" onclick="Common.ExportToExcel()">Export</button>
+            <button class="btn btn-outline-primary btn-sm text-nowrap" onclick="Common.OpenModal(this)" data-id="0" data-target="AddEditProduct">New</button>
+        </div>
+    </div>
+    @* <div class="card-header">
         <span class="font-weight-bold text-white">Products</span>
+        <span>
+            <input type="text" class="form-control form-control-sm bg-dark text-white" id="search" placeholder="Search" onkeyup="Common.Search(this)">
+        </span>
         <span class="float-end">
             <button class="btn btn-outline-warning btn-sm" type="button" onclick="Common.ResetGrid()">
                 <span>Reset Grid</span>
@@ -20,7 +37,7 @@
                 <span>New</span>
             </button>
         </span>
-    </div>
+    </div> *@
     <div class="card-body" id="productsdata">
     </div>
 </div>

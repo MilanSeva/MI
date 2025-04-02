@@ -52,9 +52,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group bulkname-container">
                             <label asp-for="@Model.OrderBulkName"></label>
-                            <select id="OrderBulkName" class="form-control form-control-sm" placeholder="OrderBulkName" multiple>
+                            <select id="OrderBulkName" class="form-control form-control-sm bulkname-container" placeholder="OrderBulkName" multiple>
                                 @foreach (var item in (ViewBag.OrderBulkNames as ICollection<string>))
                                 {
                                     <option value="@item">@item</option>
@@ -93,9 +93,9 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <div class="form-group storage-container">
                             <label asp-for="@Model.StorageNames"></label>
-                            <select id="StorageNames" class="form-control form-control-sm" placeholder="Storage" multiple>
+                            <select id="StorageNames" class="form-control form-control-sm storage-container" placeholder="Storage" multiple>
                                 @foreach (var item in (ViewBag.Storages as ICollection<MahantInv.Infrastructure.Entities.Storage>).Where(s => s.Enabled))
                                 {
                                     <option value="@item.Id">@item.Name</option>

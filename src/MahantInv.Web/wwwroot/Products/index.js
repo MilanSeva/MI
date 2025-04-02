@@ -467,9 +467,10 @@ class Common {
             maximumSelectionLength: 1
         });
 
-        $(document).on('select2:open', () => {
-            document.querySelector('.select2-search__field').focus();
-        });
+        //$(document).on('select2:open', () => {
+        //    document.querySelector('.select2-search__field').focus();
+        //});
+       
     }
 
     static async UseProduct(mthis) {
@@ -514,6 +515,15 @@ class Common {
 
     static async ExportToExcel() {
         productGridAPI.exportDataAsExcel({ fileName: 'Products.xlsx' });
+    }
+
+    static Search(mthis) {
+        var search = $(mthis).val();
+        productGridAPI.setGridOption(
+            "quickFilterText",
+            search,
+        );
+
     }
 }
 
