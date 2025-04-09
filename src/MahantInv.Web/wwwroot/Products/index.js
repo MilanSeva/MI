@@ -5,8 +5,14 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('span');
-    var btn = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
-    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
+    var btn = '';
+    if (params.data.enabled) {
+        btn += '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
+        btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
+    }
+    else {
+        btn += '<span class="badge badge-dark">Deleted</span>';
+    }
     this.eGui.innerHTML = btn;
 }
 
@@ -75,25 +81,21 @@ ImageCellRenderer.prototype.init = function (params) {
     fileInput.type = 'file';
     fileInput.style.display = 'none';
     fileInput.accept = 'image/*'; // Accept only image files
+    if (params.data.enabled) {
+        // Attach the change event to the separate function
+        fileInput.addEventListener('change', (event) => handleFileChange(event, params.data.id));
 
-    // Attach the change event to the separate function
-    fileInput.addEventListener('change', (event) => handleFileChange(event, params.data.id));
-
-    // Trigger file input click on image click
-    img.addEventListener('click', function () {
-        fileInput.click();
-    });
-
+        // Trigger file input click on image click
+        img.addEventListener('click', function () {
+            fileInput.click();
+        });
+    }
     img.title = "Click to Change";
-    // Add a click event listener to the image
-    //img.addEventListener('click', function (event) {
-    //    // Your custom click event logic here
-    //    console.log('Image clicked!', params);
-    //    alert(`Image URL: ${img.src}`);
-    //});
+
     this.eGui = document.createElement('span');
     this.eGui.setAttribute('class', 'agimgSpanLogo');
     this.eGui.appendChild(img);
+
 }
 ImageCellRenderer.prototype.getGui = function () {
     return this.eGui;
@@ -168,6 +170,11 @@ var productGridAPIOptions = {
         wrapText: true,
         autoHeight: true,
         floatingFilter: true,
+    },
+    getRowStyle: params => {
+        if (params.node.data.enabled == false) {
+            return { background: '#2C2C2C' };
+        }
     },
     animateRows: true,
     //rowSelection: {
@@ -470,7 +477,7 @@ class Common {
         //$(document).on('select2:open', () => {
         //    document.querySelector('.select2-search__field').focus();
         //});
-       
+
     }
 
     static async UseProduct(mthis) {
