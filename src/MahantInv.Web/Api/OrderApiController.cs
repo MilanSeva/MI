@@ -310,5 +310,53 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
+
+        [HttpPost("order/delete/{id}")]
+        public async Task<object> DeleteOrder(int id)
+        {
+            try
+            {
+                Order order = await _context.Orders
+                    .Include(o => o.Status)
+                    .Include(o => o.OrderTransactions)
+                    .Include(o => o.ProductExpiries)
+                    .SingleOrDefaultAsync(o => o.Id == id);
+                if (order == null)
+                {
+                    return NotFound(new { success = false, errors = new[] { "Order not found" } });
+                }
+
+                if (order.Status.Title.Equals(Meta.OrderStatusTypes.Received))
+                {
+                    //Get Product Inventory
+                    ProductInventory productInventory = await _context.ProductInventories
+                        .Where(x => x.ProductId == order.ProductId)
+                        .SingleOrDefaultAsync();
+                    if (productInventory != null)
+                    {
+                        productInventory.Quantity -= order.ReceivedQuantity.Value;
+                        //Get Product Inventory History
+                        ProductInventoryHistory productInventoryHistory = await _context.ProductInventoryHistories
+                            .Where(x => x.ProductId == order.ProductId && x.RefNo == order.RefNo)
+                            .SingleOrDefaultAsync();
+                        if (productInventoryHistory != null)
+                        {
+                            _context.ProductInventoryHistories.Remove(productInventoryHistory);
+                        }
+                    }
+                }
+                _context.ProductExpiries.RemoveRange(order.ProductExpiries);
+                _context.OrderTransactions.RemoveRange(order.OrderTransactions);
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+                return Ok(new { success = true });
+            }
+            catch (Exception e)
+            {
+                string GUID = Guid.NewGuid().ToString();
+                _logger.LogError(e, GUID, null);
+                return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
+            }
+        }
     }
 }

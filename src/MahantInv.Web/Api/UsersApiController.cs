@@ -27,14 +27,10 @@ namespace MahantInv.Web.Api
             _context = context;
             _userManager = userManager;
         }
-        private bool IsSystemUser()
-        {
-            return User.Identity.Name.Equals("msystem", System.StringComparison.OrdinalIgnoreCase) || User.Identity.Name.Equals("system", System.StringComparison.OrdinalIgnoreCase);
-        }
         [HttpGet("all")]
         public async Task<IActionResult> Users()
         {
-            if (IsSystemUser())
+            if (User.IsInRole(Roles.Admin))
             {
                 var users = await _context.Users
                     .Include(u => u.UserRoles)
@@ -58,7 +54,7 @@ namespace MahantInv.Web.Api
         [HttpPost("resetmfa/{Id}")]
         public async Task<IActionResult> ResetMFA(string Id)
         {
-            if (IsSystemUser())
+            if (User.IsInRole(Roles.Admin))
             {
                 var user = await _context.Users.FindAsync(Id);
                 if (user == null)
@@ -79,7 +75,7 @@ namespace MahantInv.Web.Api
         [HttpPost("save")]
         public async Task<IActionResult> SaveUser([FromBody] AddUserDto request)
         {
-            if (IsSystemUser())
+            if (User.IsInRole(Roles.Admin))
             {
                 if (!ModelState.IsValid)
                 {

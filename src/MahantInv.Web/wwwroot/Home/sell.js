@@ -78,18 +78,24 @@ var productUsageGridOptions = {
     },
     onCellValueChanged: onCellValueChanged,
     onStateUpdated: onStateUpdated,
-    //autoSizeStrategy: {
-    //    type: 'fitCellContents'
-    //},
+    autoSizeStrategy: {
+        type: "fitGridWidth",
+        defaultMinWidth: 100,
+        columnLimits: [
+            {
+                colId: "productName",
+                minWidth: 500,
+            },
+        ],
+    },
     onGridReady: function (params) {
         //productUsageAPI.autoSizeAllColumns();
-        productUsageAPI.sizeColumnsToFit();
-        //const allColumnIds = [];
-        //productUsageGridOptions.columnApi.getAllColumns().forEach((column) => {
-        //    if (column.colId != 'id')
-        //        allColumnIds.push(column.colId);
-        //});
-        //productUsageGridOptions.columnApi.autoSizeColumns(allColumnIds, false);
+        productUsageAPI.sizeColumnsToFit(
+            gridApi.sizeColumnsToFit({
+                defaultMinWidth: 100,
+                columnLimits: [{ key: "productName" }],
+            })
+        );
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your data are loading</span>',

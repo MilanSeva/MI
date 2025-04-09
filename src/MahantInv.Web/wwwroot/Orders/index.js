@@ -13,12 +13,15 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('div');
+    let btn = '';
     if (params.data.status != 'Ordered') {
-        this.eGui.innerHTML = '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="View"><i class="bi bi-eye"></i></a>';
+        btn += '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="View"><i class="bi bi-eye"></i></a>';
     }
     else {
-        this.eGui.innerHTML = '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="Edit"><i class="bi bi-pencil-square"></i></a>';
+        btn += '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="Edit"><i class="bi bi-pencil-square"></i></a>';
     }
+    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteAction(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash"></i></a>';
+    this.eGui.innerHTML = btn;
 }
 
 ActionCellRenderer.prototype.getGui = function () {
@@ -149,13 +152,23 @@ var orderGridOptions = {
         }
     },
     onStateUpdated: onStateUpdated,
+    autoSizeStrategy: {
+        type: "fitGridWidth",
+        defaultMinWidth: 100,
+        columnLimits: [
+            {
+                colId: "product",
+                minWidth: 500,
+            },
+        ],
+    },
     onGridReady: function (params) {
-        //const allColumnIds = [];
-        //orderGridAPI.getAllGridColumns().forEach((column) => {
-        //    if (column.colId != 'id')
-        //        allColumnIds.push(column.colId);
-        //});
-        //orderGridAPI.autoSizeColumns(allColumnIds, false);
+        orderGridAPI.sizeColumnsToFit(
+            gridApi.sizeColumnsToFit({
+                defaultMinWidth: 100,
+                columnLimits: [{ key: "productName" }],
+            })
+        );
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Loading your orders, please wait…</span>',
@@ -927,6 +940,48 @@ class Common {
                 Common.InitSelect2();
             }, 1000);
         }
+    }
+
+    static async DeleteAction(mthis) {
+        // get current row id
+        let id = $(mthis).data('id');
+        //get confirmation
+        let isConfirm = confirm("Are you sure to delete this Order?");
+        if (!isConfirm) {
+            return true;
+        }
+        //call api
+        var response = await fetch(baseUrl + 'api/order/delete/' + id, {
+            method: 'POST',
+            headers: {
+                //'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => { return response.json() });
+        if (response.status > 399 && response.status < 500) {
+            if (response != null) {
+                var errorHtml = "";
+                $.each(response.errors, function (index, element) {
+                    errorHtml += element[0] + '<br/>';
+                });
+                toastr.warning(errorHtml, '', { positionClass: 'toast-top-center' });
+            }
+        }
+        if (response.success) {
+            toastr.success("Order Deleted", '', { positionClass: 'toast-top-center' });
+            //Get Row node using id
+            let rowNode = orderGridAPI.getRowNode(id);
+            //remove row from grid
+            orderGridAPI.applyTransaction({ remove: [rowNode.data] });
+        }
+        if (response.success == false) {
+            var errorHtml = "";
+            $.each(response.errors, function (index, element) {
+                errorHtml += element[0].errorMessage + '<br/>';
+            });
+            toastr.error(errorHtml, '', { positionClass: 'toast-top-center' });
+        }
+
     }
 }
 
