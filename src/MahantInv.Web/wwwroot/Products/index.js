@@ -3,10 +3,10 @@ function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
-
+    let hasAccess = $('#iamproductview').val() == 1 ? false : true;
     this.eGui = document.createElement('span');
     var btn = '';
-    if (params.data.enabled) {
+    if (params.data.enabled && hasAccess) {
         btn += '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
         btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
     }
