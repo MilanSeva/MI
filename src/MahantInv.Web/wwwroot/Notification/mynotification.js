@@ -14,6 +14,9 @@ var notificationGridAPIOptions = {
             headerName: 'Message', field: 'message', filter: 'agTextColumnFilter', headerTooltip: 'Message'
         },
         {
+            headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Quantity'
+        },
+        {
             headerName: 'Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status'
         },
         //{

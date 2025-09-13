@@ -57,7 +57,8 @@ namespace MahantInv.Infrastructure.Data
                         CreatedAt = Meta.Now,
                         ModifiedAt = Meta.Now,
                         Title = email.Subject.ToString(),
-                        Message = email.Body.ToString()
+                        Message = email.Body.ToString(),
+                        Quantity = productInventory.Quantity
                     };
                     try
                     {
