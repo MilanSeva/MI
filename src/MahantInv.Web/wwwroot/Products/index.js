@@ -145,7 +145,11 @@ var productGridAPIOptions = {
             field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level', editable: true
         },
         {
-            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable', editable: true
+            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable', editable: true,
+            cellEditor: 'agSelectCellEditor',
+            cellEditorParams: {
+                values: ['Yes', 'No'],
+            },
         },
         {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
@@ -220,8 +224,10 @@ function onCellValueChanged(event) {
     const newValue = event.newValue;
     const oldValue = event.oldValue;
     const field = event.colDef.field;
-
-    const request = { id, field, value: newValue };
+    if (field === "disposable") {
+        newValue = newValue === "Yes" ? true : false;
+    }
+    const request = { id, field, newValue };
 
     fetch(baseUrl + 'api/product/inlineedit', {
         method: 'POST',
