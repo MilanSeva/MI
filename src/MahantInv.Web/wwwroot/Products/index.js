@@ -150,6 +150,17 @@ var productGridAPIOptions = {
             cellEditorParams: {
                 values: ['Yes', 'No'],
             },
+            // Ensure display always stays "Yes"/"No"
+            valueFormatter: params => {
+                if (params.value === true || params.value === 'true' || params.value === 1 || params.value === 'Yes')
+                    return 'Yes';
+                return 'No';
+            },
+            // Normalize user input to always store "Yes"/"No"
+            valueParser: params => {
+                const val = params.newValue?.toString().trim().toLowerCase();
+                return val === 'yes' || val === 'true' || val === '1' ? 'Yes' : 'No';
+            }
         },
         {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
@@ -221,11 +232,12 @@ var productGridAPIOptions = {
 
 function onCellValueChanged(event) {
     const id = event.data.id;
-    const newValue = event.newValue;
+    let newValue = event.newValue;
     const oldValue = event.oldValue;
     const field = event.colDef.field;
-    if (field === "disposable") {
-        newValue = newValue === "Yes" ? true : false;
+    // Convert Yes/No to true/false for backend
+    if (field === 'disposable') {
+        newValue = (newValue === 'Yes' || newValue === true);
     }
     const request = { id, field, newValue };
 
