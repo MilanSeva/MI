@@ -7,6 +7,7 @@ using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.Infrastructure.ViewModels;
 using MahantInv.SharedKernel.Interfaces;
+using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -262,6 +263,151 @@ namespace MahantInv.Web.Api
                 _logger.LogError(e, GUID, null);
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
+        [HttpPost("product/inlineedit")]
+        public async Task<IActionResult> InlineEdit([FromBody] InlineEditDto request)
+        {
+            var product = await _context.Products.FindAsync(request.Id);
+            if (product == null)
+            {
+                return BadRequest(new { success = false, message = "Product not found." });
+            }
+            switch (request.Field)
+            {
+                case "name":
+                    request.NewValue = request.NewValue?.Trim();
+                    if (string.IsNullOrWhiteSpace(request.NewValue))
+                    {
+                        return BadRequest(new { success = false, message = "Name cannot be empty." });
+                    }
+                    product.Name = request.NewValue;
+                    break;
+                case "gujaratiName":
+                    request.NewValue = request.NewValue?.Trim();
+                    //if (string.IsNullOrWhiteSpace(request.NewValue))
+                    //{
+                    //    return BadRequest(new { success = false, message = "Gujarati Name cannot be empty." });
+                    //}
+                    product.GujaratiName = request.NewValue;
+                    break;
+                case "company":
+                    request.NewValue = request.NewValue?.Trim();
+                    product.Company = request.NewValue;
+                    break;
+                case "description":
+                    request.NewValue = request.NewValue?.Trim();
+                    product.Description = request.NewValue;
+                    break;
+                case "orderBulkName":
+                    request.NewValue = request.NewValue?.Trim();
+                    product.OrderBulkName = request.NewValue;
+                    break;
+                case "orderBulkQuantity":
+                    request.NewValue = request.NewValue?.Trim();
+                    if (request.NewValue.IsNullOrWhiteSpace())
+                    {
+                        product.OrderBulkQuantity = null;
+                        break;
+                    }
+                    if (!int.TryParse(request.NewValue, out int orderBulkQuantity) || orderBulkQuantity < 0)
+                    {
+                        return BadRequest(new { success = false, message = "Order Bulk Quantity must be a non-negative integer." });
+                    }
+                    product.OrderBulkQuantity = orderBulkQuantity;
+                    break;
+                case "currentStock":
+                    request.NewValue = request.NewValue?.Trim();
+                    if (request.NewValue.IsNullOrWhiteSpace())
+                    {
+                        return BadRequest(new { success = false, message = "Current Stock is required." });
+                    }
+                    if (!int.TryParse(request.NewValue, out int currentStock) || currentStock < 0)
+                    {
+                        return BadRequest(new { success = false, message = "Current Stock must be a non-negative integer." });
+                    }
+                    var stock = await _context.ProductInventories.FirstOrDefaultAsync(s => s.ProductId == product.Id);
+                    // Also add entry in ProductInventory History
+                    if (stock == null)
+                    {
+                        stock = new ProductInventory
+                        {
+                            ProductId = product.Id,
+                            Quantity = currentStock
+                        };
+                        await _context.ProductInventories.AddAsync(stock);
+                        ProductInventoryHistory productInventoryHistory= new ProductInventoryHistory
+                        {
+                            ProductId = product.Id,
+                            Quantity = currentStock,
+                            RefNo = "Adjust Initial Stock",
+                            LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                            ModifiedAt = Meta.Now
+                        };
+                        await _context.ProductInventoryHistories.AddAsync(productInventoryHistory);
+                    }
+                    else
+                    {
+                        stock.Quantity = currentStock;
+                        _context.ProductInventories.Update(stock);
+                        ProductInventoryHistory productInventoryHistory= new ProductInventoryHistory
+                        {
+                            ProductId = product.Id,
+                            Quantity = currentStock,
+                            RefNo = "Adjust Stock",
+                            LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                            ModifiedAt = Meta.Now
+                        };
+                    }
+                    break;
+                case "reorderLevel":
+                    request.NewValue = request.NewValue?.Trim();
+                    if (request.NewValue.IsNullOrWhiteSpace())
+                    {
+                        product.ReorderLevel = null;
+                        break;
+                    }
+                    if (!decimal.TryParse(request.NewValue, out decimal reorderLevel) || reorderLevel < 0)
+                    {
+                        return BadRequest(new { success = false, message = "Reorder Level must be a non-negative number." });
+                    }
+                    product.ReorderLevel = reorderLevel;
+                    break;
+                case "disposable":
+                    request.NewValue = request.NewValue?.Trim();
+                    if (!bool.TryParse(request.NewValue, out bool disposable))
+                    {
+                        return BadRequest(new { success = false, message = "Disposable must be true or false." });
+                    }
+                    product.IsDisposable = disposable;
+                    break;
+                case "storage":
+                    request.NewValue = request.NewValue?.Trim();
+                    var ps = await _context.ProductStorages.Where(ps => ps.ProductId == product.Id).ToListAsync();
+                    _context.ProductStorages.RemoveRange(ps);
+
+                    if (!string.IsNullOrWhiteSpace(request.NewValue))
+                    {
+                        var storages = request.NewValue.Split(",").Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                        var dbStorages = await _context.Storages.Where(s => storages.Contains(s.Name)).ToListAsync();
+                        foreach (var storage in storages)
+                        {
+                            _context.ProductStorages.Add(new ProductStorage
+                            {
+                                ProductId = product.Id,
+                                Storage = dbStorages.FirstOrDefault(s => s.Name == storage) ?? new Storage { Name = storage, Enabled = true }
+                            });
+                        }
+                    }
+                    break;
+                default:
+                    return BadRequest(new { success = false, message = "Invalid field." });
+            }
+
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = "Success." });
         }
     }
 

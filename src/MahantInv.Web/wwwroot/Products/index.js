@@ -116,39 +116,39 @@ var productGridAPIOptions = {
             headerName: 'Img', field: 'picturePath', headerTooltip: 'Image', cellRenderer: "imageCellRenderer"
         },
         {
-            headerName: 'Name', field: 'name', wrapText: false, filter: 'agTextColumnFilter', headerTooltip: 'Name'
+            headerName: 'Name', field: 'name', wrapText: false, filter: 'agTextColumnFilter', headerTooltip: 'Name', editable: true
         },
         {
-            headerName: 'ગુજરાતી નામ', field: 'gujaratiName', filter: 'agTextColumnFilter', headerTooltip: 'Gujarati Name'
+            headerName: 'ગુજરાતી નામ', field: 'gujaratiName', filter: 'agTextColumnFilter', headerTooltip: 'Gujarati Name', editable: true
         },
         {
-            headerName: 'Company', field: 'company', filter: 'agTextColumnFilter', headerTooltip: 'Company'
+            headerName: 'Company', field: 'company', filter: 'agTextColumnFilter', headerTooltip: 'Company', editable: true
         },
         {
-            headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', headerTooltip: 'Description'
+            headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', headerTooltip: 'Description', editable: true
         },
         {
-            headerName: 'Size & Unit', field: 'sizeUnitTypeCode', filter: 'agTextColumnFilter', headerTooltip: 'Size & Unit'
+            headerName: 'Size & Unit', field: 'sizeUnitTypeCode', filter: 'agTextColumnFilter', headerTooltip: 'Size & Unit', editable: false
         },
         {
-            headerName: 'Order Bulk Name', field: 'orderBulkName', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Name'
+            headerName: 'Order Bulk Name', field: 'orderBulkName', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Name', editable: true
         },
         {
-            headerName: 'Order Bulk Quantity', field: 'orderBulkQuantity', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Quantity'
+            headerName: 'Order Bulk Quantity', field: 'orderBulkQuantity', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Quantity', editable: true
         },
         {
-            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Storage'
+            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Stock', editable: true
             , cellClassRules: stockClassRules
         },
         {
             headerName: 'Reorder Level',
-            field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level'
+            field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level', editable: true
         },
         {
-            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable'
+            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable', editable: true
         },
         {
-            headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
+            headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
         },
         {
             headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', suppressSizeToFit: true,
@@ -176,6 +176,7 @@ var productGridAPIOptions = {
             return { background: '#2C2C2C' };
         }
     },
+    onCellValueChanged: onCellValueChanged,
     animateRows: true,
     //rowSelection: {
     //    mode: 'singleRow',
@@ -213,6 +214,54 @@ var productGridAPIOptions = {
                 <h5 class="text-center"><b>Product(s) will appear here.</b></h5>
             </div>`
 };
+
+function onCellValueChanged(event) {
+    const id = event.data.id;
+    const newValue = event.newValue;
+    const oldValue = event.oldValue;
+    const field = event.colDef.field;
+
+    const request = { id, field, value: newValue };
+
+    fetch(baseUrl + 'api/product/inlineedit', {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const rowNode = productGridAPI.getRowNode(id);
+
+            if (data.success) {
+                toastr.success("Updated", '', { positionClass: 'toast-top-center' });
+                productGridAPI.flashCells({ rowNodes: [rowNode] });
+            } else {
+                toastr.error(data.message || "Update failed", '', { positionClass: 'toast-top-center' });
+                // ✅ Restore old value WITHOUT triggering onCellValueChanged
+                restoreOldValue(rowNode, field, oldValue);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error("Network or server error", '', { positionClass: 'toast-top-center' });
+            const rowNode = productGridAPI.getRowNode(id);
+            restoreOldValue(rowNode, field, oldValue);
+        });
+}
+
+// ✅ Helper function that restores value without retriggering AG Grid event
+function restoreOldValue(rowNode, field, oldValue) {
+    // Option 1 (recommended): directly mutate data and refresh
+    rowNode.data[field] = oldValue;
+    productGridAPI.refreshCells({ rowNodes: [rowNode], columns: [field] });
+
+    // Option 2 (if transaction is preferred)
+    // productGridAPI.applyTransactionAsync({ update: [rowNode.data] });
+}
+
 
 function onStateUpdated(event) {
     var state = productGridAPI.getState();
