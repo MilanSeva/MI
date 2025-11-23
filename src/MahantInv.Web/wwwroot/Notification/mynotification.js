@@ -8,10 +8,19 @@ var notificationGridAPIOptions = {
     // define grid columns
     columnDefs: [
         {
+            headerName: 'Product Name', field: 'productName', filter: 'agTextColumnFilter', headerTooltip: 'Product Name', minWidth:100
+        },
+        {
+            headerName: 'Reorder Level', field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level'
+        },
+        {
+            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Current Stock'
+        },
+        {
             headerName: 'title', field: 'title', filter: 'agTextColumnFilter', headerTooltip: 'Title'
         },
         {
-            headerName: 'Message', field: 'message', filter: 'agTextColumnFilter', headerTooltip: 'Message'
+            headerName: 'Message', field: 'message', filter: 'agTextColumnFilter', headerTooltip: 'Message', minWidth:200
         },
         {
             headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Quantity'
@@ -34,6 +43,7 @@ var notificationGridAPIOptions = {
         autoHeight: true,
         floatingFilter: false,
     },
+
     animateRows: true,
     pagination: true,
     paginationPageSize: 200,

@@ -151,6 +151,13 @@ namespace MahantInv.Web.Api
                 await _context.SaveChangesAsync();
 
                 ProductVM productVM = await _productRepository.GetProductById(product.Id);
+
+                await InlineEdit(new InlineEditDto
+                {
+                    Id = product.Id,
+                    Field = "currentStock",
+                    NewValue = input.Stock.ToString()
+                });
                 return Ok(new { success = true, data = productVM });
             }
             catch (Exception e)

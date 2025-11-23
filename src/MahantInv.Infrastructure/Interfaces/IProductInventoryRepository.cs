@@ -1,4 +1,5 @@
-﻿using MahantInv.Infrastructure.Entities;
+﻿using MahantInv.Infrastructure.Dtos;
+using MahantInv.Infrastructure.Entities;
 using MahantInv.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,6 +10,6 @@ namespace MahantInv.Infrastructure.Interfaces
     {
         Task<ProductInventory> GetByProductId(int productId);
         Task IFStockLowGenerateNotification(int productId);
-        Task<IEnumerable<Notification>> GetNotificationByStatus(List<string> status);
+        Task<IEnumerable<NotificationViewDTO>> GetNotificationByStatus(List<string> status);
     }
 }

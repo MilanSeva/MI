@@ -29,6 +29,7 @@ namespace MahantInv.Infrastructure.Dtos.Product
         //public int? StorageId { get; set; }
         [Dapper.Contrib.Extensions.Write(false)]
         public string StorageNames { get; set; }
+        public int Stock { get; set; }
 
     }
 }
