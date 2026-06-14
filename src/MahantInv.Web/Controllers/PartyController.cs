@@ -2,6 +2,7 @@
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Utility;
 using MahantInv.SharedKernel.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
@@ -9,9 +10,11 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class PartyController : BaseController
     {
         private readonly ILogger<PartyController> _logger;

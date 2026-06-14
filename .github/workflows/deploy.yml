@@ -1,0 +1,42 @@
+name: Deploy .NET App to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Deploy to EC2 and Build
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.MI_HOST }}
+        username: ${{ secrets.MI_USERNAME }}
+        key: ${{ secrets.MI_PRIVATE_KEY }}
+        port: ${{ secrets.MI_PORT }}
+        passphrase: ${{ secrets.MI_PASSPHRASE }}
+        script: |
+          echo "🔄 Pulling latest code..."
+          cd /home/ubuntu/MI
+          git pull origin main
+          cd src
+          echo "🔧 Restoring dependencies..."
+          dotnet restore
+
+          echo "stop service"
+          systemctl stop mi.service
+          
+          echo "🚀 Building .NET application..."
+          dotnet publish -c Release -o /var/www/MI
+
+          echo "⚡ Restarting the application..."
+          
+          systemctl daemon-reload
+          systemctl start mi.service
+          echo "✅ Deployment completed!"

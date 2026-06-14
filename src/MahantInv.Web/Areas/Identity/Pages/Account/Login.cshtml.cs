@@ -1,4 +1,5 @@
 ﻿using MahantInv.Infrastructure.Identity;
+using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,14 +17,16 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
         private readonly UserManager<MIIdentityUser> _userManager;
         private readonly SignInManager<MIIdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly GoogleCaptchaService _captchaService;
 
         public LoginModel(SignInManager<MIIdentityUser> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<MIIdentityUser> userManager)
+            UserManager<MIIdentityUser> userManager, GoogleCaptchaService captchaService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _captchaService = captchaService;
         }
 
         [BindProperty]
@@ -47,6 +50,8 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+            [Required]
+            public string gRecaptchaResponse { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -70,28 +75,50 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            //ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             if (ModelState.IsValid)
             {
+                var captchaResult = await _captchaService.VerifyCaptchaAsync(Input.gRecaptchaResponse);
+
+                //if (!captchaResult.Success || captchaResult.Score < 0.5)
+                //{
+                //    // Show visible reCAPTCHA v2 or reject the request
+                //    return Page();
+                //}
                 MIIdentityUser identityUser;
                 identityUser = await _userManager.FindByNameAsync(Input.Email);
                 if (identityUser == null)
                 {
                     identityUser = await _userManager.FindByEmailAsync(Input.Email);
                 }
-                if (identityUser == null)
+                if (identityUser == null || !await _userManager.CheckPasswordAsync(identityUser, Input.Password))
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
+                if (!identityUser.IsActive)
+                {
+                    ModelState.AddModelError(string.Empty, "Account Deactivated. Please contact Admin.");
+                    return Page();
+                }
+                //await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                if (identityUser.IsMfaEnabled)
+                {
+                    return RedirectToPage("VerifyAuthenticator", new { UserName = identityUser.Email, Input.RememberMe });
+                }
+                else
+                {
+                    // Sign in user partially to access EnableAuthenticator page
+                    return RedirectToPage("/Account/EnableAuthenticator", new { UserName = identityUser.Email });
+                }
+                //await _signInManager.SignInAsync(identityUser, Input.RememberMe);
+                return RedirectToPage("/Index");
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(identityUser, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                if (result.Succeeded && identityUser.IsMfaEnabled)
                 {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("VerifyMfa");
                 }
                 if (result.RequiresTwoFactor)
                 {

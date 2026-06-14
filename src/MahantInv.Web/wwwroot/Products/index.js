@@ -3,9 +3,17 @@ function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
-
+    let hasAccess = $('#iamproductview').val() == 1 ? false : true;
     this.eGui = document.createElement('span');
-    this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct">Edit</button>';
+    var btn = '';
+    if (params.data.enabled && hasAccess) {
+        btn += '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct" title="Edit"><i class="bi bi-pencil-square fs-6"></i></a>';
+        btn += ' <a href="#" class="link-danger" onclick="Common.DeleteProduct(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
+    }
+    else {
+        btn += '<span class="badge badge-dark">Deleted</span>';
+    }
+    this.eGui.innerHTML = btn;
 }
 
 ActionCellRenderer.prototype.getGui = function () {
@@ -13,34 +21,50 @@ ActionCellRenderer.prototype.getGui = function () {
 }
 // Function to handle the file change event
 function handleFileChange(event, rowId) {
-    let file = event.target.files[0]; // Get the selected file
-
-    if (file) {
-        // Create FormData for uploading the file
-        let formData = new FormData();
-        formData.append('file', file);
-        formData.append('id', rowId); // Include row ID or other relevant data
-
-        // Send file to the server using Fetch API
-        fetch(baseUrl + 'api/product/image', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success("File uploaded successfully!", '', { positionClass: 'toast-top-center' });
-                    productGridAPI.applyTransaction({ update: [data.data] });
-                }
-                else {
-                    toastr.error(data.message, '', { positionClass: 'toast-top-center' });
-                }
-
-            })
-            .catch(error => {
-                toastr.error("Unexpected error", '', { positionClass: 'toast-top-center' });
-            });
+    if (event.target.files.length === 0) {
+        toastr.error("Please select a file.", '', { positionClass: 'toast-top-center' });
+        return;
     }
+    let file = event.target.files[0]; // Get the selected file
+    // Validate file size (2 MB = 2 * 1024 * 1024 bytes)
+    var maxSize = 2 * 1024 * 1024; // 2 MB
+    if (file.size > maxSize) {
+        toastr.error("File size must not exceed 2 MB.", '', { positionClass: 'toast-top-center' });
+        return;
+    }
+    // Validate file type
+    var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        $('#message').html('<p style="color: red;">Invalid file type. Only JPG, PNG, and GIF are allowed.</p>');
+        return;
+    }
+
+
+    // Create FormData for uploading the file
+    let formData = new FormData();
+    formData.append('file', file);
+    formData.append('id', rowId); // Include row ID or other relevant data
+
+    // Send file to the server using Fetch API
+    fetch(baseUrl + 'api/product/image', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                toastr.success("File uploaded successfully!", '', { positionClass: 'toast-top-center' });
+                productGridAPI.applyTransaction({ update: [data.data] });
+            }
+            else {
+                toastr.error(data.message, '', { positionClass: 'toast-top-center' });
+            }
+
+        })
+        .catch(error => {
+            toastr.error("Unexpected error", '', { positionClass: 'toast-top-center' });
+        });
+
 }
 function ImageCellRenderer() { }
 
@@ -57,25 +81,21 @@ ImageCellRenderer.prototype.init = function (params) {
     fileInput.type = 'file';
     fileInput.style.display = 'none';
     fileInput.accept = 'image/*'; // Accept only image files
+    if (params.data.enabled) {
+        // Attach the change event to the separate function
+        fileInput.addEventListener('change', (event) => handleFileChange(event, params.data.id));
 
-    // Attach the change event to the separate function
-    fileInput.addEventListener('change', (event) => handleFileChange(event, params.data.id));
+        // Trigger file input click on image click
+        img.addEventListener('click', function () {
+            fileInput.click();
+        });
+    }
+    img.title = "Click to Change";
 
-    // Trigger file input click on image click
-    img.addEventListener('click', function () {
-        fileInput.click();
-    });
-
-    img.title = "Click to Edit";
-    // Add a click event listener to the image
-    //img.addEventListener('click', function (event) {
-    //    // Your custom click event logic here
-    //    console.log('Image clicked!', params);
-    //    alert(`Image URL: ${img.src}`);
-    //});
     this.eGui = document.createElement('span');
     this.eGui.setAttribute('class', 'agimgSpanLogo');
     this.eGui.appendChild(img);
+
 }
 ImageCellRenderer.prototype.getGui = function () {
     return this.eGui;
@@ -96,43 +116,61 @@ var productGridAPIOptions = {
             headerName: 'Img', field: 'picturePath', headerTooltip: 'Image', cellRenderer: "imageCellRenderer"
         },
         {
-            headerName: 'Name', field: 'name', filter: 'agTextColumnFilter', headerTooltip: 'Name'
+            headerName: 'Name', field: 'name', wrapText: false, filter: 'agTextColumnFilter', headerTooltip: 'Name', editable: true
         },
         {
-            headerName: 'Company', field: 'company', filter: 'agTextColumnFilter', headerTooltip: 'Company'
+            headerName: 'ગુજરાતી નામ', field: 'gujaratiName', filter: 'agTextColumnFilter', headerTooltip: 'Gujarati Name', editable: true
         },
         {
-            headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', headerTooltip: 'Description'
+            headerName: 'Company', field: 'company', filter: 'agTextColumnFilter', headerTooltip: 'Company', editable: true
         },
         {
-            headerName: 'Size & Unit', field: 'sizeUnitTypeCode', filter: 'agTextColumnFilter', headerTooltip: 'Size & Unit'
+            headerName: 'Description', field: 'description', filter: 'agTextColumnFilter', headerTooltip: 'Description', editable: true
         },
         {
-            headerName: 'Order Bulk Name', field: 'orderBulkName', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Name'
+            headerName: 'Size & Unit', field: 'sizeUnitTypeCode', filter: 'agTextColumnFilter', headerTooltip: 'Size & Unit', editable: false
         },
         {
-            headerName: 'Order Bulk Quantity', field: 'orderBulkQuantity', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Quantity'
+            headerName: 'Order Bulk Name', field: 'orderBulkName', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Name', editable: true
         },
         {
-            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Storage'
+            headerName: 'Order Bulk Quantity', field: 'orderBulkQuantity', filter: 'agTextColumnFilter', headerTooltip: 'Order Bulk Quantity', editable: true
+        },
+        {
+            headerName: 'Current Stock', field: 'currentStock', filter: 'agNumberColumnFilter', headerTooltip: 'Stock', editable: true
             , cellClassRules: stockClassRules
         },
         {
             headerName: 'Reorder Level',
-            field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level'
+            field: 'reorderLevel', filter: 'agNumberColumnFilter', headerTooltip: 'Reorder Level', editable: true
         },
         {
-            headerName: 'Is Disposable?', field: 'disposable', filter: 'agSetColumnFilter', headerTooltip: 'Is Disposable'
+            headerName: 'Is Disposable?', field: 'disposable', filter: 'agTextColumnFilter', headerTooltip: 'Is Disposable', editable: true,
+            cellEditor: 'agSelectCellEditor',
+            cellEditorParams: {
+                values: ['Yes', 'No'],
+            },
+            // Ensure display always stays "Yes"/"No"
+            valueFormatter: params => {
+                if (params.value === true || params.value === 'true' || params.value === 1 || params.value === 'Yes')
+                    return 'Yes';
+                return 'No';
+            },
+            // Normalize user input to always store "Yes"/"No"
+            valueParser: params => {
+                const val = params.newValue?.toString().trim().toLowerCase();
+                return val === 'yes' || val === 'true' || val === '1' ? 'Yes' : 'No';
+            }
         },
         {
-            headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage'
+            headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
         },
         {
-            headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
+            headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     //rowClassRules: {
     //    'sick-days-warning': function (params) {
     //        return params.data.currentStock < params.data.reorderLevel;
@@ -140,9 +178,6 @@ var productGridAPIOptions = {
     //},
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -151,54 +186,34 @@ var productGridAPIOptions = {
         autoHeight: true,
         floatingFilter: true,
     },
-    animateRows: true,
-    rowSelection: 'single',
-    pagination: true,
-    paginationAutoPageSize: true,
-    animateRows: true,
-    defaultColGroupDef: {
-        marryChildren: true
+    getRowStyle: params => {
+        if (params.node.data.enabled == false) {
+            return { background: '#2C2C2C' };
+        }
     },
+    onCellValueChanged: onCellValueChanged,
+    animateRows: true,
+    //rowSelection: {
+    //    mode: 'singleRow',
+    //},
+    pagination: true,
+    //paginationAutoPageSize: true,
+    paginationPageSize: 200,
     onCellClicked: onCellClickedEvent,
-    //onSelectionChanged: onSelectionChanged,
     getRowId: params => {
         return params.data.id;
     },
-    suppressContextMenu: true,
+    //suppressContextMenu: true,
     components: {
         actionCellRenderer: ActionCellRenderer,
         imageCellRenderer: ImageCellRenderer
     },
-    columnTypes: {
-        numberColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 50,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        },
-        dateColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 130,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        }
+    autoSizeStrategy: {
+        type: 'fitCellContents'
     },
     onGridReady: function (params) {
-        productGridAPI.sizeColumnsToFit();
+        //productGridAPI.sizeColumnsToFit();
+        productGridAPI.autoSizeAllColumns();
         //const allColumnIds = [];
         //productGridAPIOptions.columnApi.getAllColumns().forEach((column) => {
         //    if (column.colId != 'id')
@@ -215,14 +230,66 @@ var productGridAPIOptions = {
             </div>`
 };
 
+function onCellValueChanged(event) {
+    const id = event.data.id;
+    let newValue = event.newValue;
+    const oldValue = event.oldValue;
+    const field = event.colDef.field;
+    // Convert Yes/No to true/false for backend
+    if (field === 'disposable') {
+        newValue = (newValue === 'Yes' || newValue === true);
+    }
+    const request = { id, field, newValue };
+
+    fetch(baseUrl + 'api/product/inlineedit', {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const rowNode = productGridAPI.getRowNode(id);
+
+            if (data.success) {
+                toastr.success("Updated", '', { positionClass: 'toast-top-center' });
+                productGridAPI.flashCells({ rowNodes: [rowNode] });
+            } else {
+                toastr.error(data.message || "Update failed", '', { positionClass: 'toast-top-center' });
+                // ✅ Restore old value WITHOUT triggering onCellValueChanged
+                restoreOldValue(rowNode, field, oldValue);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error("Network or server error", '', { positionClass: 'toast-top-center' });
+            const rowNode = productGridAPI.getRowNode(id);
+            restoreOldValue(rowNode, field, oldValue);
+        });
+}
+
+// ✅ Helper function that restores value without retriggering AG Grid event
+function restoreOldValue(rowNode, field, oldValue) {
+    // Option 1 (recommended): directly mutate data and refresh
+    rowNode.data[field] = oldValue;
+    productGridAPI.refreshCells({ rowNodes: [rowNode], columns: [field] });
+
+    // Option 2 (if transaction is preferred)
+    // productGridAPI.applyTransactionAsync({ update: [rowNode.data] });
+}
+
+
 function onStateUpdated(event) {
     var state = productGridAPI.getState();
     localStorage.setItem("f840074316684a1d9074edcd72023fb3", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
+        this.GujaratiName = Common.ParseValue(GujaratiName);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
@@ -260,11 +327,37 @@ class Common {
         $('#' + target).modal('show');
         if (id == 0) {
             $('#ModalTitle').html('Add Product');
-            Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null));
+            Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null, null));
         }
         else {
             $('#ModalTitle').html('Edit Product');
             Common.GetProductById(id);
+        }
+    }
+
+    static DeleteProduct(mthis) {
+        let id = $(mthis).data('id');
+        if (confirm('Are you sure you want to delete this record?')) {
+            fetch(baseUrl + 'api/product/delete/' + id, {
+                method: 'DELETE',
+                headers: {
+                    //'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(response => { return response.json() })
+                .then(data => {
+                    if (data.success) {
+                        toastr.success("Deleted", '', { positionClass: 'toast-top-center' });
+                        productGridAPI.applyTransaction({ remove: [data.data] });
+                    }
+                    else {
+                        toastr.error(data.errors, '', { positionClass: 'toast-top-center' });
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    toastr.success("Unexpected error", '', { positionClass: 'toast-top-center' });
+                });
         }
     }
     static ResetGrid(mthis) {
@@ -278,6 +371,17 @@ class Common {
             productGridAPIOptions.initialState = JSON.parse(state);
         }
         productGridAPI = new agGrid.createGrid(gridDiv, productGridAPIOptions);
+        productGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
+
         fetch(baseUrl + 'api/products')
             .then((response) => response.json())
             .then(data => {
@@ -299,14 +403,21 @@ class Common {
         $('#ProductErrorSection').empty();
         $('#Id').val(model.Id);
         $('#Name').val(model.Name);
+        $('#GujaratiName').val(model.GujaratiName);
         $('#Description').val(model.Description);
         $('#Size').val(model.Size);
-        $('#OrderBulkName').val(model.OrderBulkName);
+        //$('#OrderBulkName').val(model.OrderBulkName);
         $('#OrderBulkQuantity').val(model.OrderBulkQuantity);
         $('#UnitTypeCode').val(model.UnitTypeCode);
         $('#ReorderLevel').val(model.ReorderLevel);
         $('#IsDisposable').prop("checked", model.IsDisposable);
         $('#Company').val(model.Company);
+        if (model.OrderBulkName != null) {
+            $('#OrderBulkName').val(model.OrderBulkName).trigger('change');
+        }
+        else {
+            $('#OrderBulkName').val('').trigger('change');
+        }
         if (model.StorageNames != null) {
             $('#StorageNames').val(model.StorageNames.split(',')).trigger('change');
         }
@@ -323,16 +434,17 @@ class Common {
         $('#ProductErrorSection').empty();
         let Id = $('#Id').val();
         let Name = $('#Name').val();
+        let GujaratiName = $('#GujaratiName').val();
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
-        let OrderBulkName = $('#OrderBulkName').val();
+        let OrderBulkName = $('#OrderBulkName option:selected').val();
         let OrderBulkQuantity = $('#OrderBulkQuantity').val();
         let ReorderLevel = $('#ReorderLevel').val();
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -379,7 +491,7 @@ class Common {
             },
         }).then(response => { return response.json() })
             .then(data => {
-                Common.BindValuesToProductForm(new Product(data.id, data.name, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
+                Common.BindValuesToProductForm(new Product(data.id, data.name, data.gujaratiName, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
             })
             .catch(error => {
                 console.log(error);
@@ -420,10 +532,19 @@ class Common {
             closeOnSelect: true,
             tags: true
         });
-
-        $(document).on('select2:open', () => {
-            document.querySelector('.select2-search__field').focus();
+        $('#OrderBulkName').select2({
+            dropdownParent: $('#AddEditProduct'),
+            placeholder: 'Search OrderBulkName',
+            //theme: "bootstrap4",
+            closeOnSelect: true,
+            tags: true,
+            maximumSelectionLength: 1
         });
+
+        //$(document).on('select2:open', () => {
+        //    document.querySelector('.select2-search__field').focus();
+        //});
+
     }
 
     static async UseProduct(mthis) {
@@ -468,6 +589,15 @@ class Common {
 
     static async ExportToExcel() {
         productGridAPI.exportDataAsExcel({ fileName: 'Products.xlsx' });
+    }
+
+    static Search(mthis) {
+        var search = $(mthis).val();
+        productGridAPI.setGridOption(
+            "quickFilterText",
+            search,
+        );
+
     }
 }
 

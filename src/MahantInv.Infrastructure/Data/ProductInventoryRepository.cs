@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MahantInv.Infrastructure.Dtos;
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.Utility;
@@ -28,9 +29,9 @@ namespace MahantInv.Infrastructure.Data
             return db.QuerySingleOrDefaultAsync<ProductInventory>("select * from ProductInventory where ProductId = @productId", new { productId }, transaction: t);
         }
 
-        public Task<IEnumerable<Notification>> GetNotificationByStatus(List<string> status)
+        public Task<IEnumerable<NotificationViewDTO>> GetNotificationByStatus(List<string> status)
         {
-            return db.QueryAsync<Notification>("select * from Notifications where status in @status order by CreatedAt desc", new { status }, transaction: t);
+            return db.QueryAsync<NotificationViewDTO>("select * from Notifications where status in @status order by CreatedAt desc", new { status }, transaction: t);
         }
 
         public async Task IFStockLowGenerateNotification(int productId)
@@ -57,7 +58,8 @@ namespace MahantInv.Infrastructure.Data
                         CreatedAt = Meta.Now,
                         ModifiedAt = Meta.Now,
                         Title = email.Subject.ToString(),
-                        Message = email.Body.ToString()
+                        Message = email.Body.ToString(),
+                        Quantity = productInventory.Quantity
                     };
                     try
                     {

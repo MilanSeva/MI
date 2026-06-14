@@ -15,7 +15,7 @@ namespace MahantInv.Infrastructure.SeedScripts
 {
     public static class SeedData
     {
-        public static async Task Initialize(IServiceProvider serviceProvider, IMediator mediator, UserManager<MIIdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task Initialize(IServiceProvider serviceProvider, IMediator mediator, UserManager<MIIdentityUser> userManager, RoleManager<MIIdentityRole> roleManager)
         {
             await SeedRoles(roleManager);
             await SeedUsers(userManager);
@@ -62,15 +62,19 @@ namespace MahantInv.Infrastructure.SeedScripts
             }
         }
 
-        private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRoles(RoleManager<MIIdentityRole> roleManager)
         {
             if (!await roleManager.RoleExistsAsync(Meta.Roles.Admin))
             {
-                await roleManager.CreateAsync(new IdentityRole(Meta.Roles.Admin));
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.Admin));
             }
             if (!await roleManager.RoleExistsAsync(Meta.Roles.User))
             {
-                await roleManager.CreateAsync(new IdentityRole(Meta.Roles.User));
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.User));
+            }
+            if (!await roleManager.RoleExistsAsync(Meta.Roles.ProductView))
+            {
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.ProductView));
             }
         }
 
@@ -81,11 +85,25 @@ namespace MahantInv.Infrastructure.SeedScripts
                 var user = new MIIdentityUser
                 {
                     UserName = "system",
-                    Email = "admin@system.com",
-                    EmailConfirmed = true
+                    Email = "ak2102@sampark.email",
+                    EmailConfirmed = true,
+                    IsActive = true
                 };
 
                 await userManager.CreateAsync(user, "M@hant@1309");
+                await userManager.AddToRoleAsync(user, Meta.Roles.Admin);
+            }
+            if (userManager.Users.All(u => u.UserName != "msystem"))
+            {
+                var user = new MIIdentityUser
+                {
+                    UserName = "msystem",
+                    Email = "milanpatel70.cmpica@gmail.com",
+                    EmailConfirmed = true,
+                    IsActive = true
+                };
+
+                await userManager.CreateAsync(user, "11J@ck070");
                 await userManager.AddToRoleAsync(user, Meta.Roles.Admin);
             }
             if (userManager.Users.All(u => u.UserName != "admin"))
@@ -94,7 +112,8 @@ namespace MahantInv.Infrastructure.SeedScripts
                 {
                     UserName = "admin",
                     Email = "admin@system.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    IsActive = true
                 };
 
                 await userManager.CreateAsync(user, "Pramukh@100");
@@ -121,7 +140,7 @@ namespace MahantInv.Infrastructure.SeedScripts
             List<UnitType> unitTYpes = [
             new UnitType{ Code = "kg", Name = "Kilogram" },
             new UnitType{ Code = "g", Name = "Gram" },
-            new UnitType{ Code = "L", Name = "Liter" },
+            new UnitType{ Code = "ltr", Name = "Liter" },
             new UnitType{ Code = "mL", Name = "Milliliter" },
             new UnitType{ Code = "pcs", Name = "Pieces" },
             new UnitType{ Code = "doz", Name = "Dozon" },
@@ -129,7 +148,8 @@ namespace MahantInv.Infrastructure.SeedScripts
             new UnitType{ Code = "box", Name = "Box" },
             new UnitType{ Code = "btl", Name = "Bottle" },
             new UnitType{ Code = "ctn", Name = "Carton" },
-            new UnitType{ Code = "mg", Name = "Milligram" }
+            new UnitType{ Code = "mg", Name = "Milligram" },
+            new UnitType{ Code = "mtr", Name = "Miter" }
             ];
             var existingUnitTypes = await _context.UnitTypes.ToListAsync();
             var newUnitTypes = unitTYpes.Where(os => !existingUnitTypes.Any(eos => eos.Code == os.Code)).ToList();

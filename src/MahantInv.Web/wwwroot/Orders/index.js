@@ -13,12 +13,15 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('div');
+    let btn = '';
     if (params.data.status != 'Ordered') {
-        this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">View</button>';
+        btn += '<a href="#" class="link-primary" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="View"><i class="bi bi-eye"></i></a>';
     }
     else {
-        this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">Edit</button>';
+        btn += '<a href="#" class="link-info" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder" title="Edit"><i class="bi bi-pencil-square"></i></a>';
     }
+    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteAction(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash"></i></a>';
+    this.eGui.innerHTML = btn;
 }
 
 ActionCellRenderer.prototype.getGui = function () {
@@ -37,7 +40,8 @@ var orderGridOptions = {
     // define grid columns
     columnDefs: [
         {
-            headerName: 'Product', field: 'product', filter: 'agSetColumnFilter', headerTooltip: 'Name', cellRenderer: "agGroupCellRenderer"
+            headerName: 'Product', field: 'product', filter: 'agTextColumnFilter', headerTooltip: 'Name'
+            //, cellRenderer: "agGroupCellRenderer"
         },
         {
             headerName: 'Order Date', field: 'orderDate', filter: 'agDateColumnFilter', headerTooltip: 'Order Date'
@@ -52,7 +56,7 @@ var orderGridOptions = {
             headerName: 'Net Amount', field: 'netAmount', filter: 'agNumberColumnFilter', headerTooltip: 'Net Amount'
         },
         {
-            headerName: 'Payment Status', field: 'paymentStatus', filter: 'agSetColumnFilter', headerTooltip: 'Payment Status',
+            headerName: 'Payment Status', field: 'paymentStatus', filter: 'agTextColumnFilter', headerTooltip: 'Payment Status',
             cellClassRules: {
                 "text-danger": (params) => params.value == "Unpaid",
                 "text-warning": (params) => params.value == "Partially Paid",
@@ -71,7 +75,7 @@ var orderGridOptions = {
             headerName: 'Seller', field: 'seller', filter: 'agTextColumnFilter', headerTooltip: 'Seller',
         },
         {
-            headerName: 'Order Status', field: 'status', filter: 'agSetColumnFilter', headerTooltip: 'Status',
+            headerName: 'Order Status', field: 'status', filter: 'agTextColumnFilter', headerTooltip: 'Status',
             cellRenderer: function (params) {
                 if (params.value == 'Ordered') {
                     return '<button type="button" class="btn btn-link btn-sm" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="PlaceOrder">' + params.value + '</button>'
@@ -94,12 +98,9 @@ var orderGridOptions = {
             cellRenderer: 'actionCellRenderer',
         }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
         flex: 1,
@@ -108,32 +109,33 @@ var orderGridOptions = {
         //autoHeight: true,
         floatingFilter: true,
     },
-    masterDetail: true,
-    detailRowAutoHeight: true,
-    detailCellRendererParams: {
-        suppressDetailGrid: true // This ensures detail rows are collapsed by default
-    },
-    detailCellRendererParams: {
-        detailGridOptions: {
-            columnDefs: [
-                { field: "party" },
-                { field: "paymentType" },
-                { field: "amount" },
-                { field: "paymentDate" },
-            ],
-            defaultColDef: {
-                flex: 1,
-            },
-        },
-        getDetailRowData: (params) => {
-            params.successCallback(params.data.orderTransactions);
-        },
-    },
+    //masterDetail: true,
+    //detailRowAutoHeight: true,
+    //detailCellRendererParams: {
+    //    suppressDetailGrid: true // This ensures detail rows are collapsed by default
+    //},
+    //detailCellRendererParams: {
+    //    detailGridOptions: {
+    //        columnDefs: [
+    //            { field: "party" },
+    //            { field: "paymentType" },
+    //            { field: "amount" },
+    //            { field: "paymentDate" },
+    //        ],
+    //        defaultColDef: {
+    //            flex: 1,
+    //        },
+    //    },
+    //    getDetailRowData: (params) => {
+    //        params.successCallback(params.data.orderTransactions);
+    //    },
+    //},
     suppressRowTransform: true,
     pagination: true,
-    paginationAutoPageSize: true,
+    paginationPageSize: 200,
+    //paginationAutoPageSize: true,
     animateRows: true,
-    
+
     getRowId: params => {
         return params.data.id;
     },
@@ -150,13 +152,23 @@ var orderGridOptions = {
         }
     },
     onStateUpdated: onStateUpdated,
+    autoSizeStrategy: {
+        type: "fitGridWidth",
+        defaultMinWidth: 100,
+        columnLimits: [
+            {
+                colId: "product",
+                minWidth: 500,
+            },
+        ],
+    },
     onGridReady: function (params) {
-        //const allColumnIds = [];
-        //orderGridAPI.getAllGridColumns().forEach((column) => {
-        //    if (column.colId != 'id')
-        //        allColumnIds.push(column.colId);
-        //});
-        //orderGridAPI.autoSizeColumns(allColumnIds, false);
+        orderGridAPI.sizeColumnsToFit(
+            gridApi.sizeColumnsToFit({
+                defaultMinWidth: 100,
+                columnLimits: [{ key: "productName" }],
+            })
+        );
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Loading your orders, please wait…</span>',
@@ -171,9 +183,10 @@ function onStateUpdated(event) {
     localStorage.setItem("9427363582ba4ccda0a9aa2fcd422bc77", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
+        this.GujaratiName = Common.ParseValue(GujaratiName);
         this.Description = Common.ParseValue(Description);
         this.Size = Size;
         this.UnitTypeCode = Common.ParseValue(UnitTypeCode);
@@ -263,6 +276,7 @@ class Common {
         $('#ProductErrorSection').empty();
         //$('#Id').val(model.Id);
         $('#Name').val('');
+        $('#GujaratiName').val('');
         $('#Description').val('');
         $('#Size').val('');
         $('#UnitTypeCode').val('');
@@ -283,7 +297,7 @@ class Common {
         //$('#PartyErrorSection').empty();
         //$('#Id').val(model.Id);
         $('#ProductName').val('');
-        $('#Type').val('');
+        $('#Type').val('Both');
         $('#CategoryId').val('');
         $('#City').val('');
         $('#Country').val('');
@@ -302,7 +316,7 @@ class Common {
         $('#PayerId').val(rowData.payerId).trigger('change');
         $('#PaidAmount').val(rowData.paidAmount);
         $('#OrderDate').val(moment(rowData.orderDate).format("YYYY-MM-DD"));
-        $('#ReceivedQuantity').val(rowData.quantity);
+        $('#ReceivedQuantity').val(rowData.receivedQuantity);
         $('#ReceivedDate').val(moment().format("YYYY-MM-DD"));
         $('#Remark').val(rowData.remark);
     }
@@ -314,9 +328,19 @@ class Common {
         var gridDiv = document.querySelector('#ordersdata');
         var state = localStorage.getItem("9427363582ba4ccda0a9aa2fcd422bc77");
         if (state) {
-            orderGridOptions.initialState=JSON.parse(state);
+            orderGridOptions.initialState = JSON.parse(state);
         }
         orderGridAPI = new agGrid.createGrid(gridDiv, orderGridOptions);
+        orderGridAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
     }
 
     static LoadDataInGrid(startDate, endDate) {
@@ -330,7 +354,7 @@ class Common {
         })
             .then((response) => response.json())
             .then(data => {
-               
+
                 orderGridAPI.setGridOption("rowData", data);
             })
             .catch(error => {
@@ -341,7 +365,7 @@ class Common {
                 //});
             });
     }
-    
+
 
     static BindValuesToOrderForm(model) {
         $('#OrderErrorSection').empty();
@@ -360,7 +384,7 @@ class Common {
         $('#NetAmount').val(model.NetAmount);
         $('#OrderTransactionSummarySectionPaidAmount').html(0);
         $('#OrderTransactionSummarySectionPendingAmount').html(model.NetAmount ?? 0);
-        
+
         if (model.OrderTransactions.length == 0) {
             $('#OrderTransactionBody').html("<tr><td colspan='5' class='text-center alert alert-info'>Transaction(s) will be appear here.</td></tr>");
         }
@@ -449,7 +473,7 @@ class Common {
                     "<div class='select2-result-repository clearfix'>" +
                     "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath + "'></div>" +
                     "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'>" + repo.name + "</div>" +
+                    "<div class='select2-result-repository__title'>" + repo.gujaratiName + "</div>" +
                     "<div class='select2-result-repository__description'>" + repo.description + "</div>" +
                     "<div class='select2-result-repository__statistics'>" +
                     "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode + "</div>" +
@@ -468,9 +492,12 @@ class Common {
                 return repo.name
             }
         });
-    } 
+    }
     static SetBulkNameAndQuantity() {
-        $('#BulkNameQuantityLabel').html(bulkOrderName);
+        bulkOrderName = bulkOrderName == null || bulkOrderName == "" ? "-" : bulkOrderName;
+        bulkOrderQuantity = bulkOrderQuantity == null || bulkOrderQuantity == "" ? "-" : bulkOrderQuantity;
+        let bulkDispLabel = bulkOrderName + "(" + bulkOrderQuantity + ")";
+        $('#BulkNameQuantityLabel').html(bulkDispLabel);
     }
     static async SaveOrder(mthis) {
         $('#OrderErrorSection').empty();
@@ -504,6 +531,7 @@ class Common {
             }
             let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
+            $('#NewOrderBtn').click();
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -537,7 +565,6 @@ class Common {
                 else {
                     $('#ReceivedQuantity').attr('readonly', false);
                 }
-                console.log();
                 if (data.status == 'Ordered') {
                     $('.cancelbtn').show();
                     $('.saveorderbtn').show();
@@ -609,6 +636,7 @@ class Common {
             //orderGridAPI.applyTransaction({ update: [response.data] });
             let rowNode = orderGridAPI.getRowNode(response.data[0].id);
             orderGridAPI.flashCells({ rowNodes: [rowNode] });
+            $('#NewOrderBtn').click();
         }
         if (response.success == false) {
             var errorHtml = "";
@@ -767,21 +795,46 @@ class Common {
         let DiscountAmount = Discount.toString().indexOf('%') == -1 ? Discount : (TotalAmount * parseFloat(Discount)) / 100;
         let NetTax = ((TotalAmount - DiscountAmount) * Tax) / 100;
         let NetAmount = (TotalAmount - DiscountAmount) + NetTax;
-        return new DiscountAndNetPay(DiscountAmount, NetAmount);
+        $('#DiscountAmount').val(parseFloat(DiscountAmount).toFixed(2));
+        $('#NetAmount').val(parseFloat(NetAmount).toFixed(2));
+    }
+    static CalculatePricePerItem(mthis) {
+        let Quantity = $('#ReceivedQuantity').val() || $('#Quantity').val() || 0;
+        let NetAmount = $('#NetAmount').val();
+        NetAmount = parseFloat(NetAmount);
+        let Tax = $('#Tax').val() || 0;
+        let Discount = $('#Discount').val() || '0';
+        let DiscountAmount = Discount.toString().indexOf('%') == -1 ? Discount : (NetAmount * parseFloat(Discount)) / 100;
+        Quantity = Quantity == null ? 1 : Quantity;
+        DiscountAmount = DiscountAmount == null ? 0 : DiscountAmount;
+        Quantity = parseFloat(Quantity);
+        DiscountAmount = parseFloat(DiscountAmount);
+        let actualAmount = NetAmount / (1 + (Tax / 100));
+        let PricePerItem = (actualAmount + DiscountAmount) / Quantity;
+        $('#PricePerItem').val(parseFloat(PricePerItem).toFixed(2));
+        //return PricePerItem;
     }
     static async InitCountable() {
         $(".countable").on("input", function () {
             if ($(this).attr('id') === 'BulkNameQuantity') {
                 var bulkQuantity = $(this).val(); // Get the value of BulkNameQuantity
                 if (bulkQuantity >= 0) {
+                    bulkOrderQuantity = bulkOrderQuantity == null || bulkOrderQuantity == "" || bulkOrderQuantity == "-" ? 1 : bulkOrderQuantity;
                     $('#Quantity').val(bulkQuantity * bulkOrderQuantity);
                 }
             }
-            var result = Common.CalculateDiscountAndNetPay();
-            $('#DiscountAmount').val(result.DiscountAmount);
-            $('#NetAmount').val(result.NetAmount);
+            $('#ReceivedQuantity').val($('#Quantity').val());
+            Common.CalculateDiscountAndNetPay();
+
             Common.UpdateOrderTransactionGrid();
         });
+    }
+    static async InitPricePerItemInput(mthis) {
+        Common.CalculateDiscountAndNetPay();
+    }
+    static async InitNetAmountInput(mthis) {
+
+        Common.CalculatePricePerItem();
     }
     static async SaveParty(mthis) {
         $('#PartyErrorSection').empty();
@@ -838,6 +891,7 @@ class Common {
     static async SaveProduct(mthis) {
         $('#ProductErrorSection').empty();
         let Name = $('#ProductName').val();
+        let GujaratiName = $('#GujaratiName').val();
         let Description = $('#Description').val();
         let Size = $('#Size').val();
         let UnitTypeCode = $('#UnitTypeCode').val();
@@ -847,7 +901,7 @@ class Common {
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(0, Name, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        let product = new Product(0, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -886,6 +940,48 @@ class Common {
                 Common.InitSelect2();
             }, 1000);
         }
+    }
+
+    static async DeleteAction(mthis) {
+        // get current row id
+        let id = $(mthis).data('id');
+        //get confirmation
+        let isConfirm = confirm("Are you sure to delete this Order?");
+        if (!isConfirm) {
+            return true;
+        }
+        //call api
+        var response = await fetch(baseUrl + 'api/order/delete/' + id, {
+            method: 'POST',
+            headers: {
+                //'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => { return response.json() });
+        if (response.status > 399 && response.status < 500) {
+            if (response != null) {
+                var errorHtml = "";
+                $.each(response.errors, function (index, element) {
+                    errorHtml += element[0] + '<br/>';
+                });
+                toastr.warning(errorHtml, '', { positionClass: 'toast-top-center' });
+            }
+        }
+        if (response.success) {
+            toastr.success("Order Deleted", '', { positionClass: 'toast-top-center' });
+            //Get Row node using id
+            let rowNode = orderGridAPI.getRowNode(id);
+            //remove row from grid
+            orderGridAPI.applyTransaction({ remove: [rowNode.data] });
+        }
+        if (response.success == false) {
+            var errorHtml = "";
+            $.each(response.errors, function (index, element) {
+                errorHtml += element[0].errorMessage + '<br/>';
+            });
+            toastr.error(errorHtml, '', { positionClass: 'toast-top-center' });
+        }
+
     }
 }
 

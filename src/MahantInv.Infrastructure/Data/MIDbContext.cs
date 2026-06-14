@@ -3,6 +3,7 @@ using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Identity;
 using MahantInv.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -11,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Infrastructure.Data
 {
-    public class MIDbContext : IdentityDbContext<MIIdentityUser>
+    public class MIDbContext : IdentityDbContext<MIIdentityUser, MIIdentityRole,string, IdentityUserClaim<string>, MIIdentityUserRole, IdentityUserLogin<string>,
+        IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         private readonly IMediator _mediator;
 
@@ -58,6 +60,40 @@ namespace MahantInv.Infrastructure.Data
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
 
+            //// Configure MIIdentityUserRole Relationship
+            //modelBuilder.Entity<MIIdentityUserRole>()
+            //    .HasKey(ur => new { ur.UserId, ur.RoleId }); // Composite primary key
+
+            //modelBuilder.Entity<MIIdentityUserRole>()
+            //    .HasOne(ur => ur.User)
+            //    .WithMany(u => u.UserRoles)
+            //    .HasForeignKey(ur => ur.UserId)
+            //    .IsRequired();
+
+
+            modelBuilder.Entity<MIIdentityUser>(b =>
+            {
+
+                // Each User can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<MIIdentityRole>(b =>
+            {
+                // Each Role can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+            });
+
+            // Ensure tables match default Identity structure
+            modelBuilder.Entity<MIIdentityUser>().ToTable("AspNetUsers");
+            modelBuilder.Entity<MIIdentityRole>().ToTable("AspNetRoles");
+            modelBuilder.Entity<MIIdentityUserRole>().ToTable("AspNetUserRoles");
             // alternately this is built-in to EF Core 2.2
             //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 

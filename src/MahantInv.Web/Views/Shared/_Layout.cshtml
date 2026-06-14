@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/lib/select2/css/select2-bootstrap4.min.css" />
     <link rel="stylesheet" href="~/lib/daterangepicker/daterangepicker.css" />
     <link rel="stylesheet" href="~/css/plugins.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
 
         .icon {
@@ -51,7 +52,7 @@
             width: 300px;
             height: 0px;
             opacity: 0;
-            z-index: 1024;
+            /* z-index: 1024; */
             position: absolute;
             top: 63px;
             right: 62px;
@@ -136,11 +137,11 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark border-bottom border-body" data-bs-theme="dark" style="background-color: #064482">
         <div class="container-fluid">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand text-white font-weight-bold" title="Mahant Inventory">MI</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 @await Html.PartialAsync("_LoginPartial")
 
             </div>
@@ -159,7 +160,7 @@
     <script src="~/lib/toastr/toastr.min.js" asp-append-version="true"></script>
     <script src="~/lib/select2/js/select2.min.js" asp-append-version="true"></script>
     <script src="~/lib/daterangepicker/daterangepicker.js" asp-append-version="true"></script>
-
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lc0gKAqAAAAAEQxmKiHtpSyV_WXojjc0ccWbUaK"></script>
     <script type="text/javascript">
         var baseUrl = '@Url.Content("~/")';
         Array.prototype.uniquePush = function (item) {
@@ -187,6 +188,17 @@
                 );
             };
         }
+        // var miTheme = agGrid.themeQuartz
+        // .withParams(
+        //   {
+        //     backgroundColor: "#201008",
+        //     foregroundColor: "#FFFFFFCC",
+        //     browserColorScheme: "dark",
+        //   },
+        //   "dark-red",
+        // );
+
+       
         //        $(document).ready(function(){
 
 
@@ -216,7 +228,7 @@
     </script>
     <script src="~/Notification/mynotification.js" asp-append-version="true"></script>
     @await RenderSectionAsync("scripts", required: false).ConfigureAwait(false)
-    <script src="~/lib/aggrid/ag-grid-enterprise.min.js"></script>
-
+    @* <script src="~/lib/aggrid/ag-grid-enterprise.min.js"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ag-grid/33.0.3/ag-grid-community.min.js" integrity="sha512-2bPPlED0cr8Mg0om7YNIyFkU1Uwsh+FPmDeoCW8QkHKnex+AIGbGXFqI7g7Bz6+TbvLQFpr7PJoZcWPWjzaNqA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>

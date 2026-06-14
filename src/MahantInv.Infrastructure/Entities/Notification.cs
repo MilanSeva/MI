@@ -13,5 +13,6 @@ namespace MahantInv.Infrastructure.Entities
         public string Status { get; set; }
         public DateTime ModifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }
+        public double? Quantity { get; set; }
     }
 }

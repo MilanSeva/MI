@@ -28,7 +28,7 @@ namespace MahantInv.Infrastructure.Data
                             where ps.ProductId = @productId
                             group by ps.ProductId
                         )
-                        select p.Id,p.Name, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
+                        select p.Id,p.Name, p.GujaratiName, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
                     s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] 
                         from Products p
                         inner join AspNetUsers u on p.LastModifiedById = u.Id
@@ -46,7 +46,7 @@ namespace MahantInv.Infrastructure.Data
                             left outer join Storages s on ps.StorageId = s.Id
                             group by ps.ProductId
                         )
-                        select p.Id,p.Name, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
+                        select p.Id,p.Name, p.GujaratiName, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
                         s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] from Products p
                         inner join AspNetUsers u on p.LastModifiedById = u.Id
                         left outer join storagecte s on p.Id = s.ProductId

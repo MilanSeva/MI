@@ -2,18 +2,20 @@
 using MahantInv.Infrastructure.Entities;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     public class PartyApiController : BaseApiController
     {
         private readonly ILogger<PartyApiController> _logger;
@@ -51,7 +53,7 @@ namespace MahantInv.Web.Api
                           .ToList();
                     return BadRequest(errors);
                 }
-                party.Country = party.Country.IsNullOrEmpty() ? "India" : party.Country;
+                party.Country = string.IsNullOrEmpty(party.Country) ? "India" : party.Country;
                 party.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 party.ModifiedAt = DateTime.UtcNow;
                 if (party.Id == 0)

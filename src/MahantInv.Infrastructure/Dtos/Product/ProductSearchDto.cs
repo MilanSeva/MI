@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string GujaratiName { get; set; } = null!;
         public string? PicturePath { get; set; }
         public decimal? Size { get; set; }
         public string Description { get; set; }

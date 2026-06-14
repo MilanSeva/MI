@@ -5,7 +5,9 @@ ActionCellRenderer.prototype.init = function (params) {
     this.params = params;
 
     this.eGui = document.createElement('span');
-    this.eGui.innerHTML = '<button class="btn btn-sm btn-link" type="button" onclick="Common.OpenModal(this)" data-id="' + params.data.id + '" data-target="AddEditProduct">Edit</button>';
+    let btn = '';
+    btn += ' <a href="#" class="link-danger" onclick="Common.DeleteSell(this)" data-id="' + params.data.id + '" title="Delete"><i class="bi bi-trash3 fs-6"></i></a>';
+    this.eGui.innerHTML = btn;
 }
 
 ActionCellRenderer.prototype.getGui = function () {
@@ -24,10 +26,11 @@ var productUsageGridOptions = {
     // define grid columns
     columnDefs: [
         {
-            headerName: 'Product', field: 'productName', filter: 'agTextColumnFilter', headerTooltip: 'Product'
+            headerName: 'Product', field: 'productName', wrapText: false, filter: 'agTextColumnFilter', headerTooltip: 'Product'
         },
         {
-            headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Quantity'
+            headerName: 'Quantity', field: 'quantity', filter: 'agNumberColumnFilter', headerTooltip: 'Quantity',
+            editable: true
         },
         {
             headerName: 'Buyer', field: 'buyer', filter: 'agTextColumnFilter', headerTooltip: 'Buyer'
@@ -35,13 +38,12 @@ var productUsageGridOptions = {
         {
             headerName: 'Usage Date', field: 'usageDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Usage Date'
         },
-
-        //{
-        //    headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
-        //    cellRenderer: 'actionCellRenderer',
-        //}
+        {
+            headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
+            cellRenderer: 'actionCellRenderer',
+        }
     ],
-    sideBar: { toolPanels: ['columns', 'filters'] },
+    //sideBar: { toolPanels: ['columns', 'filters'] },
     //rowClassRules: {
     //    'sick-days-warning': function (params) {
     //        return params.data.currentStock < params.data.reorderLevel;
@@ -49,12 +51,9 @@ var productUsageGridOptions = {
     //},
     defaultColDef: {
         editable: false,
-        enableRowGroup: true,
-        enablePivot: true,
-        enableValue: true,
         sortable: true,
         resizable: true,
-        flex: 1,
+        //flex: 1,
         minWidth: 50,
         wrapText: true,
         autoHeight: true,
@@ -74,46 +73,29 @@ var productUsageGridOptions = {
         return params.data.id;
     },
     suppressContextMenu: true,
-    //components: {
-    //    actionCellRenderer: ActionCellRenderer
-    //},
-    columnTypes: {
-        numberColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 50,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        },
-        dateColumn: {
-            editable: false,
-            enableRowGroup: true,
-            enablePivot: true,
-            enableValue: true,
-            sortable: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 130,
-            wrapText: true,
-            autoHeight: true,
-            floatingFilter: true,
-        }
+    components: {
+        actionCellRenderer: ActionCellRenderer
     },
+    onCellValueChanged: onCellValueChanged,
     onStateUpdated: onStateUpdated,
+    autoSizeStrategy: {
+        type: "fitGridWidth",
+        defaultMinWidth: 100,
+        columnLimits: [
+            {
+                colId: "productName",
+                minWidth: 500,
+            },
+        ],
+    },
     onGridReady: function (params) {
-        productUsageAPI.sizeColumnsToFit();
-        //const allColumnIds = [];
-        //productUsageGridOptions.columnApi.getAllColumns().forEach((column) => {
-        //    if (column.colId != 'id')
-        //        allColumnIds.push(column.colId);
-        //});
-        //productUsageGridOptions.columnApi.autoSizeColumns(allColumnIds, false);
+        //productUsageAPI.autoSizeAllColumns();
+        productUsageAPI.sizeColumnsToFit(
+            gridApi.sizeColumnsToFit({
+                defaultMinWidth: 100,
+                columnLimits: [{ key: "productName" }],
+            })
+        );
     },
     overlayLoadingTemplate:
         '<span class="ag-overlay-loading-center">Please wait while your data are loading</span>',
@@ -122,6 +104,37 @@ var productUsageGridOptions = {
                 <h5 class="text-center"><b>Data will be appear here.</b></h5>
             </div>`
 };
+function onCellValueChanged(event) {
+    //get the row id
+    let id = event.data.id;
+    let quantity = event.newValue;
+
+    //Call the API to update the quantity
+    fetch(baseUrl + 'api/product/usage/' + id, {
+        method: 'PUT',
+        body: quantity,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    }).then(response => { return response.json() })
+        .then(data => {
+            if (data.success) {
+                toastr.success("Updated", '', { positionClass: 'toast-top-center' });
+                //Get the row node by id
+                let rowNode = productUsageAPI.getRowNode(id);
+                //Update the row node in the grid
+                rowNode.setDataValue('quantity', quantity);
+                productUsageAPI.flashCells({ rowNodes: [rowNode] });
+            }
+            if (data.success == false) {
+                toastr.error(data.errors, '', { positionClass: 'toast-top-center' });
+            }
+        }).catch(error => {
+            console.log('err:', error);
+            toastr.error(error, '', { positionClass: 'toast-top-center' });
+        });
+}
 function onStateUpdated(event) {
     var state = productUsageAPI.getState();
     localStorage.setItem("612bd1bf907e4d08a2a86799e193ecfb", JSON.stringify(state));
@@ -170,6 +183,16 @@ class Common {
             productUsageGridOptions.initialState = JSON.parse(state);
         }
         productUsageAPI = new agGrid.createGrid(gridDiv, productUsageGridOptions);
+        productUsageAPI.setGridOption("theme", agGrid.themeQuartz
+            .withParams(
+                {
+                    backgroundColor: "#1e2838",
+                    foregroundColor: "#FFFFFFCC",
+                    browserColorScheme: "dark",
+                },
+                "dark-red",
+            ));
+        document.body.dataset.agThemeMode = "dark-red";
         fetch(baseUrl + 'api/usages')
             .then((response) => response.json())
             .then(data => {
@@ -204,6 +227,32 @@ class Common {
         Common.ProductSearchSelect2();
     }
 
+    static async DeleteSell(mthis) {
+        //get confirmation using confirm box
+        let isDelete = confirm('Are you sure to delete this record?');
+
+        if (!isDelete) return;
+
+        let id = $(mthis).data('id');
+        let response = await fetch(baseUrl + 'api/product/usage/' + id, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(response => { return response.json() });
+        if (response.success) {
+            toastr.success("Deleted", '', { positionClass: 'toast-top-center' });
+            //Get the row node by id
+            let rowNode = productUsageAPI.getRowNode(id);
+            //Remove the row node from the grid
+            productUsageAPI.applyTransaction({ remove: [rowNode] });
+        }
+        if (response.success == false) {
+            toastr.error(response.errors, '', { positionClass: 'toast-top-center' });
+        }
+    }
+
     //static BindSelectData() {
     //    var result = [];
     //    result.push({ id: '', text: '' });
@@ -220,11 +269,12 @@ class Common {
                 'Content-Type': 'application/json'
             },
         }).then(response => { return response.json() });
-        
-        $('#ProductUsageSelect').select2({
+
+        $('#ProductUsageSelect').prepend('<option selected></option>').select2({
             placeholder: 'Search Product',
             closeOnSelect: true,
             allowClear: true,
+            minimumResultsForSearch: 10,
             data: response,
             templateResult: function (repo) {
                 if (repo.loading) {
@@ -232,14 +282,14 @@ class Common {
                 }
                 var $container = $(
                     "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath +"'></div>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + repo.picturePath + "'></div>" +
                     "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'>"+repo.name+"</div>" +
-                    "<div class='select2-result-repository__description'>"+repo.description+"</div>" +
+                    "<div class='select2-result-repository__title'>" + repo.gujaratiName + "</div>" +
+                    "<div class='select2-result-repository__description'>" + repo.description + "</div>" +
                     "<div class='select2-result-repository__statistics'>" +
-                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode +"</div>" +
-                    "<div class='select2-result-repository__stargazers'>"+repo.company+"</div>" +
-                    "<div class='select2-result-repository__watchers'>"+repo.storage+"</div>" +
+                    "<div class='select2-result-repository__forks'>" + repo.size + "" + repo.unitTypeCode + "</div>" +
+                    "<div class='select2-result-repository__stargazers'>" + repo.company + "</div>" +
+                    "<div class='select2-result-repository__watchers'>" + repo.storage + "</div>" +
                     "</div>" +
                     "</div>" +
                     "</div>"
@@ -274,7 +324,7 @@ class Common {
         let quantity = $('#UsageQuantity').val();
         let Buyer = $('#BuyersSelect').val();
         let UsageDate = $('#UsageDate').val();
-        var productUsageModel = new ProductUsageModel(productId[0], quantity, Buyer, UsageDate);
+        var productUsageModel = new ProductUsageModel(productId, quantity, Buyer, UsageDate);
         var response = await fetch(baseUrl + 'api/product/usage', {
             method: 'POST',
             body: JSON.stringify(productUsageModel),
@@ -294,9 +344,9 @@ class Common {
         }
         if (response.success) {
             toastr.success("Saved", '', { positionClass: 'toast-top-center' });
-            productUsageGridOptions.api.applyTransaction({ add: [response.data], addIndex: 0 });
-            let rowNode = productUsageGridOptions.api.getRowNode(response.data.id);
-            productUsageGridOptions.api.flashCells({ rowNodes: [rowNode] });
+            productUsageAPI.applyTransaction({ add: [response.data], addIndex: 0 });
+            let rowNode = productUsageAPI.getRowNode(response.data.id);
+            productUsageAPI.flashCells({ rowNodes: [rowNode] });
 
             $('#ProductUsageSelect').val('').trigger('change');
             $('#UsageQuantity').val('');

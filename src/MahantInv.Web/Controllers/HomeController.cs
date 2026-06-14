@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {
@@ -21,6 +23,7 @@ namespace MahantInv.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductUsageRepository _productUsageRepository;
+
         public HomeController(ILogger<HomeController> logger, IProductUsageRepository productUsageRepository, IMapper mapper) : base(mapper)
         {
             _logger = logger;
@@ -31,7 +34,7 @@ namespace MahantInv.Web.Controllers
         {
             return View();
         }
-        [Authorize]
+        [Authorize(Roles = Roles.Admin + "," + Roles.User)]
         public async Task<IActionResult> Sell()
         {
             try
@@ -47,9 +50,40 @@ namespace MahantInv.Web.Controllers
                 return BadRequest("Unexpected Error " + GUID);
             }
         }
-        
+        //[HttpPost]
+        //public async Task<IActionResult> VerifyCaptcha(string gRecaptchaResponse)
+        //{
+        //    if (string.IsNullOrWhiteSpace(gRecaptchaResponse))
+        //    {
+        //        ModelState.AddModelError(string.Empty, "Captcha is required.");
+        //        return View("Index");
+        //    }
+
+        //    var captchaResult = await _captchaService.VerifyCaptchaAsync(gRecaptchaResponse);
+
+        //    if (!captchaResult.Success || captchaResult.Score < 0.5)
+        //    {
+        //        // Show visible reCAPTCHA v2 or reject the request
+        //        return View("CaptchaRequired");
+        //    }
+
+        //    // Proceed with form submission
+        //    return RedirectToAction("Success");
+        //}
         public IActionResult Error()
         {
+            return View();
+        }
+        [Authorize(Roles = Roles.Admin)]
+        public IActionResult Users()
+        {
+            //Create viewbag for roles
+            ViewBag.Roles = new SelectList(new List<SelectListItem>
+            {
+                new SelectListItem { Text = Roles.Admin, Value = Roles.Admin },
+                new SelectListItem { Text = Roles.User, Value = Roles.User },
+                new SelectListItem { Text = Roles.ProductView, Value = Roles.ProductView }
+            }, "Value", "Text");
             return View();
         }
     }

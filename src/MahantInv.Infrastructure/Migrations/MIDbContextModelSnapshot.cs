@@ -15,7 +15,7 @@ namespace MahantInv.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
             modelBuilder.Entity("MahantInv.Infrastructure.Entities.Buyer", b =>
                 {
@@ -84,8 +84,7 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<double?>("NetAmount")
                         .HasColumnType("REAL");
 
-                    b.Property<DateOnly?>("OrderDate")
-                        .IsRequired()
+                    b.Property<DateOnly>("OrderDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentStatus")
@@ -94,12 +93,10 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<double?>("PricePerItem")
                         .HasColumnType("REAL");
 
-                    b.Property<int?>("ProductId")
-                        .IsRequired()
+                    b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double?>("Quantity")
-                        .IsRequired()
+                    b.Property<double>("Quantity")
                         .HasColumnType("REAL");
 
                     b.Property<DateOnly?>("ReceivedDate")
@@ -216,8 +213,7 @@ namespace MahantInv.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CategoryId")
-                        .IsRequired()
+                    b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("City")
@@ -294,6 +290,10 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("GujaratiName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsDisposable")
                         .HasColumnType("INTEGER");
 
@@ -316,12 +316,10 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<string>("PicturePath")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("ReorderLevel")
-                        .IsRequired()
+                    b.Property<decimal>("ReorderLevel")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("Size")
-                        .IsRequired()
+                    b.Property<decimal>("Size")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UnitTypeCode")
@@ -517,6 +515,9 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AuthenticatorKey")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
@@ -526,6 +527,12 @@ namespace MahantInv.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsMfaEnabled")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("LockoutEnabled")
