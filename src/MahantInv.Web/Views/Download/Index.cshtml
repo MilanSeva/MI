@@ -1,0 +1,168 @@
+@{
+    ViewData["Title"] = "Download Data";
+}
+
+<style>
+    .download-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .download-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #dee2e6;
+        margin-bottom: 15px;
+    }
+
+    .download-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .download-card.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .download-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .download-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .download-description {
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading-overlay.show {
+        display: flex;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #0d6efd;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+</style>
+
+<style>
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        font-size: 1.1rem;
+        color: #333;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="download-container">
+        <h1 class="mb-4">Download Data</h1>
+        <p class="text-muted mb-4">Select the data type you want to export as Excel file.</p>
+
+        <div class="card download-card" onclick="downloadData('products')">
+            <div class="card-body">
+                <div class="download-icon">??</div>
+                <div class="download-title">Products</div>
+                <div class="download-description">Download all products inventory data</div>
+            </div>
+        </div>
+
+        <div class="card download-card" onclick="downloadData('purchase')">
+            <div class="card-body">
+                <div class="download-icon">??</div>
+                <div class="download-title">Purchase</div>
+                <div class="download-description">Download all purchase orders data</div>
+            </div>
+        </div>
+
+        <div class="card download-card" onclick="downloadData('sell')">
+            <div class="card-body">
+                <div class="download-icon">??</div>
+                <div class="download-title">Sell</div>
+                <div class="download-description">Download all sales transaction data</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <div class="loading-text">Preparing your download...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function downloadData(type) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('show');
+
+            const apiUrl = `/api/download/${type}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Download failed');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${type}.xlsx`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error downloading file. Please try again.');
+                })
+                .finally(() => {
+                    loadingOverlay.classList.remove('show');
+                });
+        }
+    </script>
+}
