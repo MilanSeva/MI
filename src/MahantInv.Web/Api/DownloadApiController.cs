@@ -1,5 +1,4 @@
 using AutoMapper;
-using AutoMapper;
 using MahantInv.Infrastructure.Data;
 using MahantInv.Infrastructure.Interfaces;
 using MahantInv.Infrastructure.ViewModels;
@@ -57,18 +56,19 @@ namespace MahantInv.Web.Api
 
                     // Add headers
                     worksheet.Cells[1, 1].Value = "Name";
-                    worksheet.Cells[1, 2].Value = "Company";
-                    worksheet.Cells[1, 3].Value = "Description";
-                    worksheet.Cells[1, 4].Value = "Size & Unit";
-                    worksheet.Cells[1, 5].Value = "Order Bulk Name";
-                    worksheet.Cells[1, 6].Value = "Order Bulk Quantity";
-                    worksheet.Cells[1, 7].Value = "Current Stock";
-                    worksheet.Cells[1, 8].Value = "Reorder Level";
-                    worksheet.Cells[1, 9].Value = "Is Disposable?";
-                    worksheet.Cells[1, 10].Value = "Storage";
+                    worksheet.Cells[1, 2].Value = "Gujarati Name";
+                    worksheet.Cells[1, 3].Value = "Company";
+                    worksheet.Cells[1, 4].Value = "Description";
+                    worksheet.Cells[1, 5].Value = "Size & Unit";
+                    worksheet.Cells[1, 6].Value = "Order Bulk Name";
+                    worksheet.Cells[1, 7].Value = "Order Bulk Quantity";
+                    worksheet.Cells[1, 8].Value = "Current Stock";
+                    worksheet.Cells[1, 9].Value = "Reorder Level";
+                    worksheet.Cells[1, 10].Value = "Is Disposable?";
+                    worksheet.Cells[1, 11].Value = "Storage";
 
                     // Style header row
-                    var headerRange = worksheet.Cells[1, 1, 1, 10];
+                    var headerRange = worksheet.Cells[1, 1, 1, 11];
                     headerRange.Style.Font.Bold = true;
                     headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
@@ -78,15 +78,16 @@ namespace MahantInv.Web.Api
                     foreach (var product in products)
                     {
                         worksheet.Cells[row, 1].Value = product.Name;
-                        worksheet.Cells[row, 2].Value = product.Company ?? string.Empty;
-                        worksheet.Cells[row, 3].Value = product.Description ?? string.Empty;
-                        worksheet.Cells[row, 4].Value = product.SizeUnitTypeCode ?? string.Empty;
-                        worksheet.Cells[row, 5].Value = product.OrderBulkName ?? string.Empty;
-                        worksheet.Cells[row, 6].Value = product.OrderBulkQuantity ?? 0;
-                        worksheet.Cells[row, 7].Value = product.CurrentStock;
-                        worksheet.Cells[row, 8].Value = product.ReorderLevel ?? 0;
-                        worksheet.Cells[row, 9].Value = product.Disposable;
-                        worksheet.Cells[row, 10].Value = product.Storage ?? string.Empty;
+                        worksheet.Cells[row, 2].Value = product.GujaratiName ?? string.Empty;
+                        worksheet.Cells[row, 3].Value = product.Company ?? string.Empty;
+                        worksheet.Cells[row, 4].Value = product.Description ?? string.Empty;
+                        worksheet.Cells[row, 5].Value = product.SizeUnitTypeCode ?? string.Empty;
+                        worksheet.Cells[row, 6].Value = product.OrderBulkName ?? string.Empty;
+                        worksheet.Cells[row, 7].Value = product.OrderBulkQuantity ?? 0;
+                        worksheet.Cells[row, 8].Value = product.CurrentStock;
+                        worksheet.Cells[row, 9].Value = product.ReorderLevel ?? 0;
+                        worksheet.Cells[row, 10].Value = product.Disposable;
+                        worksheet.Cells[row, 11].Value = product.Storage ?? string.Empty;
                         row++;
                     }
 
