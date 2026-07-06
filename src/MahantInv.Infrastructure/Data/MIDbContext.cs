@@ -24,6 +24,7 @@ namespace MahantInv.Infrastructure.Data
         }
 
         public virtual DbSet<Buyer> Buyers { get; set; }
+        public virtual DbSet<DefaultFilter> DefaultFilters { get; set; }
 
         public virtual DbSet<Notification> Notifications { get; set; }
 
@@ -164,6 +165,10 @@ namespace MahantInv.Infrastructure.Data
             });
 
             modelBuilder.Entity<Storage>(entity =>
+            {
+
+            });
+            modelBuilder.Entity<DefaultFilter>(entity =>
             {
 
             });

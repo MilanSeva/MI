@@ -12,15 +12,27 @@
 }
 <div class="card bg-dark border-dark">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="m-0 font-weight-bold text-white">Products</h5>
-        <div class="d-flex">
+        <!-- Left Section -->
+        <h5 class="m-0 font-weight-bold text-white" style="width: 200px;">Products</h5>
+
+        <!-- Center Section: Dropdown -->
+        <div class="mx-auto d-flex align-items-center gap-2" style="width: 350px;">
+            <select id="defaultFilterSelect" class="form-select form-select-sm bg-dark text-white border-light" data-bs-toggle="tooltip" title="Default Filter" onchange="Common.ApplyFilter(this)">
+                <option value="">Default Filter</option>
+            </select>
+
+            <button class="btn btn-outline-info btn-sm text-nowrap" onclick="Common.OpenFilterModal()">Save</button>
+        </div>
+
+        <!-- Right Section -->
+        <div class="d-flex" style="width: auto;">
             <div class="input-group">
                 <span class="input-group-text bg-dark border-light text-white">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" class="form-control form-control-sm me-2 bg-dark text-white" placeholder="Search..." onkeyup="Common.Search(this)">
             </div>
-            <button class="btn btn-outline-warning btn-sm me-2 text-nowrap" onclick="Common.ResetGrid()">Reset Grid</button>
+            <button class="btn btn-outline-warning btn-sm me-2 text-nowrap" onclick="Common.ResetGrid()">Reset</button>
             @if (!User.IsInRole(MahantInv.Infrastructure.Utility.Meta.Roles.ProductView))
             {
                 <button class="btn btn-outline-success btn-sm me-2 text-nowrap" onclick="Common.ExportToExcel()">Export</button>
@@ -49,6 +61,39 @@
     </div>
 </div>
 @await Html.PartialAsync("_AddEditProduct", new MahantInv.Infrastructure.Dtos.Product.ProductCreateDto())
+<div id="SaveFilterModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SaveFilterModalTitle">Save Filter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="DefaultFilterErrorSection" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="filterName">Name</label>
+                            <input type="text" id="filterName" name="filterName" class="form-control form-control-sm" placeholder="Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Description">Description</label>
+                            <textarea rows="3" id="filterDescription" name="filterDescription" class="form-control form-control-sm" placeholder="Description"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="Common.SaveFilter(this)" data-target="SaveFilterModal">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script src="~/Products/index.js" type="text/javascript" asp-append-version="true"></script>
 }

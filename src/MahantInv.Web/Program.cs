@@ -52,7 +52,7 @@ services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
     options =>
     {
-        options.UseSqlite(connectionString,mh=>mh.MigrationsHistoryTable("MigrationHistory"));
+        options.UseSqlite(connectionString, mh => mh.MigrationsHistoryTable("MigrationHistory"));
         options.EnableDetailedErrors(true);
     });
 
@@ -131,7 +131,9 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterModule(new DefaultInfrastructureModule(false));
 });
-services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+services.AddAutoMapper(
+    configAction => { },
+    AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

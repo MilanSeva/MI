@@ -3,6 +3,8 @@ using QRCoder.Core;
 using System.Threading.Tasks;
 using System;
 using MahantInv.Infrastructure.Identity;
+using QRCoder.Core.Generators;
+using QRCoder.Core.Renderers;
 
 namespace MahantInv.Web.Service
 {

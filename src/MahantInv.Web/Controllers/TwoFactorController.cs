@@ -5,6 +5,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using System.Drawing.Imaging;
+using QRCoder.Core.Generators;
+using QRCoder.Core.Renderers;
 
 namespace MahantInv.Web.Controllers
 {
@@ -67,14 +69,13 @@ namespace MahantInv.Web.Controllers
         private byte[] GenerateQrCode(string uri)
         {
             using var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
+            using var qrCodeData = qrGenerator.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
 
-            // Remove 'using' for QRCode instance since it doesn't implement IDisposable
-            var qrCode = new QRCode(qrCodeData);
-            using var bitmap = qrCode.GetGraphic(20);
-            using var stream = new MemoryStream();
-            bitmap.Save(stream,ImageFormat.Png);
-            return stream.ToArray();
+            // Use PngByteQRCode renderer instead of the legacy QRCode/Bitmap approach
+            using var qrCode = new PngByteQRCode(qrCodeData);
+
+            // GetGraphic returns the byte[] directly; no need for MemoryStream or Bitmap
+            return qrCode.GetGraphic(20);
         }
 
     }

@@ -9,6 +9,8 @@
     using System;
     using MahantInv.Infrastructure.Identity;
     using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+    using QRCoder.Core.Generators;
+    using QRCoder.Core.Renderers;
 
     public class EnableAuthenticatorModel : PageModel
     {

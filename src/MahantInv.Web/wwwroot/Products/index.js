@@ -1,4 +1,5 @@
 ﻿let productGridAPI;
+let defaultFilters;
 function ActionCellRenderer() { }
 
 ActionCellRenderer.prototype.init = function (params) {
@@ -398,7 +399,108 @@ class Common {
             });
 
     }
+    static OpenFilterModal(mthis) {
+        $('#filterName').val("");
+        $('#filterDescription').val("");
+        $('#SaveFilterModal').modal('show');
+    }
+    static SaveFilter(mthis) {
+        let filterData = productGridAPI.getState();
+        let name = $('#filterName').val().trim();
+        let description = $('#filterDescription').val().trim();
 
+        // Reset previous error states
+        $('#filterName').removeClass('is-invalid');
+
+        // 1. Check if Name is required
+        if (name == null || name === "") {
+            alert("Filter Name is required.");
+            return false;
+        }
+        // 2. Check if Name is max 50 characters
+        else if (name.length > 50) {
+            alert("Filter Name cannot exceed 50 characters.");
+            return false;
+        }
+        if (description == null || description === "") {
+            alert("Filter Description is required.");
+            return false;
+        }
+
+        fetch(baseUrl + 'api/filter/save', {
+            method: 'POST',
+            body: JSON.stringify({
+                code: 'Product',
+                name: name,
+                description: description,
+                filterData: JSON.stringify(filterData)
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(response => { return response.json() })
+            .then(data => {
+                if (data.success) {
+                    $('#SaveFilterModal').modal('hide');
+                    toastr.success("Saved", '', { positionClass: 'toast-top-center' });
+                    Common.GetDefaultFilters();
+                }
+                else {
+                    toastr.error(data.errors, '', { positionClass: 'toast-top-center' });
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                toastr.success("Unexpected error", '', { positionClass: 'toast-top-center' });
+            });
+
+    }
+    static ApplyFilter(mthis) {
+        const selectedId = $(mthis).val();
+        if (selectedId) {
+            const selectedObj = defaultFilters.find(f => f.id === Number(selectedId));
+
+            if (selectedObj) {
+                const state = JSON.parse(selectedObj.filterData);
+                console.log("Applying manual state for:", selectedObj.name);
+
+                // 1. Apply Column Sizing (if it exists in your state)
+                if (state.columnSizing && state.columnSizing.columnSizingModel) {
+                    productGridAPI.applyColumnState({
+                        state: state.columnSizing.columnSizingModel,
+                        applyOrder: true
+                    });
+                }
+
+                // 2. Apply Column Order (if it exists)
+                if (state.columnOrder && state.columnOrder.orderedColIds) {
+                    productGridAPI.applyColumnState({
+                        state: state.columnOrder.orderedColIds.map((colId, index) => ({
+                            colId: colId,
+                            pinned: null,
+                            sort: null
+                        })),
+                        applyOrder: true
+                    });
+                }
+
+                // 3. Apply Filters
+                if (state.filter && state.filter.filterModel) {
+                    productGridAPI.setFilterModel(state.filter.filterModel);
+                }
+
+                // 4. Apply Pagination
+                //if (state.pagination) {
+                //    productGridAPI.paginationSetPageSize(state.pagination.pageSize || 100);
+                //    productGridAPI.paginationGoToPage(state.pagination.page || 0);
+                //}
+            }
+        }
+        else {
+            productGridAPI.setFilterModel(null);
+            productGridAPI.refreshHeader();
+        }
+    }
     static BindValuesToProductForm(model) {
         $('#ProductErrorSection').empty();
         $('#Id').val(model.Id);
@@ -599,9 +701,27 @@ class Common {
         );
 
     }
+    static GetDefaultFilters() {
+        fetch(baseUrl + 'api/filters/Product')
+            .then((response) => response.json())
+            .then(data => {
+                defaultFilters = data;
+                const $dropdown = $('#defaultFilterSelect');
+
+                $dropdown.empty().append('<option value="" title="It clear the filter.">Default Filter</option>');
+
+                defaultFilters.forEach(item => {
+                    $dropdown.append(`<option value="${item.id}" title="${item.description}">${item.name}</option>`);
+                });
+            })
+            .catch(error => {
+
+            });
+    }
 }
 
 jQuery(document).ready(function () {
     Common.init();
     Common.ApplyAGGrid();
+    Common.GetDefaultFilters();
 });

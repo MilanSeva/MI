@@ -148,7 +148,14 @@ class MyNotification {
         //    down = true;
         //}
     }
+    static async NotificationSearch() {
+        $('#notificationsearchtext').on('input', function () {
+            const searchText = $(this).val();
 
+            // Apply the Quick Filter to the grid
+            notificationGridAPI.setGridOption('quickFilterText', searchText);
+        });
+    }
     static init() {
         MyNotification.ApplyAGGrid();
         MyNotification.GetPendingORNotifiedNotifications();

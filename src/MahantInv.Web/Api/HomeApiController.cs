@@ -125,7 +125,7 @@ namespace MahantInv.Web.Api
                 {
                     return BadRequest(new { success = false, errors = new[] { "Product/Stock not available" } });
                 }
-                
+
                 productInventory.Quantity += productUsage.Quantity.Value;
                 productInventory.Quantity -= quantity;
                 productInventory.ModifiedAt = DateTime.UtcNow;
@@ -161,7 +161,7 @@ namespace MahantInv.Web.Api
                 string GUID = Guid.NewGuid().ToString();
                 _logger.LogError(e, GUID, null);
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
-        }
+            }
         }
 
         [HttpDelete("product/usage/{id}")]
@@ -200,6 +200,36 @@ namespace MahantInv.Web.Api
                 //await _productInventoryRepository.UpdateAsync(productInventory);
                 //await _productUsageRepository.DeleteAsync(productUsage);
                 //await _unitOfWork.CommitAsync();
+                return Ok(new { success = true });
+            }
+            catch (Exception e)
+            {
+                string GUID = Guid.NewGuid().ToString();
+                _logger.LogError(e, GUID, null);
+                return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
+            }
+        }
+        [HttpGet("filters/{code}")]
+        public async Task<IActionResult> GetFilters([FromRoute] string code)
+        {
+            var result = await _context.DefaultFilters.Where(filter => filter.Code == code).OrderBy(a => a.Name).ToListAsync();
+            return Ok(result);
+        }
+        [HttpPost("filter/save")]
+        public async Task<IActionResult> SaveDefaultFilter([FromBody] DefaultFilter defaultFilter)
+        {
+            try
+            {
+                var existingFilter = await _context.DefaultFilters.Where(f => f.Code == defaultFilter.Code && f.Name == defaultFilter.Name).SingleOrDefaultAsync();
+                if (existingFilter != null)
+                {
+                    existingFilter.FilterData = defaultFilter.FilterData;
+                }
+                else
+                {
+                    await _context.DefaultFilters.AddAsync(defaultFilter);
+                }
+                await _context.SaveChangesAsync();
                 return Ok(new { success = true });
             }
             catch (Exception e)
