@@ -148,13 +148,12 @@ class MyNotification {
         //    down = true;
         //}
     }
-    static async NotificationSearch() {
-        $('#notificationsearchtext').on('input', function () {
-            const searchText = $(this).val();
-
-            // Apply the Quick Filter to the grid
-            notificationGridAPI.setGridOption('quickFilterText', searchText);
-        });
+    static NotificationSearch(mthis) {
+        var search = $(mthis).val();
+        notificationGridAPI.setGridOption(
+            "quickFilterText",
+            search,
+        );
     }
     static init() {
         MyNotification.ApplyAGGrid();
