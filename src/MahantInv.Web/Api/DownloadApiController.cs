@@ -126,7 +126,7 @@ namespace MahantInv.Web.Api
                     worksheet.Cells[1, 6].Value = "Seller";
                     worksheet.Cells[1, 7].Value = "Order Status";
                     worksheet.Cells[1, 8].Value = "Received Date";
-                    worksheet.Cells[1, 8].Value = "Remark";
+                    worksheet.Cells[1, 9].Value = "Remark";
                     worksheet.Cells[1, 10].Value = "Order Bulk Name";
                     worksheet.Cells[1, 11].Value = "Last Modified By";
 
