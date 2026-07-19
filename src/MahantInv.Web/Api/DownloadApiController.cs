@@ -122,14 +122,13 @@ namespace MahantInv.Web.Api
                     worksheet.Cells[1, 2].Value = "Order Date";
                     worksheet.Cells[1, 3].Value = "Ordered Quantity";
                     worksheet.Cells[1, 4].Value = "Received Quantity";
-                    worksheet.Cells[1, 5].Value = "Net Amount";
-                    worksheet.Cells[1, 6].Value = "Payment Status";
-                    worksheet.Cells[1, 7].Value = "Seller";
-                    worksheet.Cells[1, 8].Value = "Order Status";
-                    worksheet.Cells[1, 9].Value = "Received Date";
-                    worksheet.Cells[1, 10].Value = "Remark";
-                    worksheet.Cells[1, 11].Value = "Order Bulk Name";
-                    worksheet.Cells[1, 12].Value = "Last Modified By";
+                    worksheet.Cells[1, 5].Value = "Payment Status";
+                    worksheet.Cells[1, 6].Value = "Seller";
+                    worksheet.Cells[1, 7].Value = "Order Status";
+                    worksheet.Cells[1, 8].Value = "Received Date";
+                    worksheet.Cells[1, 8].Value = "Remark";
+                    worksheet.Cells[1, 10].Value = "Order Bulk Name";
+                    worksheet.Cells[1, 11].Value = "Last Modified By";
 
                     // Style header row
                     var headerRange = worksheet.Cells[1, 1, 1, 12];
@@ -145,14 +144,13 @@ namespace MahantInv.Web.Api
                         worksheet.Cells[row, 2].Value = order.OrderDate ?? string.Empty;
                         worksheet.Cells[row, 3].Value = order.Quantity ?? 0;
                         worksheet.Cells[row, 4].Value = order.ReceivedQuantity ?? 0;
-                        worksheet.Cells[row, 5].Value = order.NetAmount ?? 0;
-                        worksheet.Cells[row, 6].Value = order.PaymentStatus ?? string.Empty;
-                        worksheet.Cells[row, 7].Value = order.Seller ?? string.Empty;
-                        worksheet.Cells[row, 8].Value = order.Status ?? string.Empty;
-                        worksheet.Cells[row, 9].Value = order.ReceivedDate ?? string.Empty;
-                        worksheet.Cells[row, 10].Value = order.Remark ?? string.Empty;
-                        worksheet.Cells[row, 11].Value = order.OrderBulkName ?? string.Empty;
-                        worksheet.Cells[row, 12].Value = order.LastModifiedBy ?? string.Empty;
+                        worksheet.Cells[row, 5].Value = order.PaymentStatus ?? string.Empty;
+                        worksheet.Cells[row, 6].Value = order.Seller ?? string.Empty;
+                        worksheet.Cells[row, 7].Value = order.Status ?? string.Empty;
+                        worksheet.Cells[row, 8].Value = order.ReceivedDate ?? string.Empty;
+                        worksheet.Cells[row, 9].Value = order.Remark ?? string.Empty;
+                        worksheet.Cells[row, 10].Value = order.OrderBulkName ?? string.Empty;
+                        worksheet.Cells[row, 11].Value = order.LastModifiedBy ?? string.Empty;
                         row++;
                     }
 
