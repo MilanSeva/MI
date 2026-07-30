@@ -3,7 +3,13 @@
     @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User))
     {
         <li class="nav-item">
-            <a class="nav-link text-white" href="/Home/Sell">Sell</a>
+            <a class="nav-link text-white" href="/Home/Sell">Sell Products</a>
+        </li>
+    }
+    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User) || User.IsInRole(Roles.SellView))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white" href="/Home/QuickSell">Quick Sell</a>
         </li>
     }
     @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.User) || User.IsInRole(Roles.ProductView))

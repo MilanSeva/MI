@@ -9,6 +9,7 @@ namespace MahantInv.Infrastructure.Utility
             public const string Admin = "Admin";
             public const string User = "User";
             public const string ProductView = "ProductView";
+            public const string SellView = "SellView";
         }
         public static DateTime Now = DateTime.UtcNow;
         public class OrderStatusTypes

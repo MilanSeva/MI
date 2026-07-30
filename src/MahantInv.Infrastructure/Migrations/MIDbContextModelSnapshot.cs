@@ -454,6 +454,9 @@ namespace MahantInv.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("ProductId")
                         .HasColumnType("INTEGER");
 

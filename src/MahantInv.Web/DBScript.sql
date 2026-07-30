@@ -565,6 +565,7 @@ CREATE TABLE ProductUsages (
     ModifiedAt       DATETIME        NOT NULL,
     Buyer            VARCHAR (255),
     UsageDate        DATE,
+    Note             VARCHAR (1000),
     CONSTRAINT FK_ProductUsages_LastModifiedById FOREIGN KEY (
         LastModifiedById
     )

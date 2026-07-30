@@ -51,6 +51,7 @@ namespace MahantInv.Web.Api
             _unitOfWork = unitOfWork;
             _context = context;
         }
+        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.ProductView + "," + Roles.SellView)]
         [HttpGet("product/search")]
         public async Task<IEnumerable<ProductSearchDto>> ProductSearch()
         {

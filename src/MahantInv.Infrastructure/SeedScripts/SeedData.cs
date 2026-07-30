@@ -76,6 +76,10 @@ namespace MahantInv.Infrastructure.SeedScripts
             {
                 await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.ProductView));
             }
+            if (!await roleManager.RoleExistsAsync(Meta.Roles.SellView))
+            {
+                await roleManager.CreateAsync(new MIIdentityRole(Meta.Roles.SellView));
+            }
         }
 
         private static async Task SeedUsers(UserManager<MIIdentityUser> userManager)

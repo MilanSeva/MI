@@ -16,6 +16,7 @@ namespace MahantInv.Infrastructure.Entities
         public DateTime? ModifiedAt { get; set; }
         public string Buyer { get; set; }
         public DateTime? UsageDate { get; set; }
+        public string Note { get; set; }
 
         [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("LastModifiedById")]

@@ -8,5 +8,6 @@ namespace MahantInv.Web.ViewModels
         public string Buyer { get; set; }
         public double Quantity { get; set; }
         public DateTime? UsageDate { get; set; }
+        public string Note { get; set; }
     }
 }

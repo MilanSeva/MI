@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MahantInv.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication;
 
 namespace MahantInv.Web.Areas.Identity.Pages.Account
 {
@@ -41,7 +42,7 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
 
             user.IsMfaEnabled = true;
             await _userManager.UpdateAsync(user);
-            await _signInManager.SignInAsync(user, RememberMe);
+            await _signInManager.SignInAsync(user, isPersistent: true);
             return RedirectToPage("/Index");
         }
     }

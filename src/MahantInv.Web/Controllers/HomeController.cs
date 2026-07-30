@@ -50,6 +50,11 @@ namespace MahantInv.Web.Controllers
                 return BadRequest("Unexpected Error " + GUID);
             }
         }
+        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.SellView)]
+        public IActionResult QuickSell()
+        {
+            return View();
+        }
         //[HttpPost]
         //public async Task<IActionResult> VerifyCaptcha(string gRecaptchaResponse)
         //{
@@ -82,7 +87,8 @@ namespace MahantInv.Web.Controllers
             {
                 new SelectListItem { Text = Roles.Admin, Value = Roles.Admin },
                 new SelectListItem { Text = Roles.User, Value = Roles.User },
-                new SelectListItem { Text = Roles.ProductView, Value = Roles.ProductView }
+                new SelectListItem { Text = Roles.ProductView, Value = Roles.ProductView },
+                new SelectListItem { Text = Roles.SellView, Value = Roles.SellView }
             }, "Value", "Text");
             return View();
         }

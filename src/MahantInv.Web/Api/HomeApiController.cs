@@ -36,6 +36,7 @@ namespace MahantInv.Web.Api
             _productInventoryHistoryRepository = productInventoryHistoryRepository;
             _context = context;
         }
+        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.SellView)]
         [HttpGet("usages")]
         public async Task<IActionResult> GetUsages()
         {
@@ -51,6 +52,7 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
+        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.SellView)]
         [HttpPost("product/usage")]
         public async Task<object> ProductUsage([FromBody] ProductUsageModel productUsageModel)
         {
@@ -65,6 +67,7 @@ namespace MahantInv.Web.Api
                     ProductId = productUsageModel.ProductId,
                     Quantity = productUsageModel.Quantity,
                     Buyer = productUsageModel.Buyer,
+                    Note = productUsageModel.Note,
                     RefNo = Guid.NewGuid().ToString(),
                     UsageDate = productUsageModel.UsageDate,
                     LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value,
