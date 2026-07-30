@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MahantInv.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
+using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Areas.Identity.Pages.Account
 {
@@ -43,6 +44,11 @@ namespace MahantInv.Web.Areas.Identity.Pages.Account
             user.IsMfaEnabled = true;
             await _userManager.UpdateAsync(user);
             await _signInManager.SignInAsync(user, isPersistent: true);
+
+            if (await _userManager.IsInRoleAsync(user, Roles.SellView))
+            {
+                return RedirectToAction("QuickSell", "Home");
+            }
             return RedirectToPage("/Index");
         }
     }

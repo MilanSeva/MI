@@ -36,7 +36,6 @@ namespace MahantInv.Web.Api
             _productInventoryHistoryRepository = productInventoryHistoryRepository;
             _context = context;
         }
-        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.SellView)]
         [HttpGet("usages")]
         public async Task<IActionResult> GetUsages()
         {

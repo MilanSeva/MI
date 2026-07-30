@@ -29,7 +29,7 @@ namespace MahantInv.Web.Controllers
             _logger = logger;
             _productUsageRepository = productUsageRepository;
         }
-        [Authorize]
+        [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.ProductView)]
         public IActionResult Index()
         {
             return View();
