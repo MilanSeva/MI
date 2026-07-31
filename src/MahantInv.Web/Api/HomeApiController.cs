@@ -18,7 +18,7 @@ using static MahantInv.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
-    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User + "," + Roles.SellView)]
     public class HomeApiController : BaseApiController
     {
         private readonly ILogger<HomeApiController> _logger;
