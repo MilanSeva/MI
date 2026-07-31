@@ -1,31 +1,58 @@
-﻿using Dapper;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class PartiesRepository : DapperRepository<Party>, IPartiesRepository
+    public class PartiesRepository : EfRepository<Party>, IPartiesRepository
     {
-        public PartiesRepository(IDapperUnitOfWork uow) : base(uow)
+        public PartiesRepository(MIDbContext context) : base(context)
         {
         }
 
         public Task<PartyVM> GetPartyById(int partyId)
         {
-            return db.QuerySingleAsync<PartyVM>(@"select p.*,u.UserName LastModifiedBy,pc.Name as Category from Parties p 
-                    inner join AspNetUsers u on p.LastModifiedById = u.Id
-                    left outer join PartyCategories pc on p.CategoryId = pc.Id
-                    where p.Id= @partyId", new { partyId }, transaction: t);
+            return _context.Parties
+                .Where(p => p.Id == partyId)
+                .Select(p => new PartyVM
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Type = p.Type,
+                    CategoryId = p.CategoryId,
+                    PrimaryContact = p.PrimaryContact,
+                    City = p.City,
+                    Country = p.Country,
+                    LastModifiedById = p.LastModifiedById,
+                    ModifiedAt = p.ModifiedAt,
+                    LastModifiedBy = p.LastModifiedBy.UserName,
+                    Category = p.Category.Name
+                })
+                .SingleAsync();
         }
 
-        public Task<IEnumerable<PartyVM>> GetParties()
+        public async Task<IEnumerable<PartyVM>> GetParties()
         {
-            return db.QueryAsync<PartyVM>(@"select p.*,u.UserName LastModifiedBy,pc.Name as Category from Parties p 
-                    inner join AspNetUsers u on p.LastModifiedById = u.Id
-                    left outer join PartyCategories pc on p.CategoryId = pc.Id", transaction: t);
+            return await _context.Parties
+                .Select(p => new PartyVM
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Type = p.Type,
+                    CategoryId = p.CategoryId,
+                    PrimaryContact = p.PrimaryContact,
+                    City = p.City,
+                    Country = p.Country,
+                    LastModifiedById = p.LastModifiedById,
+                    ModifiedAt = p.ModifiedAt,
+                    LastModifiedBy = p.LastModifiedBy.UserName,
+                    Category = p.Category.Name
+                })
+                .ToListAsync();
         }
     }
 }

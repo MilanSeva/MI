@@ -35,37 +35,29 @@ namespace MahantInv.Web.Infrastructure.Entities
         public bool Enabled { get; set; }
         public string LastModifiedById { get; set; }
         public DateTime? ModifiedAt { get; set; }
-        [Dapper.Contrib.Extensions.Write(false)]
         public List<ProductStorage> ProductStorages { get; set; }
 
         [ForeignKey("LastModifiedById")]
         [InverseProperty("Products")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual MIIdentityUser LastModifiedBy { get; set; }
 
         [InverseProperty("Product")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
         [InverseProperty("Product")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual ProductInventory ProductInventory { get; set; } = new ProductInventory();
 
         [InverseProperty("Product")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual ICollection<ProductInventoryHistory> ProductInventoryHistories { get; set; } = new List<ProductInventoryHistory>();
 
         [InverseProperty("Product")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual ICollection<ProductUsage> ProductUsages { get; set; } = new List<ProductUsage>();
 
         [ForeignKey("UnitTypeCode")]
         [InverseProperty("Products")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual UnitType UnitTypeCodeNavigation { get; set; }
 
         [InverseProperty("Product")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
     }
 

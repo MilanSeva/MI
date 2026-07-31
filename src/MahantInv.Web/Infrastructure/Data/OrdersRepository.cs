@@ -1,6 +1,5 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Dapper;
 using MahantInv.Web.Infrastructure.Dtos.Purchase;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
@@ -12,19 +11,17 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class OrdersRepository : DapperRepository<Order>, IOrdersRepository
+    public class OrdersRepository : EfRepository<Order>, IOrdersRepository
     {
-        private readonly MIDbContext _context;
         private readonly IMapper _mapper;
-        public OrdersRepository(MIDbContext context, IMapper mapper, IDapperUnitOfWork uow) : base(uow)
+        public OrdersRepository(MIDbContext context, IMapper mapper) : base(context)
         {
-            _context = context;
             _mapper = mapper;
         }
 
         public Task DeleteOrderTransactionByOrderId(int orderId)
         {
-            return db.ExecuteAsync("delete from OrderTransactions where OrderId = @orderId", new { orderId }, transaction: t);
+            return _context.OrderTransactions.Where(ot => ot.OrderId == orderId).ExecuteDeleteAsync();
         }
 
         public async Task<OrderCreateDto> GetOrderById(int orderId)
@@ -33,62 +30,10 @@ namespace MahantInv.Web.Infrastructure.Data
                  .Where(o => o.Id == orderId)
                  .ProjectTo<OrderCreateDto>(_mapper.ConfigurationProvider)
                  .SingleOrDefaultAsync();
-            //string sql = @"select * from vOrders o
-            //    left outer join vOrderTransactions ot on o.Id = ot.OrderId
-            //        where o.Id = @orderId";
-            //var orderVMDictionary = new Dictionary<int, OrderVM>();
-            //var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
-            //    (order, orderTransaction) =>
-            //    {
-            //        if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
-            //        {
-            //            orderVMEntry = order;
-            //            orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
-            //        }
-            //        if (orderTransaction != null)
-            //        {
-            //            if (orderVMEntry.OrderTransactionVMs == null)
-            //            {
-            //                orderVMEntry.OrderTransactionVMs = new();
-            //            }
-            //            orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
-            //        }
-            //        return orderVMEntry;
-            //    },
-            //    new { orderId },
-            //    splitOn: "Id",
-            //     transaction: t);
-            //return result.Distinct().Single();
         }
 
         public async Task<IEnumerable<OrderListDto>> GetOrders(DateOnly? startDate = null, DateOnly? endDate = null, int? Id = null)
         {
-            //string sql = @"select * from vOrders o
-            //    left outer join vOrderTransactions ot on o.Id = ot.OrderId
-            //    where date(o.OrderDate) between date(@startDate) and date(@endDate)
-            //    order by ModifiedAt desc";
-            //var orderVMDictionary = new Dictionary<int, OrderVM>();
-            //var result = await db.QueryAsync<OrderVM, OrderTransactionVM, OrderVM>(sql,
-            //    (order, orderTransaction) =>
-            //    {
-            //        if (!orderVMDictionary.TryGetValue(order.Id, out OrderVM orderVMEntry))
-            //        {
-            //            orderVMEntry = order;
-            //            orderVMDictionary.Add(orderVMEntry.Id, orderVMEntry);
-            //        }
-            //        if (orderTransaction != null)
-            //        {
-            //            if (orderVMEntry.OrderTransactionVMs == null)
-            //            {
-            //                orderVMEntry.OrderTransactionVMs = new();
-            //            }
-            //            orderVMEntry.OrderTransactionVMs.Add(orderTransaction);
-            //        }
-            //        return orderVMEntry;
-            //    },
-            //    new { startDate, endDate },
-            //    splitOn: "Id",
-            //     transaction: t);
             var query = _context.Orders.AsQueryable();
             if (startDate.HasValue && endDate.HasValue)
             {

@@ -18,12 +18,10 @@ namespace MahantInv.Web.Infrastructure.Entities
         public DateTime? UsageDate { get; set; }
         public string Note { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("LastModifiedById")]
         [InverseProperty("ProductUsages")]
         public virtual MIIdentityUser LastModifiedBy { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
         [InverseProperty("ProductUsages")]
         public virtual Product Product { get; set; }

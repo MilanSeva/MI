@@ -8,13 +8,10 @@ using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class ProductUsageRepository : DapperRepository<ProductUsage>, IProductUsageRepository
+    public class ProductUsageRepository : EfRepository<ProductUsage>, IProductUsageRepository
     {
-        private readonly MIDbContext _context;
-
-        public ProductUsageRepository(IDapperUnitOfWork uow, MIDbContext context) : base(uow)
+        public ProductUsageRepository(MIDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<ProductUsageVM>> GetProductUsages()

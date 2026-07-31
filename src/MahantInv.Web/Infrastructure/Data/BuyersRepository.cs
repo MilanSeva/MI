@@ -1,11 +1,11 @@
-﻿using MahantInv.Web.Infrastructure.Entities;
+using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class BuyersRepository : DapperRepository<Buyer>, IBuyersRepository
+    public class BuyersRepository : EfRepository<Buyer>, IBuyersRepository
     {
-        public BuyersRepository(IDapperUnitOfWork uow) : base(uow)
+        public BuyersRepository(MIDbContext context) : base(context)
         {
         }
     }

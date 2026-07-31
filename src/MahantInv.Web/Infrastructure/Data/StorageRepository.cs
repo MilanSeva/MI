@@ -1,26 +1,32 @@
-﻿using Dapper;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class StorageRepository : DapperRepository<Storage>, IStorageRepository
+    public class StorageRepository : EfRepository<Storage>, IStorageRepository
     {
-        public StorageRepository(IDapperUnitOfWork uow) : base(uow)
+        public StorageRepository(MIDbContext context) : base(context)
         {
         }
 
         public Task<StorageVM> GetStorageById(int storageId)
         {
-            return db.QuerySingleAsync<StorageVM>(@"select * from Storages where Id = @storageId", new { storageId }, transaction: t);
+            return _context.Storages
+                .Where(s => s.Id == storageId)
+                .Select(s => new StorageVM { Id = s.Id, Name = s.Name, Enabled = s.Enabled })
+                .SingleAsync();
         }
 
-        public Task<IEnumerable<StorageVM>> GetStorages()
+        public async Task<IEnumerable<StorageVM>> GetStorages()
         {
-            return db.QueryAsync<StorageVM>(@"select * from Storages", transaction: t);
+            return await _context.Storages
+                .Select(s => new StorageVM { Id = s.Id, Name = s.Name, Enabled = s.Enabled })
+                .ToListAsync();
         }
     }
 }

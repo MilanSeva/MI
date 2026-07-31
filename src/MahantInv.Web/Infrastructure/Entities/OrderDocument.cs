@@ -18,7 +18,6 @@ namespace MahantInv.Web.Infrastructure.Entities
         public int OrderId { get; set; }
 
         [ForeignKey("OrderId")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual Order Order { get; set; }
     }
 }

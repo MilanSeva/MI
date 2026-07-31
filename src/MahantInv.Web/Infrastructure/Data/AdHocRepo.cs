@@ -1,75 +1,90 @@
-﻿using MahantInv.Web.Infrastructure.Interfaces;
+using MahantInv.Web.Infrastructure.Dtos;
+using MahantInv.Web.Infrastructure.Interfaces;
+using MahantInv.Web.Infrastructure.Utility;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data;
+using System.Data.Common;
+using System.Dynamic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Dapper;
-using MahantInv.Web.Infrastructure.Dtos;
-using MahantInv.Web.Infrastructure.Utility;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class AdHocRepo : IAdHocRepo, IDisposable
+    public class AdHocRepo : IAdHocRepo
     {
-        private readonly DbConnection db;
-        static Regex ddmlRegex = new("\"[^\"]*\"|'[^']*'|(\\b(insert|update|delete|create|alter|drop|begin|commit|rollback)\\b)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly MIDbContext _context;
+        static readonly Regex ddmlRegex = new("\"[^\"]*\"|'[^']*'|(\\b(insert|update|delete|create|alter|drop|begin|commit|rollback)\\b)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public AdHocRepo(DbConnection db)
+        public AdHocRepo(MIDbContext context)
         {
-            this.db = db;
+            _context = context;
         }
-        public void Dispose()
+
+        private async Task<DbConnection> GetOpenConnectionAsync()
         {
-            if (db != null)
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
             {
-                // Closing a closed connection doesn't make a different so calling this method as a backup
-                // in case the connection was kept open.
-                db.Close();
-                db.Dispose();
+                await connection.OpenAsync();
             }
+            return connection;
         }
 
-
-        public Task<IEnumerable<T>> QueryAsync<T>(string sql)
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql)
         {
-            return db.QueryAsync<T>(sql);
+            var connection = await GetOpenConnectionAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            var results = new List<T>();
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                results.Add(reader.IsDBNull(0) ? default : (T)Convert.ChangeType(reader.GetValue(0), typeof(T)));
+            }
+            return results;
         }
 
-        public Task<T> QueryScalarAsync<T>(string sql)
+        public async Task<T> QueryScalarAsync<T>(string sql)
         {
-            return db.ExecuteScalarAsync<T>(sql);
+            var connection = await GetOpenConnectionAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            var result = await command.ExecuteScalarAsync();
+            return result is null or DBNull ? default : (T)Convert.ChangeType(result, typeof(T));
         }
 
         public Task<IEnumerable<string>> GetSchemaAsync()
         {
-            return db.QueryAsync<string>("select name from sqlite_master where type='table' order by name");
+            return QueryAsync<string>("select name from sqlite_master where type='table' order by name");
         }
 
         private async Task FillTableAsync(DataTable table, string sql)
         {
             try
             {
+                var connection = await GetOpenConnectionAsync();
                 if (IsSelectOnly(sql))
                 {
-                    using var dr = await db.ExecuteReaderAsync(sql);
-                    //try { table.Load(dr); } catch (ConstraintException) { }
+                    using var command = connection.CreateCommand();
+                    command.CommandText = sql;
+                    using var dr = await command.ExecuteReaderAsync();
                     table.Load(dr);
                     table.TableName = $"{table.TableName}-{Guid.NewGuid()}";
                 }
                 else
                 {
-                    var affectedRows = await db.ExecuteAsync(sql);
+                    using var command = connection.CreateCommand();
+                    command.CommandText = sql;
+                    var affectedRows = await command.ExecuteNonQueryAsync();
                     table.Columns.Add("Outcome");
                     table.Rows.Add($"{affectedRows} row(s) affected.");
                 }
             }
             catch (Exception ex)
             {
-                //using var table = new DataTable();
                 table.Reset();
                 table.Columns.Add("Error");
                 table.Rows.Add(ex.ToString());
@@ -78,17 +93,8 @@ namespace MahantInv.Web.Infrastructure.Data
 
         private bool IsSelectOnly(string sql)
         {
-            //sql = sql.ToLower();
-            //var dmlClauses = new string[] { "insert", "update", "delete", "create", "alter", "drop", "begin", "commit", "rollback" };
-            //return !dmlClauses.Any(cl => IsClausePresent(sql, cl));
             return !ddmlRegex.Matches(sql).Any(m => m.Groups[1].Success);
         }
-
-        //private bool IsClausePresent(string sql, string clause)
-        //{
-        //  var quotedSplit = sql.QuotedSplit(clause);
-        //  return quotedSplit.Count() > 1;
-        //}
 
         public async Task<DataSet> QueryAsync(string query)
         {
@@ -100,9 +106,6 @@ namespace MahantInv.Web.Infrastructure.Data
             // this will allow running arbitrary queries without any constraint checks
             using DataSet ds = new() { EnforceConstraints = false };
 
-            // initate a transaction, this will commit only if use provides a commit statement
-            //await _uow.BeginAsync();
-
             var sqlList = query.QuotedSplit(";")
                 .Where(s => !s.IsNullOrWhiteSpace());
 
@@ -112,8 +115,7 @@ namespace MahantInv.Web.Infrastructure.Data
                 ds.Tables.Add(table);
                 if (sql.Equals("commit", StringComparison.OrdinalIgnoreCase))
                 {
-
-                    //await _uow.CommitAsync();
+                    // no-op: matches historical behavior where a bare "commit" statement was swallowed
                 }
                 else
                 {
@@ -122,23 +124,37 @@ namespace MahantInv.Web.Infrastructure.Data
             }
 
             return ds;
-
         }
+
         public async Task<IEnumerable<dynamic>> QueryObjectAsync(string query)
         {
             if (query == null)
             {
                 return new List<ValidationError>
-        {
-          new ValidationError
-          {
-            Key = "SQL",
-            ErrorMessage = "Try a vaild SQL."
-          }
-        }.AsEnumerable<dynamic>();
+                {
+                    new ValidationError
+                    {
+                        Key = "SQL",
+                        ErrorMessage = "Try a vaild SQL."
+                    }
+                }.AsEnumerable<dynamic>();
             }
 
-            return await db.QueryAsync<dynamic>(query);
+            var connection = await GetOpenConnectionAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = query;
+            var results = new List<dynamic>();
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                IDictionary<string, object> row = new ExpandoObject();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                }
+                results.Add(row);
+            }
+            return results;
         }
     }
 }

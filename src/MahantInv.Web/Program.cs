@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +22,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,15 +38,6 @@ services.AddControllers(options =>
 });
 services.AddControllers(options => { options.Filters.Add<HttpGlobalExceptionFilter>(); });
 string connectionString = builder.Configuration.GetConnectionString("MahantInventoryDB");
-//Db Connection
-builder.Services.AddTransient<DbConnection>(sp =>
-{
-    var dbProviderFactory = SqliteFactory.Instance;
-    var connection = dbProviderFactory.CreateConnection();
-    connection.ConnectionString = connectionString;
-    return connection;
-});
-services.UseSQLiteUOW(connectionString);
 services.AddDbContext<MIDbContext>(
     options =>
     {
@@ -117,6 +106,7 @@ builder.Services.AddMediatR(options =>
 options.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly())
 );
 
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 builder.Services.AddTransient<IBuyersRepository, BuyersRepository>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<IPartiesRepository, PartiesRepository>();

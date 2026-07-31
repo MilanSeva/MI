@@ -9,13 +9,12 @@ namespace MahantInv.Web.Infrastructure.Entities
     public class UnitType : IAggregateRoot
     {
         [Key]
-        [Dapper.Contrib.Extensions.ExplicitKey, Required]
+        [Required]
         public string Code { get; set; }
         [Required, Display(Name = "Unit Type Name")]
         public string Name { get; set; }
         //public List<BaseDomainEvent> Events = new();
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("UnitTypeCodeNavigation")]
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }

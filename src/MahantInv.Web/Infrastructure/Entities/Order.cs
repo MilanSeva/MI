@@ -43,26 +43,21 @@ namespace MahantInv.Web.Infrastructure.Entities
         [Display(Name = "Modified At")]
         public DateTime? ModifiedAt { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("LastModifiedById")]
         [InverseProperty("Orders")]
         public virtual MIIdentityUser LastModifiedBy { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [InverseProperty("Order")]
         public virtual List<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("ProductId")]
         [InverseProperty("Orders")]
         public virtual Product Product { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("SellerId")]
         [InverseProperty("Orders")]
         public virtual Party Seller { get; set; }
 
-        [Dapper.Contrib.Extensions.Write(false)]
         [ForeignKey("StatusId")]
         [InverseProperty("Orders")]
         public virtual OrderStatusType Status { get; set; }

@@ -1,22 +1,23 @@
-﻿using Dapper;
 using MahantInv.Web.Infrastructure.Dtos;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Infrastructure.Utility;
 using MahantInv.Web.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class ProductInventoryRepository : DapperRepository<ProductInventory>, IProductInventoryRepository
+    public class ProductInventoryRepository : EfRepository<ProductInventory>, IProductInventoryRepository
     {
         private readonly IProductsRepository _productRepository;
         private readonly IAsyncRepository<Notification> _notificationRepository;
         private readonly IEmailService _emailService;
-        public ProductInventoryRepository(IEmailService emailService, IAsyncRepository<Notification> notificationRepository, IProductsRepository productRepository, IDapperUnitOfWork uow) : base(uow)
+        public ProductInventoryRepository(IEmailService emailService, IAsyncRepository<Notification> notificationRepository, IProductsRepository productRepository, MIDbContext context) : base(context)
         {
             _productRepository = productRepository;
             _notificationRepository = notificationRepository;
@@ -25,12 +26,25 @@ namespace MahantInv.Web.Infrastructure.Data
 
         public Task<ProductInventory> GetByProductId(int productId)
         {
-            return db.QuerySingleOrDefaultAsync<ProductInventory>("select * from ProductInventory where ProductId = @productId", new { productId }, transaction: t);
+            return _context.ProductInventories.SingleOrDefaultAsync(pi => pi.ProductId == productId);
         }
 
-        public Task<IEnumerable<NotificationViewDTO>> GetNotificationByStatus(List<string> status)
+        public async Task<IEnumerable<NotificationViewDTO>> GetNotificationByStatus(List<string> status)
         {
-            return db.QueryAsync<NotificationViewDTO>("select * from Notifications where status in @status order by CreatedAt desc", new { status }, transaction: t);
+            return await _context.Notifications
+                .Where(n => status.Contains(n.Status))
+                .OrderByDescending(n => n.CreatedAt)
+                .Select(n => new NotificationViewDTO
+                {
+                    Id = n.Id,
+                    Title = n.Title,
+                    Message = n.Message,
+                    Status = n.Status,
+                    ModifiedAt = n.ModifiedAt,
+                    CreatedAt = n.CreatedAt,
+                    Quantity = n.Quantity
+                })
+                .ToListAsync();
         }
 
         public async Task IFStockLowGenerateNotification(int productId)
@@ -46,7 +60,7 @@ namespace MahantInv.Web.Infrastructure.Data
                     {
                         Subject = new StringBuilder("Low Stock")
                         ,
-                        Body = new StringBuilder($@"{product.Name}, {product.UnitTypeCode}, {product.Size}. 
+                        Body = new StringBuilder($@"{product.Name}, {product.UnitTypeCode}, {product.Size}.
                             Reorder Level:{product.ReorderLevel}. Current Stock:{productInventory.Quantity}")
                         ,
                         IsBodyHtml = true

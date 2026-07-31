@@ -11,13 +11,11 @@ namespace MahantInv.Web.Infrastructure.Entities
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual Product Product { get; set; }
 
         public int OrderId { get; set; }
 
         [ForeignKey("OrderId")]
-        [Dapper.Contrib.Extensions.Write(false)]
         public virtual Order Order { get; set; }
 
         public bool IsArchive { get; set; }

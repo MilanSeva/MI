@@ -1,74 +1,82 @@
-﻿using Dapper;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MahantInv.Web.Infrastructure.Data
 {
-    public class ProductsRepository : DapperRepository<Product>, IProductsRepository
+    public class ProductsRepository : EfRepository<Product>, IProductsRepository
     {
-        public ProductsRepository(IDapperUnitOfWork uow) : base(uow)
+        public ProductsRepository(MIDbContext context) : base(context)
         {
         }
 
-        public Task AddProductStorage(ProductStorage productStorage)
+        public async Task AddProductStorage(ProductStorage productStorage)
         {
-            return db.ExecuteAsync("insert into ProductStorages (ProductId,StorageId) values (@ProductId,@StorageId)", productStorage, transaction: t);
+            await _context.ProductStorages.AddAsync(productStorage);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<ProductVM> GetProductById(int productId)
+        public async Task<ProductVM> GetProductById(int productId)
         {
-            return db.QuerySingleAsync<ProductVM>(@"
-                        with storagecte as
-                        (
-                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as Storage from ProductStorages ps
-                            left outer join Storages s on ps.StorageId = s.Id
-                            where ps.ProductId = @productId
-                            group by ps.ProductId
-                        )
-                        select p.Id,p.Name, p.GujaratiName, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
-                    s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] 
-                        from Products p
-                        inner join AspNetUsers u on p.LastModifiedById = u.Id
-                        left outer join storagecte s on p.Id = s.ProductId
-                        left outer join UnitTypes ut on p.UnitTypeCode = ut.Code
-                        left outer join ProductInventory pi on p.Id = pi.ProductId
-                        where p.Id = @productId", new { productId }, transaction: t);
+            var product = await ProductsWithIncludes()
+                .SingleAsync(p => p.Id == productId);
+            return MapToProductVM(product);
         }
 
-        public Task<IEnumerable<ProductVM>> GetProducts()
+        public async Task<IEnumerable<ProductVM>> GetProducts()
         {
-            return db.QueryAsync<ProductVM>(@"with storagecte as
-                        (
-                            select ps.ProductId,group_concat(s.Id) as StorageIds,group_concat(s.Name) as Storage from ProductStorages ps
-                            left outer join Storages s on ps.StorageId = s.Id
-                            group by ps.ProductId
-                        )
-                        select p.Id,p.Name, p.GujaratiName, p.PicturePath, cast(p.Size as real) Size, p.Description, p.UnitTypeCode,p.OrderBulkName,p.OrderBulkQuantity,p.ReorderLevel, p.IsDisposable, p.Company, p.Enabled, p.LastModifiedById, p.ModifiedAt,
-                        s.StorageIds,s.Storage, u.UserName as [LastModifiedBy], ut.Name as [UnitTypeName], pi.Quantity as [CurrentStock] from Products p
-                        inner join AspNetUsers u on p.LastModifiedById = u.Id
-                        left outer join storagecte s on p.Id = s.ProductId
-                        left outer join UnitTypes ut on p.UnitTypeCode = ut.Code
-                        left outer join ProductInventory pi on p.Id = pi.ProductId", transaction: t);
+            var products = await ProductsWithIncludes().ToListAsync();
+            return products.Select(MapToProductVM);
         }
 
         public Task<bool> IsProductExist(string unitTypeCode)
         {
-            return db.QuerySingleAsync<bool>(@"if EXISTS(select top 1 from Products where UnitTypeCode = @unitTypeCode
-                                        BEGIN
-                                        	select 1
-                                        END
-                                        ELSE
-                                        BEGIN
-                                        	select 0
-                                        END", new { unitTypeCode }, transaction: t);
+            return _context.Products.AnyAsync(p => p.UnitTypeCode == unitTypeCode);
         }
 
         public Task RemoveProductStorages(int productId)
         {
-            return db.ExecuteAsync("delete from ProductStorages where ProductId = @productId", new { productId }, transaction: t);
+            return _context.ProductStorages.Where(ps => ps.ProductId == productId).ExecuteDeleteAsync();
+        }
+
+        private IQueryable<Product> ProductsWithIncludes()
+        {
+            return _context.Products
+                .Include(p => p.ProductStorages).ThenInclude(ps => ps.Storage)
+                .Include(p => p.LastModifiedBy)
+                .Include(p => p.UnitTypeCodeNavigation)
+                .Include(p => p.ProductInventory);
+        }
+
+        private static ProductVM MapToProductVM(Product p)
+        {
+            return new ProductVM
+            {
+                Id = p.Id.ToString(),
+                PicturePath = p.PicturePath,
+                Name = p.Name,
+                GujaratiName = p.GujaratiName,
+                Size = p.Size,
+                Description = p.Description,
+                UnitTypeCode = p.UnitTypeCode,
+                ReorderLevel = p.ReorderLevel,
+                OrderBulkName = p.OrderBulkName,
+                OrderBulkQuantity = p.OrderBulkQuantity,
+                IsDisposable = p.IsDisposable,
+                Company = p.Company,
+                Enabled = p.Enabled,
+                LastModifiedById = p.LastModifiedById,
+                ModifiedAt = p.ModifiedAt,
+                StorageIds = p.ProductStorages.Count > 0 ? string.Join(",", p.ProductStorages.Select(ps => ps.StorageId)) : null,
+                Storage = p.ProductStorages.Count > 0 ? string.Join(",", p.ProductStorages.Select(ps => ps.Storage.Name)) : null,
+                LastModifiedBy = p.LastModifiedBy?.UserName,
+                UnitTypeName = p.UnitTypeCodeNavigation?.Name,
+                CurrentStock = (decimal)(p.ProductInventory?.Quantity ?? 0)
+            };
         }
     }
 }
