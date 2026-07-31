@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Data;
-using MahantInv.Infrastructure.Entities;
-using MahantInv.Infrastructure.Interfaces;
-using MahantInv.SharedKernel.Interfaces;
+using MahantInv.Web.Infrastructure.Data;
+using MahantInv.Web.Infrastructure.Entities;
+using MahantInv.Web.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {

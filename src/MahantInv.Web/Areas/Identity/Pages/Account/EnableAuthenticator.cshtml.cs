@@ -7,7 +7,7 @@
     using QRCoder.Core;
     using System.Threading.Tasks;
     using System;
-    using MahantInv.Infrastructure.Identity;
+    using MahantInv.Web.Infrastructure.Identity;
     using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
     using QRCoder.Core.Generators;
     using QRCoder.Core.Renderers;

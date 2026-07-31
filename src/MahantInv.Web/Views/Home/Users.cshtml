@@ -13,7 +13,7 @@
     <div class="card-body ag-theme-balham-auto-dark" id="usergrid">
     </div>
 </div>
-@await Html.PartialAsync("_AddUser", new MahantInv.Infrastructure.Dtos.User.AddUserDto())
+@await Html.PartialAsync("_AddUser", new MahantInv.Web.Infrastructure.Dtos.User.AddUserDto())
 @section Scripts {
     <script src="~/Home/users.js" type="text/javascript" asp-append-version="true"></script>
 }

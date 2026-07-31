@@ -1,4 +1,4 @@
-﻿using MahantInv.Infrastructure.Identity;
+﻿using MahantInv.Web.Infrastructure.Identity;
 using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

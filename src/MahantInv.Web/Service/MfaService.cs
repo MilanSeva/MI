@@ -2,7 +2,7 @@
 using QRCoder.Core;
 using System.Threading.Tasks;
 using System;
-using MahantInv.Infrastructure.Identity;
+using MahantInv.Web.Infrastructure.Identity;
 using QRCoder.Core.Generators;
 using QRCoder.Core.Renderers;
 

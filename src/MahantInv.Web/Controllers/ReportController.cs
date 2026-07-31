@@ -1,10 +1,10 @@
-﻿using MahantInv.Infrastructure.Interfaces;
+﻿using MahantInv.Web.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {

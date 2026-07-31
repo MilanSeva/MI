@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using MahantInv.Infrastructure.Identity;
+using MahantInv.Web.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Areas.Identity.Pages.Account
 {

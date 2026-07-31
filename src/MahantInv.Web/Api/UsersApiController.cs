@@ -1,8 +1,8 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using MahantInv.Infrastructure.Data;
-using MahantInv.Infrastructure.Dtos.User;
-using MahantInv.Infrastructure.Identity;
+using MahantInv.Web.Infrastructure.Data;
+using MahantInv.Web.Infrastructure.Dtos.User;
+using MahantInv.Web.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {

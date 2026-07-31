@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 
-namespace MahantInv.SharedKernel.Filter
+namespace MahantInv.Web.Filters
 {
     public class HttpGlobalExceptionFilter : IExceptionFilter
     {

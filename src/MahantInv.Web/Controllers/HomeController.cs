@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using MahantInv.Infrastructure.Interfaces;
+using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Controllers
 {

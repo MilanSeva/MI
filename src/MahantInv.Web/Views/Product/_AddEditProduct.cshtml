@@ -1,4 +1,4 @@
-﻿@model MahantInv.Infrastructure.Dtos.Product.ProductCreateDto
+﻿@model MahantInv.Web.Infrastructure.Dtos.Product.ProductCreateDto
 
 <div id="AddEditProduct" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -42,7 +42,7 @@
                             <label asp-for="@Model.UnitTypeCode"></label>
                             <select id="UnitTypeCode" class="form-control form-control-sm" placeholder="Unit Type">
                                 <option value="">Select Unit Type</option>
-                                @foreach (var item in (ViewBag.UnitTypes as ICollection<MahantInv.Infrastructure.Entities.UnitType>))
+                                @foreach (var item in (ViewBag.UnitTypes as ICollection<MahantInv.Web.Infrastructure.Entities.UnitType>))
                                 {
                                     <option value="@item.Code">@item.Name</option>
                                 }
@@ -96,7 +96,7 @@
                         <div class="form-group storage-container">
                             <label asp-for="@Model.StorageNames"></label>
                             <select id="StorageNames" class="form-control form-control-sm storage-container" placeholder="Storage" multiple>
-                                @foreach (var item in (ViewBag.Storages as ICollection<MahantInv.Infrastructure.Entities.Storage>).Where(s => s.Enabled))
+                                @foreach (var item in (ViewBag.Storages as ICollection<MahantInv.Web.Infrastructure.Entities.Storage>).Where(s => s.Enabled))
                                 {
                                     <option value="@item.Id">@item.Name</option>
                                 }

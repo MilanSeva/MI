@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using MahantInv.Infrastructure.Data;
-using MahantInv.Infrastructure.Dtos.Product;
-using MahantInv.Infrastructure.Entities;
-using MahantInv.Infrastructure.Interfaces;
-using MahantInv.Infrastructure.Utility;
-using MahantInv.Infrastructure.ViewModels;
-using MahantInv.SharedKernel.Interfaces;
+using MahantInv.Web.Infrastructure.Data;
+using MahantInv.Web.Infrastructure.Dtos.Product;
+using MahantInv.Web.Infrastructure.Entities;
+using MahantInv.Web.Infrastructure.Interfaces;
+using MahantInv.Web.Infrastructure.Utility;
+using MahantInv.Web.Infrastructure.ViewModels;
 using MahantInv.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static MahantInv.Infrastructure.Utility.Meta;
+using static MahantInv.Web.Infrastructure.Utility.Meta;
 
 namespace MahantInv.Web.Api
 {
