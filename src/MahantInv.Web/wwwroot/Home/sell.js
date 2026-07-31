@@ -39,6 +39,9 @@ var productUsageGridOptions = {
             headerName: 'Usage Date', field: 'usageDateFormat', filter: 'agDateColumnFilter', headerTooltip: 'Usage Date'
         },
         {
+            headerName: 'Note', field: 'note', filter: 'agTextColumnFilter', headerTooltip: 'Note'
+        },
+        {
             headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', width: 80, suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
