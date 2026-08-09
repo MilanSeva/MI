@@ -69,3 +69,77 @@ html {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/* Responsive layout fixes
+-------------------------------------------------- */
+
+/* Keep header content (brand, bell, toggler) on one line and never let it
+   get squeezed off-screen on narrow devices. */
+.navbar > .container-fluid {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    order: 3;
+  }
+}
+
+/* Toolbars in card headers (Purchase, Sell, Product, Party, Storage, Unit Type, etc.)
+   should wrap their action buttons instead of clipping/floating off-screen. */
+.card-header .row {
+  row-gap: .5rem;
+}
+
+@media (max-width: 767.98px) {
+  .card-header {
+    flex-wrap: wrap;
+  }
+
+  .card-header .float-end {
+    float: none !important;
+  }
+
+  .card-header .d-flex,
+  .card-header .float-end,
+  #actionsection {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .card-header .d-flex > [style*="width"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  #actionsection button {
+    flex: 1 1 100%;
+  }
+}
+
+/* Notification dropdown panel must stay within the viewport on small screens */
+@media (max-width: 575.98px) {
+  .notifications {
+    width: calc(100vw - 24px);
+    right: 12px;
+    left: auto;
+  }
+}
+
+/* Keep brand, bell, greeting and toggler from overflowing on very narrow phones */
+@media (max-width: 400px) {
+  .navbar-brand {
+    margin-right: .25rem;
+  }
+
+  #logoutForm .nav-link {
+    max-width: 80px !important;
+  }
+
+  #logoutForm .btn {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+}

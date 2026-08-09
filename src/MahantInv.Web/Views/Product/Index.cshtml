@@ -11,12 +11,12 @@
     <input type="hidden" id="iamproductview" value="1" />
 }
 <div class="card bg-dark border-dark">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex flex-wrap gap-3 justify-content-between align-items-center">
         <!-- Left Section -->
-        <h5 class="m-0 font-weight-bold text-white" style="width: 200px;">Products</h5>
+        <h5 class="m-0 font-weight-bold text-white">Products</h5>
 
         <!-- Center Section: Dropdown -->
-        <div class="mx-auto d-flex align-items-center gap-2" style="width: 350px;">
+        <div class="d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" style="max-width: 350px;">
             <select id="defaultFilterSelect" class="form-select form-select-sm bg-dark text-white border-light" data-bs-toggle="tooltip" title="Default Filter" onchange="Common.ApplyFilter(this)">
                 <option value="">Default Filter</option>
             </select>
@@ -25,17 +25,17 @@
         </div>
 
         <!-- Right Section -->
-        <div class="d-flex" style="width: auto;">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <div class="input-group">
                 <span class="input-group-text bg-dark border-light text-white">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" class="form-control form-control-sm me-2 bg-dark text-white" placeholder="Search..." onkeyup="Common.Search(this)">
+                <input type="text" class="form-control form-control-sm bg-dark text-white" placeholder="Search..." onkeyup="Common.Search(this)">
             </div>
-            <button class="btn btn-outline-warning btn-sm me-2 text-nowrap" onclick="Common.ResetGrid()">Reset</button>
+            <button class="btn btn-outline-warning btn-sm text-nowrap" onclick="Common.ResetGrid()">Reset</button>
             @if (!User.IsInRole(MahantInv.Web.Infrastructure.Utility.Meta.Roles.ProductView))
             {
-                <button class="btn btn-outline-success btn-sm me-2 text-nowrap" onclick="Common.ExportToExcel()">Export</button>
+                <button class="btn btn-outline-success btn-sm text-nowrap" onclick="Common.ExportToExcel()">Export</button>
                 <button class="btn btn-outline-primary btn-sm text-nowrap" onclick="Common.OpenModal(this)" data-id="0" data-target="AddEditProduct">New</button>
             }
         </div>

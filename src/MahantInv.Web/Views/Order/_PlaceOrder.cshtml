@@ -173,16 +173,10 @@
 
             </div>
             <div class="modal-footer">
-                <div class="row g-3" id="actionsection">
-                    <div class="col-auto">
-                        <button type="button" class="cancelbtn btn btn-outline-danger form-control" onclick="Common.CancelOrder(this)" data-bs-target="PlaceOrder">Cancel Order</button>
-                    </div>
-                    <div class="col-auto">
-                        <button type="button" class="saveorderbtn btn btn-outline-success form-control" onclick="Common.SaveOrder(this)" data-bs-target="PlaceOrder">Save Order</button>
-                    </div>
-                    <div class="col-auto">
-                        <button type="button" class="receiveorderbtn btn btn-outline-warning form-control" onclick="Common.ReceiveOrder(this)" data-bs-target="PlaceOrder">Receive Order</button>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 w-100" id="actionsection">
+                    <button type="button" class="cancelbtn btn btn-outline-danger" onclick="Common.CancelOrder(this)" data-bs-target="PlaceOrder">Cancel Order</button>
+                    <button type="button" class="saveorderbtn btn btn-outline-success" onclick="Common.SaveOrder(this)" data-bs-target="PlaceOrder">Save Order</button>
+                    <button type="button" class="receiveorderbtn btn btn-outline-warning" onclick="Common.ReceiveOrder(this)" data-bs-target="PlaceOrder">Receive Order</button>
                 </div>
             </div>
         </div>

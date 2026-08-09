@@ -1,0 +1,19 @@
+@using MahantInv.Web.Infrastructure.Identity
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<MIIdentityUser> SignInManager
+@inject UserManager<MIIdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" id="logoutForm" class="form-inline navbar-right">
+        <ul class="navbar-nav d-flex flex-row align-items-center gap-2">
+            <li class="nav-item">
+                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Manage" class="nav-link text-white text-truncate d-inline-block" style="max-width:140px">Hello @UserManager.GetUserName(User)!</a>
+            </li>
+            <li class="nav-item">
+                <button type="submit" class="btn btn-outline-dark text-white text-nowrap">Logout</button>
+            </li>
+        </ul>
+    </form>
+}

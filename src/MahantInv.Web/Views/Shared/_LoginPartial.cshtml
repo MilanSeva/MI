@@ -2,42 +2,10 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<MIIdentityUser> SignInManager
-@inject UserManager<MIIdentityUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {
     @await Html.PartialAsync("_Menu")
-    <nav>
-
-        <div class="icon2" id="bell">
-            <button class="btn btn-primary" style="background-color:transparent;border:none;" onclick=MyNotification.ViewNotificationModal(this)>
-                <i class="bi bi-bell"></i>
-                <span class="badge badge-danger" style="margin-left:-15px;top:-12px;" id="NotificationPendingCount">0</span>
-            </button>
-        </div>
-        <div class="notifications" id="NotificationMessages">
-            <h2>Notifications</h2>
-            <div class="notifications-item">
-                <div class="notification-text">
-                    <h4>{title}</h4>
-                    <p>{message}</p>
-                </div>
-                <div class="notification-action">
-                    <button class="btn btn-light btn-sm">√</button>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" method="post" id="logoutForm" class="form-inline navbar-right">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Manage" class="nav-link text-white">Hello @UserManager.GetUserName(User)!</a>
-            </li>
-            <li class="nav-item">
-                <button type="submit" class="btn btn-outline-dark text-white">Logout</button>
-            </li>
-        </ul>
-    </form>
 }
 
 <!-- Create Modal -->
