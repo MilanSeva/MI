@@ -1,0 +1,195 @@
+/* Dark-theme overrides for vendor widgets (select2, daterangepicker) that ship
+   their own hardcoded light-mode colors and don't respond to Bootstrap's
+   data-bs-theme attribute. Loaded after select2/daterangepicker/plugins CSS
+   so these rules win the cascade at equal specificity. */
+
+/* Select2 - dropdown panel & results list (shared by default/bootstrap4 themes) */
+.select2-dropdown {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.select2-results__option {
+    color: var(--bs-body-color);
+}
+
+.select2-container--default .select2-results__option--selected {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+.select2-container--bootstrap4 .select2-results__option--highlighted,
+.select2-container--bootstrap4 .select2-results__option--highlighted.select2-results__option[aria-selected="true"] {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.select2-container--bootstrap4 .select2-dropdown .select2-results__option[aria-selected="true"] {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+}
+
+.select2-container--default .select2-results__group,
+.select2-container--bootstrap4 .select2-results__group,
+.select2-results__message {
+    color: var(--bs-secondary-color);
+}
+
+.select2-search--dropdown .select2-search__field {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+/* Select2 - the closed selection box */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple,
+.select2-container--bootstrap4 .select2-selection {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--single,
+.select2-container--default.select2-container--disabled .select2-selection--multiple,
+.select2-container--bootstrap4.select2-container--disabled .select2-selection,
+.select2-container--bootstrap4.select2-container--disabled.select2-container--focus .select2-selection {
+    background-color: var(--bs-secondary-bg);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+    color: var(--bs-body-color);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--bs-body-color) transparent transparent transparent;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent var(--bs-body-color) transparent;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow b {
+    border-top-color: var(--bs-body-color);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice,
+.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--bs-tertiary-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+    color: var(--bs-body-color);
+}
+
+/* Custom product-search result template used in the Sell/Products/Orders select2 dropdowns */
+.select2-result-repository__title {
+    color: var(--bs-body-color);
+}
+
+.select2-result-repository__forks,
+.select2-result-repository__stargazers,
+.select2-result-repository__watchers,
+.select2-result-repository__description {
+    color: var(--bs-secondary-color);
+}
+
+.select2-results__option--highlighted .select2-result-repository__title,
+.select2-results__option--highlighted .select2-result-repository__forks,
+.select2-results__option--highlighted .select2-result-repository__stargazers,
+.select2-results__option--highlighted .select2-result-repository__watchers,
+.select2-results__option--highlighted .select2-result-repository__description {
+    color: #fff;
+}
+
+/* Daterangepicker */
+.daterangepicker {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.daterangepicker:before {
+    border-bottom-color: var(--bs-border-color);
+}
+
+.daterangepicker:after {
+    border-bottom-color: var(--bs-body-bg);
+}
+
+.daterangepicker.drop-up:before {
+    border-top-color: var(--bs-border-color);
+}
+
+.daterangepicker.drop-up:after {
+    border-top-color: var(--bs-body-bg);
+}
+
+.daterangepicker .calendar-table {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-body-bg);
+}
+
+.daterangepicker .calendar-table .next span,
+.daterangepicker .calendar-table .prev span {
+    border-color: var(--bs-body-color);
+}
+
+.daterangepicker td.available:hover,
+.daterangepicker th.available:hover {
+    background-color: var(--bs-tertiary-bg);
+    color: inherit;
+}
+
+.daterangepicker td.off,
+.daterangepicker td.off.in-range,
+.daterangepicker td.off.start-date,
+.daterangepicker td.off.end-date {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+}
+
+.daterangepicker td.in-range {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+}
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.daterangepicker select.monthselect,
+.daterangepicker select.yearselect,
+.daterangepicker select.hourselect,
+.daterangepicker select.minuteselect,
+.daterangepicker select.secondselect,
+.daterangepicker select.ampmselect {
+    background-color: var(--bs-tertiary-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+.daterangepicker .drp-buttons {
+    border-top-color: var(--bs-border-color);
+}
+
+.daterangepicker .ranges li:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.daterangepicker .ranges li.active {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.daterangepicker.show-ranges.single.rtl .drp-calendar.left,
+.daterangepicker.show-ranges.single.ltr .drp-calendar.left,
+.daterangepicker.show-ranges.rtl .drp-calendar.right,
+.daterangepicker.show-ranges.ltr .drp-calendar.left {
+    border-color: var(--bs-border-color);
+}
