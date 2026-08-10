@@ -39,8 +39,9 @@ namespace MahantInv.Web.Api
             _productUsageRepository = productUsageRepository;
             _context = context;
 
+            ExcelPackage.License.SetNonCommercialPersonal("Milan Patel");
             // Set EPPlus license context
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
         [HttpGet("download/products")]

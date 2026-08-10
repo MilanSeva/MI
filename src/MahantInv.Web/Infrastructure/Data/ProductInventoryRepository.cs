@@ -44,6 +44,8 @@ namespace MahantInv.Web.Infrastructure.Data
                     CreatedAt = n.CreatedAt,
                     Quantity = n.Quantity
                 })
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(200)
                 .ToListAsync();
         }
 
