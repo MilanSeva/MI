@@ -31,6 +31,7 @@ namespace MahantInv.Web.Api
         private readonly ILogger<ProductApiController> _logger;
         private readonly IProductsRepository _productRepository;
         private readonly IStorageRepository _storageRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly MIDbContext _context;
         // Allowed image MIME types for validation
@@ -42,11 +43,12 @@ namespace MahantInv.Web.Api
         "image/bmp",
         "image/svg+xml"
         };
-        public ProductApiController(MIDbContext context, IUnitOfWork unitOfWork, IStorageRepository storageRepository, IMapper mapper, ILogger<ProductApiController> logger, IProductsRepository productRepository) : base(mapper)
+        public ProductApiController(MIDbContext context, IUnitOfWork unitOfWork, IStorageRepository storageRepository, IMapper mapper, ILogger<ProductApiController> logger, IProductsRepository productRepository, ICategoryRepository categoryRepository) : base(mapper)
         {
             _logger = logger;
             _productRepository = productRepository;
             _storageRepository = storageRepository;
+            _categoryRepository = categoryRepository;
             _unitOfWork = unitOfWork;
             _context = context;
         }
@@ -104,6 +106,7 @@ namespace MahantInv.Web.Api
                 {
                     product = await _context.Products
                         .Include(p => p.ProductStorages)
+                        .Include(p => p.ProductCategories).ThenInclude(pc => pc.Category)
                         .SingleOrDefaultAsync(p => p.Id == input.Id);
                     if (product == null)
                     {
@@ -143,6 +146,13 @@ namespace MahantInv.Web.Api
                         _context.Storages.Update(storage);
                     }
                 }
+
+                // Categories are optional; null means the client didn't send them, so keep what's there
+                if (input.CategoryNames != null)
+                {
+                    await _categoryRepository.SyncProductCategories(product, input.CategoryNames);
+                }
+
                 if (input.Id == 0)
                 {
                     await _context.AddAsync(product);

@@ -1,3 +1,4 @@
+using MahantInv.Web.Infrastructure.Dtos.Category;
 using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Interfaces;
 using MahantInv.Web.Infrastructure.ViewModels;
@@ -47,13 +48,20 @@ namespace MahantInv.Web.Infrastructure.Data
         {
             return _context.Products
                 .Include(p => p.ProductStorages).ThenInclude(ps => ps.Storage)
+                .Include(p => p.ProductCategories).ThenInclude(pc => pc.Category)
                 .Include(p => p.LastModifiedBy)
                 .Include(p => p.UnitTypeCodeNavigation)
-                .Include(p => p.ProductInventory);
+                .Include(p => p.ProductInventory)
+                // Two collection includes (storages + categories) would otherwise multiply rows
+                .AsSplitQuery();
         }
 
         private static ProductVM MapToProductVM(Product p)
         {
+            List<CategoryDto> categories = p.ProductCategories
+                .Select(pc => new CategoryDto { Id = pc.CategoryId, Name = pc.Category.Name })
+                .OrderBy(c => c.Name)
+                .ToList();
             return new ProductVM
             {
                 Id = p.Id.ToString(),
@@ -73,6 +81,8 @@ namespace MahantInv.Web.Infrastructure.Data
                 ModifiedAt = p.ModifiedAt,
                 StorageIds = p.ProductStorages.Count > 0 ? string.Join(",", p.ProductStorages.Select(ps => ps.StorageId)) : null,
                 Storage = p.ProductStorages.Count > 0 ? string.Join(",", p.ProductStorages.Select(ps => ps.Storage.Name)) : null,
+                Categories = categories,
+                Category = categories.Count > 0 ? string.Join(", ", categories.Select(c => c.Name)) : null,
                 LastModifiedBy = p.LastModifiedBy?.UserName,
                 UnitTypeName = p.UnitTypeCodeNavigation?.Name,
                 CurrentStock = (decimal)(p.ProductInventory?.Quantity ?? 0)

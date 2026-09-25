@@ -37,6 +37,9 @@ namespace MahantInv.Web.Infrastructure.Entities
         public DateTime? ModifiedAt { get; set; }
         public List<ProductStorage> ProductStorages { get; set; }
 
+        [InverseProperty("Product")]
+        public virtual ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+
         [ForeignKey("LastModifiedById")]
         [InverseProperty("Products")]
         public virtual MIIdentityUser LastModifiedBy { get; set; }

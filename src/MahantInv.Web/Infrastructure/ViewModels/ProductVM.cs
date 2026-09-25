@@ -1,4 +1,5 @@
-﻿using MahantInv.Web.Infrastructure.Entities;
+﻿using MahantInv.Web.Infrastructure.Dtos.Category;
+using MahantInv.Web.Infrastructure.Entities;
 using MahantInv.Web.Infrastructure.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -39,6 +40,9 @@ namespace MahantInv.Web.Infrastructure.ViewModels
         public virtual ICollection<ProductExpiry> ProductExpiries { get; set; } = new List<ProductExpiry>();
         public string? Storage { get; set; }
         public string? StorageIds { get; set; }
+        public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+        /// <summary>Comma-separated category names for the grid and exports, e.g. "Electronics, Gadgets".</summary>
+        public string? Category { get; set; }
         public string LastModifiedBy { get; set; }
         public decimal CurrentStock { get; set; }
         public string UnitTypeName { get; set; }

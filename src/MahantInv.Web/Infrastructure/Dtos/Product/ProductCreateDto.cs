@@ -1,4 +1,5 @@
 ﻿using MahantInv.Web.Infrastructure;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MahantInv.Web.Infrastructure.Dtos.Product
@@ -29,6 +30,13 @@ namespace MahantInv.Web.Infrastructure.Dtos.Product
         //public int? StorageId { get; set; }
         public string StorageNames { get; set; }
         public int Stock { get; set; }
+
+        /// <summary>
+        /// Optional. Unknown names are created as new categories on save.
+        /// null leaves an existing product's categories untouched; an empty list clears them.
+        /// </summary>
+        [Display(Name = "Category")]
+        public List<string>? CategoryNames { get; set; }
 
     }
 }

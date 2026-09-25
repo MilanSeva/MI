@@ -54,6 +54,10 @@ namespace MahantInv.Web.Infrastructure.Data
 
         public virtual DbSet<Storage> Storages { get; set; }
 
+        public virtual DbSet<Category> Categories { get; set; }
+
+        public virtual DbSet<ProductCategory> ProductCategories { get; set; }
+
         public virtual DbSet<UnitType> UnitTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -155,6 +159,25 @@ namespace MahantInv.Web.Infrastructure.Data
                 entity.HasOne(d => d.Product).WithMany(p => p.ProductStorages);
 
                 entity.HasOne(d => d.Storage).WithMany();
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                // NOCASE keeps "Electronics" and "electronics" from becoming two categories
+                entity.Property(d => d.Name).UseCollation("NOCASE");
+                entity.HasIndex(d => d.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<ProductCategory>(entity =>
+            {
+                entity.HasIndex(d => new { d.ProductId, d.CategoryId }).IsUnique();
+                entity.HasIndex(d => d.CategoryId);
+
+                entity.HasOne(d => d.Product).WithMany(p => p.ProductCategories)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.Category).WithMany(p => p.ProductCategories)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<ProductUsage>(entity =>

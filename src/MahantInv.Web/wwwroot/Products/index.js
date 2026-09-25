@@ -167,6 +167,10 @@ var productGridAPIOptions = {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
         },
         {
+            headerName: 'Category', field: 'category', filter: 'agTextColumnFilter', headerTooltip: 'Category', editable: false,
+            valueFormatter: params => params.value || '-'
+        },
+        {
             headerName: '', field: 'id', headerTooltip: 'Action', pinned: 'right', suppressSizeToFit: true,
             cellRenderer: 'actionCellRenderer',
         }
@@ -287,7 +291,7 @@ function onStateUpdated(event) {
     localStorage.setItem("f840074316684a1d9074edcd72023fb3", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames, CategoryNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.GujaratiName = Common.ParseValue(GujaratiName);
@@ -301,6 +305,7 @@ class Product {
         this.Company = Common.ParseValue(Company);
         //this.StorageId = StorageId;
         this.StorageNames = StorageNames;
+        this.CategoryNames = CategoryNames || [];
     }
 }
 class ProductUsageModel {
@@ -526,6 +531,10 @@ class Common {
         else {
             $('#StorageNames').val('').trigger('change');
         }
+        // Options come from AJAX, so the selected ones must be added before they can be selected
+        let $categories = $('#CategoryNames').empty();
+        model.CategoryNames.forEach(name => $categories.append(new Option(name, name, true, true)));
+        $categories.trigger('change');
     }
 
     static init() {
@@ -546,7 +555,8 @@ class Common {
         let IsDisposable = $('#IsDisposable').is(':checked');
         let Company = $('#Company').val();
         let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        let CategoryNames = $('#CategoryNames').val() || [];
+        let product = new Product(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames, CategoryNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -593,7 +603,7 @@ class Common {
             },
         }).then(response => { return response.json() })
             .then(data => {
-                Common.BindValuesToProductForm(new Product(data.id, data.name, data.gujaratiName, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds));
+                Common.BindValuesToProductForm(new Product(data.id, data.name, data.gujaratiName, data.description, data.size, data.unitTypeCode, data.orderBulkName, data.orderBulkQuantity, data.reorderLevel, data.isDisposable, data.company, data.storageIds, (data.categories || []).map(c => c.name)));
             })
             .catch(error => {
                 console.log(error);
@@ -641,6 +651,30 @@ class Common {
             closeOnSelect: true,
             tags: true,
             maximumSelectionLength: 1
+        });
+        $('#CategoryNames').select2({
+            dropdownParent: $('#AddEditProduct'),
+            placeholder: 'Search or add Category',
+            closeOnSelect: true,
+            tags: true,
+            ajax: {
+                url: baseUrl + 'api/categories/search',
+                dataType: 'json',
+                delay: 250,
+                data: params => ({ query: params.term || '' }),
+                // Option value is the name: the save API maps names to existing or new categories
+                processResults: data => ({ results: data.map(c => ({ id: c.name, text: c.name })) })
+            },
+            createTag: params => {
+                let term = $.trim(params.term);
+                return term === '' ? null : { id: term, text: term, newTag: true };
+            },
+            // Don't offer "Foo (new)" when the search already returned "foo"
+            insertTag: (data, tag) => {
+                let exists = data.some(d => (d.text || '').toLowerCase() === tag.text.toLowerCase());
+                if (!exists) data.unshift(tag);
+            },
+            templateResult: data => data.newTag ? $('<span>').text(data.text + ' (new)') : data.text
         });
 
         //$(document).on('select2:open', () => {

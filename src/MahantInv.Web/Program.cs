@@ -114,6 +114,7 @@ builder.Services.AddTransient<IProductInventoryRepository, ProductInventoryRepos
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductUsageRepository, ProductUsageRepository>();
 builder.Services.AddTransient<IStorageRepository, StorageRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient<GoogleCaptchaService>();
 builder.Services.AddScoped<IAdHocRepo, AdHocRepo>();

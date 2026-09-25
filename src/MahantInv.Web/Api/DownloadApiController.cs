@@ -67,9 +67,10 @@ namespace MahantInv.Web.Api
                     worksheet.Cells[1, 9].Value = "Reorder Level";
                     worksheet.Cells[1, 10].Value = "Is Disposable?";
                     worksheet.Cells[1, 11].Value = "Storage";
+                    worksheet.Cells[1, 12].Value = "Category";
 
                     // Style header row
-                    var headerRange = worksheet.Cells[1, 1, 1, 11];
+                    var headerRange = worksheet.Cells[1, 1, 1, 12];
                     headerRange.Style.Font.Bold = true;
                     headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
@@ -89,6 +90,7 @@ namespace MahantInv.Web.Api
                         worksheet.Cells[row, 9].Value = product.ReorderLevel ?? 0;
                         worksheet.Cells[row, 10].Value = product.Disposable;
                         worksheet.Cells[row, 11].Value = product.Storage ?? string.Empty;
+                        worksheet.Cells[row, 12].Value = product.Category ?? string.Empty;
                         row++;
                     }
 

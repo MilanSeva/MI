@@ -104,6 +104,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group category-container">
+                            <label asp-for="@Model.CategoryNames"></label>
+                            @* Options are loaded on demand from api/categories/search; typing a new name adds it as a tag *@
+                            <select id="CategoryNames" class="form-control form-control-sm" multiple></select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="Common.SaveProduct(this)" data-target="AddEditProduct">Save</button>
