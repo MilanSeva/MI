@@ -549,6 +549,8 @@ class Common {
 
     static init() {
         $('#productsdata').height(Common.calcDataTableHeight(27));
+        // Typing an English name fills the Gujarati name and vice versa (see js/transliterate.js)
+        initNameTransliteration($('#AddEditProduct'), '#Name', '#GujaratiName');
     }
 
     static async SaveProduct(mthis) {

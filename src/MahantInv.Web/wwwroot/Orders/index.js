@@ -450,6 +450,8 @@ class Common {
             tags: true
         });
         initCategorySelect2($('#AddProduct #CategoryNames'), $('#AddProduct'));
+        // Typing an English name fills the Gujarati name and vice versa (see js/transliterate.js)
+        initNameTransliteration($('#AddProduct'), '#Name', '#GujaratiName');
         // select2:select fires only on a user pick, not on .val().trigger('change') when an order is loaded for edit.
         // Bound once here; GetAllProducts re-creates the Select2 widget but the <select> and its handlers survive.
         $('#ProductId').on('select2:select', e => Common.FillLastSeller(e.params.data.id));
