@@ -22,6 +22,8 @@
             </select>
 
             <button class="btn btn-outline-info btn-sm text-nowrap" onclick="Common.OpenFilterModal()">Save</button>
+            @* Disabled while "Default Filter" is selected; enabled by Common.UpdateDeleteFilterButton *@
+            <button id="deleteFilterBtn" class="btn btn-outline-danger btn-sm text-nowrap" onclick="Common.DeleteFilter()" title="Delete selected filter" disabled>Delete</button>
         </div>
 
         <!-- Right Section -->

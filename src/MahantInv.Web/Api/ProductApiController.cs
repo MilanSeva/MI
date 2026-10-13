@@ -418,6 +418,24 @@ namespace MahantInv.Web.Api
                         }
                     }
                     break;
+                case "category":
+                    // Comma-separated names; same rules as the product form (reuse existing, create missing, drop the rest)
+                    await _context.Entry(product).Collection(p => p.ProductCategories)
+                        .Query().Include(pc => pc.Category).LoadAsync();
+                    var categoryNames = (request.NewValue ?? string.Empty).Split(",");
+                    await _categoryRepository.SyncProductCategories(product, categoryNames);
+                    product.ModifiedAt = DateTime.UtcNow;
+                    product.LastModifiedById = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    await _context.SaveChangesAsync();
+
+                    // Send back the normalized list (trimmed, de-duplicated, sorted) so the grid shows what was stored
+                    var savedNames = product.ProductCategories.Select(pc => pc.Category.Name).OrderBy(n => n).ToList();
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Success.",
+                        value = savedNames.Count > 0 ? string.Join(", ", savedNames) : null
+                    });
                 default:
                     return BadRequest(new { success = false, message = "Invalid field." });
             }

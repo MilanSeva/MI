@@ -167,7 +167,8 @@ var productGridAPIOptions = {
             headerName: 'Storage', field: 'storage', filter: 'agTextColumnFilter', headerTooltip: 'Storage', editable: true
         },
         {
-            headerName: 'Category', field: 'category', filter: 'agTextColumnFilter', headerTooltip: 'Category', editable: false,
+            // Edit as comma-separated names, e.g. "Electronics, Gadgets"; unknown names become new categories
+            headerName: 'Category', field: 'category', filter: 'agTextColumnFilter', headerTooltip: 'Category (comma separated)', editable: true,
             valueFormatter: params => params.value || '-'
         },
         {
@@ -260,6 +261,10 @@ function onCellValueChanged(event) {
 
             if (data.success) {
                 toastr.success("Updated", '', { positionClass: 'toast-top-center' });
+                // Fields like category return the value as stored (trimmed, de-duplicated, sorted); show that
+                if (data.value !== undefined) {
+                    restoreOldValue(rowNode, field, data.value);
+                }
                 productGridAPI.flashCells({ rowNodes: [rowNode] });
             } else {
                 toastr.error(data.message || "Update failed", '', { positionClass: 'toast-top-center' });
@@ -462,6 +467,7 @@ class Common {
     }
     static ApplyFilter(mthis) {
         const selectedId = $(mthis).val();
+        Common.UpdateDeleteFilterButton();
         if (selectedId) {
             const selectedObj = defaultFilters.find(f => f.id === Number(selectedId));
 
@@ -713,7 +719,7 @@ class Common {
 
     }
     static GetDefaultFilters() {
-        fetch(baseUrl + 'api/filters/Product')
+        return fetch(baseUrl + 'api/filters/Product')
             .then((response) => response.json())
             .then(data => {
                 defaultFilters = data;
@@ -724,10 +730,47 @@ class Common {
                 defaultFilters.forEach(item => {
                     $dropdown.append(`<option value="${item.id}" title="${item.description}">${item.name}</option>`);
                 });
+                Common.UpdateDeleteFilterButton();
             })
             .catch(error => {
 
             });
+    }
+
+    // "Default Filter" (empty value) is not a saved filter and can't be deleted
+    static UpdateDeleteFilterButton() {
+        $('#deleteFilterBtn').prop('disabled', !$('#defaultFilterSelect').val());
+    }
+
+    static async DeleteFilter() {
+        const $dropdown = $('#defaultFilterSelect');
+        const selectedId = $dropdown.val();
+        if (!selectedId) {
+            toastr.warning("Default Filter cannot be deleted.", '', { positionClass: 'toast-top-center' });
+            return;
+        }
+        const name = $dropdown.find('option:selected').text();
+        if (!confirm(`Are you sure you want to delete the filter "${name}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(baseUrl + 'api/filter/delete/' + selectedId, { method: 'DELETE' });
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.success) {
+                toastr.success("Filter deleted", '', { positionClass: 'toast-top-center' });
+                // Rebuilding the dropdown selects "Default Filter"; apply it so the grid's filter is cleared too
+                await Common.GetDefaultFilters();
+                Common.ApplyFilter($dropdown);
+            }
+            else {
+                toastr.error((data.errors && data.errors.join(', ')) || "Delete failed", '', { positionClass: 'toast-top-center' });
+            }
+        }
+        catch (error) {
+            console.log(error);
+            toastr.error("Network or server error", '', { positionClass: 'toast-top-center' });
+        }
     }
 }
 

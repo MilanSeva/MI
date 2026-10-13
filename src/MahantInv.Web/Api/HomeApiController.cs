@@ -240,5 +240,27 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
+        // "Default Filter" in the dropdown is not a stored row (it just clears the grid filter), so only saved filters can be deleted here
+        [HttpDelete("filter/delete/{id}")]
+        public async Task<IActionResult> DeleteDefaultFilter([FromRoute] int id)
+        {
+            try
+            {
+                var filter = await _context.DefaultFilters.FindAsync(id);
+                if (filter == null)
+                {
+                    return NotFound(new { success = false, errors = new[] { "Filter not found. It may have already been deleted." } });
+                }
+                _context.DefaultFilters.Remove(filter);
+                await _context.SaveChangesAsync();
+                return Ok(new { success = true });
+            }
+            catch (Exception e)
+            {
+                string GUID = Guid.NewGuid().ToString();
+                _logger.LogError(e, GUID, null);
+                return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
+            }
+        }
     }
 }
