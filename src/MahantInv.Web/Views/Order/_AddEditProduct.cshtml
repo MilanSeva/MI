@@ -14,13 +14,16 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="@Model.Name"></label>
-                            <input asp-for="@Model.Name" class="form-control form-control-sm" placeholder="Name" />
+                            <input asp-for="@Model.Name" class="form-control form-control-sm" placeholder="Name" list="ProductNameSuggestions" autocomplete="off" />
+                            @* Existing product names, filled by fillProductNameSuggestions() *@
+                            <datalist id="ProductNameSuggestions"></datalist>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="@Model.GujaratiName"></label>
-                            <input asp-for="@Model.GujaratiName" class="form-control form-control-sm" placeholder="ગુજરાતી નામ" />
+                            <input asp-for="@Model.GujaratiName" class="form-control form-control-sm" placeholder="ગુજરાતી નામ" list="ProductGujaratiNameSuggestions" autocomplete="off" />
+                            <datalist id="ProductGujaratiNameSuggestions"></datalist>
                         </div>
                     </div>
                 </div>

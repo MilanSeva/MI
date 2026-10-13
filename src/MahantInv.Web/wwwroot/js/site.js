@@ -30,3 +30,15 @@ function initCategorySelect2($select, $dropdownParent) {
         templateResult: data => data.newTag ? $('<span>').text(data.text + ' (new)') : data.text
     });
 }
+
+// Fills the Product Name / Gujarati Name <datalist>s of an Add/Edit Product modal from a list of products
+// ({ name, gujaratiName }), so typing shows existing names as suggestions. Browser-native, so no extra library.
+function fillProductNameSuggestions($modal, products) {
+    const fill = (selector, values) => {
+        const unique = [...new Set(values.map(v => (v || '').trim()).filter(v => v !== ''))]
+            .sort((a, b) => a.localeCompare(b));
+        $modal.find(selector).empty().append(unique.map(v => $('<option>').attr('value', v)));
+    };
+    fill('#ProductNameSuggestions', products.map(p => p.name));
+    fill('#ProductGujaratiNameSuggestions', products.map(p => p.gujaratiName));
+}

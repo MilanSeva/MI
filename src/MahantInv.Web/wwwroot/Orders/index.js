@@ -467,6 +467,9 @@ class Common {
             },
         }).then(response => { return response.json() });
 
+        // Same list feeds the New Product modal's name suggestions (re-run after a product is saved)
+        fillProductNameSuggestions($('#AddProduct'), response);
+
         $('#ProductId').select2({
             dropdownParent: $('#PlaceOrder'),
             placeholder: 'Search Product',

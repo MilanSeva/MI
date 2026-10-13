@@ -336,6 +336,10 @@ class Common {
         let id = $(mthis).data('id');
         let target = $(mthis).data('target');
         $('#' + target).modal('show');
+        // Name suggestions come from the grid rows, so products added since page load are included
+        let products = [];
+        productGridAPI.forEachNode(rowNode => products.push(rowNode.data));
+        fillProductNameSuggestions($('#' + target), products);
         if (id == 0) {
             $('#ModalTitle').html('Add Product');
             Common.BindValuesToProductForm(new Product(0, null, null, null, null, null, null, null, null, null));
