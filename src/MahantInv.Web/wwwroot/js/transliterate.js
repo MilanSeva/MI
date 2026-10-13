@@ -86,7 +86,9 @@ var GujaratiTransliterator = (function () {
     }
 
     function toGujarati(text) {
-        return (text || '').replace(/[A-Za-z]+/g, romanWordToGujarati);
+        return (text || '')
+            .replace(/[A-Za-z]+/g, romanWordToGujarati)
+            .replace(/[0-9]/g, function (d) { return GUJ_DIGITS.charAt(Number(d)); }); // 100 -> ૧૦૦
     }
 
     // ---------- Gujarati -> English ----------
