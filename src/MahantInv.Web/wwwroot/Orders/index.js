@@ -183,7 +183,7 @@ function onStateUpdated(event) {
     localStorage.setItem("9427363582ba4ccda0a9aa2fcd422bc77", JSON.stringify(state));
 }
 class Product {
-    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames) {
+    constructor(Id, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames, CategoryNames) {
         this.Id = parseInt(Id);
         this.Name = Common.ParseValue(Name);
         this.GujaratiName = Common.ParseValue(GujaratiName);
@@ -196,6 +196,7 @@ class Product {
         this.IsDisposable = IsDisposable;
         this.Company = Common.ParseValue(Company);
         this.StorageNames = StorageNames;
+        this.CategoryNames = CategoryNames || [];
     }
 }
 class Order {
@@ -263,7 +264,8 @@ class Common {
         $('#BulkNameQuantityLabel').html('.');
         if (id == 0) {
             $('#actionsection').find('.cancelbtn').hide();
-            Common.BindValuesToOrderForm(new Order(0, null, null, null, moment().format("YYYY-MM-DD"), null, null, null, null, null, null, null, null, null, null));
+            // ReceivedDate (13th arg) defaults to today; it is only a prefill, the order is still saved as "Ordered"
+            Common.BindValuesToOrderForm(new Order(0, null, null, null, moment().format("YYYY-MM-DD"), null, null, null, null, null, null, null, moment().format("YYYY-MM-DD"), null, null));
         }
         else {
             $('#actionsection').find('.cancelbtn').show();
@@ -273,19 +275,21 @@ class Common {
 
     static OpenProductModal(mthis) {
 
-        $('#ProductErrorSection').empty();
-        //$('#Id').val(model.Id);
-        $('#Name').val('');
-        $('#GujaratiName').val('');
-        $('#Description').val('');
-        $('#Size').val('');
-        $('#UnitTypeCode').val('');
-        $('#OrderBulkName').val('');
-        $('#OrderBulkQuantity').val('');
-        $('#ReorderLevel').val('');
-        $('#IsDisposable').prop("checked", false);
-        $('#Company').val('');
-        $('#StorageNames').val('').trigger('change');
+        // Scoped to the modal: the Party modal on this page also renders id="Name"
+        let $form = $('#AddProduct');
+        $form.find('#ProductErrorSection').empty();
+        $form.find('#Name').val('');
+        $form.find('#GujaratiName').val('');
+        $form.find('#Description').val('');
+        $form.find('#Size').val('');
+        $form.find('#UnitTypeCode').val('');
+        $form.find('#OrderBulkName').val('');
+        $form.find('#OrderBulkQuantity').val('');
+        $form.find('#ReorderLevel').val('');
+        $form.find('#IsDisposable').prop("checked", false);
+        $form.find('#Company').val('');
+        $form.find('#StorageNames').val('').trigger('change');
+        $form.find('#CategoryNames').empty().trigger('change');
 
         let target = $(mthis).data('target');
         $('#' + target).modal('show');
@@ -372,7 +376,7 @@ class Common {
         $('#Id').val(model.Id);
         $('#ProductId').val(model.ProductId).trigger('change');
         $('#Quantity').val(model.Quantity);
-        $('#SellerId').val(model.ProductId).trigger('change');
+        $('#SellerId').val(model.SellerId).trigger('change');
         $('#OrderDate').val(moment(model.OrderDate).format("YYYY-MM-DD"));
         $('#Remark').val(model.Remark);
         $('#ReceivedQuantity').val(model.ReceivedQuantity);
@@ -445,6 +449,10 @@ class Common {
             closeOnSelect: true,
             tags: true
         });
+        initCategorySelect2($('#AddProduct #CategoryNames'), $('#AddProduct'));
+        // select2:select fires only on a user pick, not on .val().trigger('change') when an order is loaded for edit.
+        // Bound once here; GetAllProducts re-creates the Select2 widget but the <select> and its handlers survive.
+        $('#ProductId').on('select2:select', e => Common.FillLastSeller(e.params.data.id));
         Common.GetAllProducts();
         Common.InitCountable();
 
@@ -492,6 +500,25 @@ class Common {
                 return repo.name
             }
         });
+    }
+    // Defaults the Seller to whoever supplied this product last. New orders only; the user can still change it.
+    static async FillLastSeller(productId) {
+        if (!productId || parseInt($('#PlaceOrder #Id').val() || 0) !== 0) return;
+        try {
+            let response = await fetch(baseUrl + 'api/order/lastseller/' + productId);
+            if (response.status !== 200) return; // 204: product never ordered, leave Seller as is
+            let lastSeller = await response.json();
+            // Ignore a slow response if the user has already picked another product
+            if ($('#ProductId').val() != productId) return;
+            let $seller = $('#SellerId');
+            // A seller whose party type has since changed may no longer be in the list
+            if ($seller.find('option[value="' + lastSeller.sellerId + '"]').length === 0) {
+                $seller.append(new Option(lastSeller.sellerName, lastSeller.sellerId));
+            }
+            $seller.val(lastSeller.sellerId).trigger('change');
+        } catch (error) {
+            console.log('Last seller lookup failed:', error);
+        }
     }
     static SetBulkNameAndQuantity() {
         bulkOrderName = bulkOrderName == null || bulkOrderName == "" ? "-" : bulkOrderName;
@@ -889,19 +916,22 @@ class Common {
     }
 
     static async SaveProduct(mthis) {
-        $('#ProductErrorSection').empty();
-        let Name = $('#ProductName').val();
-        let GujaratiName = $('#GujaratiName').val();
-        let Description = $('#Description').val();
-        let Size = $('#Size').val();
-        let UnitTypeCode = $('#UnitTypeCode').val();
-        let OrderBulkName = $('#OrderBulkName');
-        let OrderBulkQuantity = $('#OrderBulkQuantity');
-        let ReorderLevel = $('#ReorderLevel').val();
-        let IsDisposable = $('#IsDisposable').is(':checked');
-        let Company = $('#Company').val();
-        let StorageNames = $('#StorageNames option:selected').toArray().map(item => item.text).join();
-        let product = new Product(0, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames);
+        // Scoped to the modal: the Party modal on this page also renders id="Name"
+        let $form = $('#AddProduct');
+        $form.find('#ProductErrorSection').empty();
+        let Name = $form.find('#Name').val();
+        let GujaratiName = $form.find('#GujaratiName').val();
+        let Description = $form.find('#Description').val();
+        let Size = $form.find('#Size').val();
+        let UnitTypeCode = $form.find('#UnitTypeCode').val();
+        let OrderBulkName = Common.ParseValue($form.find('#OrderBulkName').val());
+        let OrderBulkQuantity = $form.find('#OrderBulkQuantity').val() || null;
+        let ReorderLevel = $form.find('#ReorderLevel').val();
+        let IsDisposable = $form.find('#IsDisposable').is(':checked');
+        let Company = $form.find('#Company').val();
+        let StorageNames = $form.find('#StorageNames option:selected').toArray().map(item => item.text).join();
+        let CategoryNames = $form.find('#CategoryNames').val() || [];
+        let product = new Product(0, Name, GujaratiName, Description, Size, UnitTypeCode, OrderBulkName, OrderBulkQuantity, ReorderLevel, IsDisposable, Company, StorageNames, CategoryNames);
 
         var response = await fetch(baseUrl + 'api/product/save', {
             method: 'POST',
@@ -918,27 +948,20 @@ class Common {
                 $.each(response.errors, function (index, element) {
                     errorHtml += element[0] + '<br/>';
                 });
-                $('#ProductErrorSection').html(errorHtml);
+                $form.find('#ProductErrorSection').html(errorHtml);
             }
+        }
+        if (response.success === false && Array.isArray(response.errors)) {
+            // Business-rule errors from the API, e.g. "Storage field is required"
+            $form.find('#ProductErrorSection').html(response.errors.map(e => $('<div>').text(e).html()).join('<br/>'));
         }
         if (response.success) {
             toastr.success("Product Saved", '', { positionClass: 'toast-top-center' });
             let target = $(mthis).data('target');
             $('#' + target).modal('hide');
+            // Reload the order form's product dropdown so the new product can be picked right away
             $("#ProductId").select2('destroy').empty();
             Common.GetAllProducts();
-            //if (Id == 0) {
-            //    productGridOptions.api.applyTransaction({ add: [response.data] });//addIndex
-            //}
-            //else {
-            //    productGridOptions.api.applyTransaction({ update: [response.data] });
-            //}
-            let rowNode = productGridOptions.api.getRowNode(response.data.id);
-            productGridOptions.api.flashCells({ rowNodes: [rowNode] });
-            $("#ProductUsageSelect").select2('destroy').empty();
-            setTimeout(function () {
-                Common.InitSelect2();
-            }, 1000);
         }
     }
 

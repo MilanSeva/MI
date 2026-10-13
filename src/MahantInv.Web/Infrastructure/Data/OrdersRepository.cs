@@ -24,6 +24,20 @@ namespace MahantInv.Web.Infrastructure.Data
             return _context.OrderTransactions.Where(ot => ot.OrderId == orderId).ExecuteDeleteAsync();
         }
 
+        public Task<LastSellerDto?> GetLastSellerForProduct(int productId)
+        {
+            // Latest by order date, Id breaks ties between orders placed the same day.
+            // Cancelled orders are skipped: they often mean that seller couldn't supply.
+            return _context.Orders
+                .Where(o => o.ProductId == productId
+                    && o.SellerId != null
+                    && o.StatusId != Utility.Meta.OrderStatusTypes.Cancelled)
+                .OrderByDescending(o => o.OrderDate)
+                .ThenByDescending(o => o.Id)
+                .Select(o => new LastSellerDto { SellerId = o.SellerId.Value, SellerName = o.Seller.Name })
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<OrderCreateDto> GetOrderById(int orderId)
         {
             return await _context.Orders

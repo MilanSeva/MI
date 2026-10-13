@@ -652,30 +652,7 @@ class Common {
             tags: true,
             maximumSelectionLength: 1
         });
-        $('#CategoryNames').select2({
-            dropdownParent: $('#AddEditProduct'),
-            placeholder: 'Search or add Category',
-            closeOnSelect: true,
-            tags: true,
-            ajax: {
-                url: baseUrl + 'api/categories/search',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({ query: params.term || '' }),
-                // Option value is the name: the save API maps names to existing or new categories
-                processResults: data => ({ results: data.map(c => ({ id: c.name, text: c.name })) })
-            },
-            createTag: params => {
-                let term = $.trim(params.term);
-                return term === '' ? null : { id: term, text: term, newTag: true };
-            },
-            // Don't offer "Foo (new)" when the search already returned "foo"
-            insertTag: (data, tag) => {
-                let exists = data.some(d => (d.text || '').toLowerCase() === tag.text.toLowerCase());
-                if (!exists) data.unshift(tag);
-            },
-            templateResult: data => data.newTag ? $('<span>').text(data.text + ' (new)') : data.text
-        });
+        initCategorySelect2($('#CategoryNames'), $('#AddEditProduct'));
 
         //$(document).on('select2:open', () => {
         //    document.querySelector('.select2-search__field').focus();

@@ -12,5 +12,6 @@ namespace MahantInv.Web.Infrastructure.Interfaces
         Task<IEnumerable<OrderListDto>> GetOrders(DateOnly? startDate = null, DateOnly? endDate = null, int? Id = null);
         Task<OrderCreateDto> GetOrderById(int orderId);
         Task DeleteOrderTransactionByOrderId(int orderId);
+        Task<LastSellerDto?> GetLastSellerForProduct(int productId);
     }
 }

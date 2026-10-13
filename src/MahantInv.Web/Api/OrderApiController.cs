@@ -209,6 +209,22 @@ namespace MahantInv.Web.Api
                 return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
             }
         }
+        // Seller of the latest order for this product; 204 No Content when the product has never been ordered
+        [HttpGet("order/lastseller/{productId}")]
+        public async Task<object> GetLastSeller(int productId)
+        {
+            try
+            {
+                LastSellerDto? lastSeller = await _orderRepository.GetLastSellerForProduct(productId);
+                return lastSeller == null ? NoContent() : Ok(lastSeller);
+            }
+            catch (Exception e)
+            {
+                string GUID = Guid.NewGuid().ToString();
+                _logger.LogError(e, GUID, null);
+                return BadRequest(new { success = false, errors = new[] { "Unexpected Error " + GUID } });
+            }
+        }
         [HttpPost("order/receive")]
         public async Task<object> ReceiveOrder([FromBody] OrderCreateDto orderDto)
         {
